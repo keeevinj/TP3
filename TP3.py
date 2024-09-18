@@ -13,11 +13,6 @@ import os.path
 import pickle
 import io
 
-import os
-import os.path
-import pickle
-import io
-
 class estudiantes:
 	def __init__(self):
 		self.email=email
@@ -46,27 +41,18 @@ class administradores:
 		self.email=email
 		self.contraseña=contraseña
 
-def verificar_archivo(path,tipo):
+def verificar_archivo(path):
 	if os.path.exists(path):
 		archivo_log=open(path,"r+b")
 	else:
 		archivo_log=open(path,"w+b")
 
 def main():
-	print("Esto")
-	print(os.getcwd()+)
-	s=input()
 
-def inicializar():
-
-	archivo_fisico_estudiantes= os.getcwd()+"estudiantes.dat"
-	archivo_fisico_administradores= os.getcwd()+"administradores.dat"
-	archivo_fisico_moderadores= os.getcwd()+"moderadores.dat"	
-
-	if os.path.exists(archivo_log):
-        archivo_log = open(archivo_fisico, "r+b")
-    else:
-		archivo_log = open(archivo_fisico, "w+b")
+	archivo_fisico_estudiantes= os.getcwd()+"\\estudiantes.dat"
+	archivo_fisico_administradores= os.getcwd()+"\\administradores.dat"
+	archivo_fisico_moderadores= os.getcwd()+"\\moderadores.dat"
+	verificar_archivo(archivo_fisico_estudiantes)
 
 main()
 
