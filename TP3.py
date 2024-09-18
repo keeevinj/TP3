@@ -15,26 +15,32 @@ import io
 
 class estudiantes:
 	def __init__(self):
-		self.email=email
-		self.nombre=nombre
-		self.sexo=sexo
-		self.contraseña=contraseña
-		self.estado=estado
-		self.hobbies=hobbies
-		self.materia_fav=materia_fav
-		self.deporte_fav=deporte_fav
-		self.materia_fuerte=materia_fuerte
-		self.materia_debil=materia_debil
-		self.biografia=biografia
-		self.pais=pais
-		self.ciudad=ciudad
-		self.fecha_nacimiento=fecha_nacimiento
+		self.email=""
+		self.nombre=""
+		self.sexo=""
+		self.contraseña=""
+		self.estado=""
+		self.hobbies=""
+		self.materia_fav=""
+		self.deporte_fav=""
+		self.materia_fuerte=""
+		self.materia_debil=""
+		self.biografia=""
+		self.pais=""
+		self.ciudad=""
+		self.fecha_nacimiento=""
+
+#Crear metodo para formatear los strings?
+#Es para que todos los registros sean del mismo tamaño
+
+	def formato(self):
+		self.email=self.email.ljust(32)
 
 class moderadores:
 	def __init__(self):
-		self.email=email
-		self.contraseña=contraseña
-		self.estado=estado
+		self.email=""
+		self.contraseña=""
+		self.estado=""
 
 class administradores:
 	def __init__(self):
