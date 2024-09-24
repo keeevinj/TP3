@@ -108,3 +108,9 @@ arr_moderadores=[]
 
 main()
 
+def print_menu_inicio():
+    print("0. Salir")
+    print("1. Login")
+    print("2. Registrarse")
+
+
