@@ -114,3 +114,33 @@ def print_menu_inicio():
     print("2. Registrarse")
 
 
+
+	
+    for i in range (filas):
+        for j in range (columna):
+            if j == 0:
+                A[i][j] = "Student"
+            elif j == 1:
+                A[i][j] = "estudiante" + str(i+1) + "@ayed.com"
+            elif j == 2:
+                A[i][j] = str(111222 + 111111*i)
+            elif j == 9:
+                if (0 <= i < 4):
+                    A[i][j] = ASTA
+                else:
+                    A[i][j] = ISTA
+            elif (0 <= i < 4):
+                if j == 3:
+                    A[i][j] = globals()[f"NAME{i+1}"]
+                elif j == 4:
+                    A[i][j] = rdob()
+                elif j == 5:
+                    rage = datetime.now().date() - datetime.strptime(A[i][j-1], "%Y-%m-%d").date()
+                    rage = math.floor(rage.days / DPY)
+                    A[i][j] = str(rage)
+                elif j == 6:
+                    A[i][j] = "M"
+                elif j == 7:
+                    A[i][j] = globals()[f"BIO{i+1}"]
+                elif j == 8:
+                    A[i][j] = globals()[f"HOB{i+1}"]
