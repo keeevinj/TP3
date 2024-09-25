@@ -118,40 +118,17 @@ def print_menu_inicio():
 
 
 def carga_estudiantes():
-    
-    global archivo_logico_estudiantes
-    global archivo_fisico_estudiantes
-    #8 estudiantes
-    for i in range (8):
-        #13 atributos sin el id
-        for j in range (13):
-            estudiante=estudiantes()
-            if j == 0:
-                estudiante.email = "estudiante" + str(i+1) + "@ayed.com"
-            elif j == 1:
-                A[i][j] = "Student" #creo que no hace falta
-            elif j == 2:
-                estudiante.contraseña = str(111222 + 111111*i)
-            elif j == 9: #que es?
-                if (0 <= i < 4):
-                    A[i][j] = ASTA
-                else:
-                    A[i][j] = ISTA
-            elif (0 <= i < 4):
-                if j == 3:
-                    estudiante.nombre = globals()[f"NAME{i+1}"]
-                elif j == 4:
-                    A[i][j] = rdob() #que es?
-                elif j == 5:
-                    rage = datetime.now().date() - datetime.strptime(A[i][j-1], "%Y-%m-%d").date()
-                    rage = math.floor(rage.days / DPY)
-                    estudiante.fecha_nacimiento = str(rage)
-                elif j == 6:
-                    estudiante.sexo = "M"
-                elif j == 7:
-                    estudiante.biografia = globals()[f"BIO{i+1}"]
-                elif j == 8:
-                    estudiante.hobbies = globals()[f"HOB{i+1}"]
+	global archivo_logico_estudiantes
+	global archivo_fisico_estudiantes
+	archivo_logico_estudiantes.seek(0,0)
+	for i in range (8):
+		estudiante=estudiantes()
+		estudiante.email = "estudiante" + str(i+1) + "@ayed.com"
+		estudiante.contraseña = str(111222 + 111111*i)
+		estudiante.nombre = globals()[f"NAME{i+1}"]
+		estudiante.sexo = "M"
+		estudiante.biografia = globals()[f"BIO{i+1}"]
+		estudiante.hobbies = globals()[f"HOB{i+1}"]
 	pickle.dump(estudiante,archivo_logico_estudiante)
 	archivo_logico_administradores.flush()
 	archivo_logico_administradores.close()
