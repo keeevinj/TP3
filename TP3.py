@@ -88,6 +88,8 @@ def cargar_archivo_administradores(path):
 
 def main():
 	global archivo_logico_administradores
+	global archivo_logico_estudiantes
+	global archivo_fisico_estudiantes
 	global arr_estudiantes
 	global arr_administradores
 	global arr_moderadores
@@ -115,32 +117,41 @@ def print_menu_inicio():
 
 
 
-	
-    for i in range (filas):
-        for j in range (columna):
+def carga_estudiantes():
+    
+    global archivo_logico_estudiantes
+    global archivo_fisico_estudiantes
+    #8 estudiantes
+    for i in range (8):
+        #13 atributos sin el id
+        for j in range (13):
+            estudiante=estudiantes()
             if j == 0:
-                A[i][j] = "Student"
+                estudiante.email = "estudiante" + str(i+1) + "@ayed.com"
             elif j == 1:
-                A[i][j] = "estudiante" + str(i+1) + "@ayed.com"
+                A[i][j] = "Student" #creo que no hace falta
             elif j == 2:
-                A[i][j] = str(111222 + 111111*i)
-            elif j == 9:
+                estudiante.contraseña = str(111222 + 111111*i)
+            elif j == 9: #que es?
                 if (0 <= i < 4):
                     A[i][j] = ASTA
                 else:
                     A[i][j] = ISTA
             elif (0 <= i < 4):
                 if j == 3:
-                    A[i][j] = globals()[f"NAME{i+1}"]
+                    estudiante.nombre = globals()[f"NAME{i+1}"]
                 elif j == 4:
-                    A[i][j] = rdob()
+                    A[i][j] = rdob() #que es?
                 elif j == 5:
                     rage = datetime.now().date() - datetime.strptime(A[i][j-1], "%Y-%m-%d").date()
                     rage = math.floor(rage.days / DPY)
-                    A[i][j] = str(rage)
+                    estudiante.fecha_nacimiento = str(rage)
                 elif j == 6:
-                    A[i][j] = "M"
+                    estudiante.sexo = "M"
                 elif j == 7:
-                    A[i][j] = globals()[f"BIO{i+1}"]
+                    estudiante.biografia = globals()[f"BIO{i+1}"]
                 elif j == 8:
-                    A[i][j] = globals()[f"HOB{i+1}"]
+                    estudiante.hobbies = globals()[f"HOB{i+1}"]
+	pickle.dump(estudiante,archivo_logico_estudiante)
+	archivo_logico_administradores.flush()
+	archivo_logico_administradores.close()
