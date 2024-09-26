@@ -168,6 +168,7 @@ def cargar_archivo_administradores(path):
 
 
 def main():
+	global archivo_logico_estudiantes
 	global archivo_logico_administradores
 	global arr_estudiantes
 	global arr_administradores
