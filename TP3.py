@@ -170,6 +170,8 @@ def cargar_archivo_administradores(path):
 def main():
 	global archivo_logico_estudiantes
 	global archivo_logico_administradores
+	global archivo_logico_estudiantes
+	global archivo_fisico_estudiantes
 	global arr_estudiantes
 	global arr_administradores
 	global arr_moderadores
@@ -196,3 +198,19 @@ def print_menu_inicio():
     print("2. Registrarse")
 
 
+
+def carga_estudiantes():
+	global archivo_logico_estudiantes
+	global archivo_fisico_estudiantes
+	archivo_logico_estudiantes.seek(0,0)
+	for i in range (8):
+		estudiante=estudiantes()
+		estudiante.email = "estudiante" + str(i+1) + "@ayed.com"
+		estudiante.contraseña = str(111222 + 111111*i)
+		estudiante.nombre = globals()[f"NAME{i+1}"]
+		estudiante.sexo = "M"
+		estudiante.biografia = globals()[f"BIO{i+1}"]
+		estudiante.hobbies = globals()[f"HOB{i+1}"]
+	pickle.dump(estudiante,archivo_logico_estudiante)
+	archivo_logico_administradores.flush()
+	archivo_logico_administradores.close()
