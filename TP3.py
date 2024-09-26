@@ -145,7 +145,7 @@ def cargar_archivo_estudiantes(path):
     global archivo_logico_estudiantes
     archivo_logico_estudiantes.seek(0, 0)
     estudiante = estudiantes()
-    for i in range(0, 3):
+    for i in range(0, 4):
         estudiante.email = "estudiante" + str(i + 1) + "@ayed.com"
         estudiante.nombre = globals()[f"nombre{i + 1}"]
         estudiante.sexo = "M"
