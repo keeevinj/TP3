@@ -65,10 +65,10 @@ def verificar_archivo(path):
 		archivo_log=open(path,"w+b")
 	return archivo_log
 
-def inicializar_arr(arreglo,tamaño):
+def inicializar_arr(arreglo,tamaño, clase):
 	arreglo=[None]*tamaño
 	for i in range(tamaño):
-		arreglo[i]=administradores()
+		arreglo[i]=clase()
 
 	
 
@@ -98,7 +98,7 @@ def main():
 	archivo_logico_administradores=verificar_archivo(archivo_fisico_administradores)
 	archivo_logico_moderadores=verificar_archivo(archivo_fisico_moderadores)
 	#arr_estudiantes=inicializar_arr(arr_estudiantes,8,estudiantes)
-	arr_administradores=inicializar_arr(arr_administradores,4)
+	arr_administradores=inicializar_arr(arr_administradores,4, administradores)
 	#arr_moderadores=inicializar_arr(arr_moderadores,4,moderadores)
 	cargar_archivo_administradores(archivo_fisico_administradores)
 
