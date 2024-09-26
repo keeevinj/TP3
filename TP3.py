@@ -33,7 +33,7 @@ class estudiantes:
 #Crear metodo para formatear los strings?
 #Es para que todos los registros sean del mismo tamaño
 
-def formato(self):
+def formato_estudiante(self):
 	self.email=self.email.ljust(32)
 	self.nombre=self.nombre.ljust(32)
 	self.contraseña=self.contraseña.ljust(32)
@@ -47,6 +47,14 @@ def formato(self):
 	self.ciudad=self.ciudad.ljust(32)
 	self.fecha_nacimiento=self.fecha_nacimiento.ljust(10)
 		
+def formato_moderadores(self):
+	self.email=self.email.ljust(32)
+	self.contraseña=self.contraseña.ljust(32)
+
+def formato_administrador(self):
+	self.email=self.email.ljust(32)
+	self.contraseña=self.contraseña.ljust(32)
+
 class moderadores:
 	def __init__(self):
 		self.email=""
@@ -160,7 +168,7 @@ def cargar_archivo_estudiantes(path):
         estudiante.pais = globals()["pais"]
         estudiante.ciudad = globals()[f"ciudad{i + 1}"]
         estudiante.fecha_nacimiento = rdob()
-        formato(estudiante)
+        formato_estudiante(estudiante)
         pickle.dump(estudiante, archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
 
