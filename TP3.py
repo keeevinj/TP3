@@ -30,9 +30,6 @@ class estudiantes:
 		self.ciudad=""
 		self.fecha_nacimiento=""
 
-#Crear metodo para formatear los strings?
-#Es para que todos los registros sean del mismo tamaño
-
 def formato_estudiante(self):
 	self.email=self.email.ljust(32)
 	self.nombre=self.nombre.ljust(32)
@@ -83,17 +80,12 @@ def cargar_archivo_administradores(path):
 	global archivo_logico_administradores
 	archivo_logico_administradores.seek(0,0)
 	administrador=administradores()
-	administrador.email="Prueba@utn.edu.ar"
-	#Hay que ajustar todos los string con el mismo "Largo" para que todos los registros sean del mismo tamaño.
-	administrador.email=administrador.email.ljust(32)
+	administrador.email="admin1@utn.edu.ar"
 	administrador.contraseña="123456"
-	administrador.contraseña=administrador.contraseña.ljust(32)
+	formato_administrador(administrador)
 	pickle.dump(administrador,archivo_logico_administradores)
 	archivo_logico_administradores.flush()
 	archivo_logico_administradores.close()
-
-
-
 
 def rdob():
 
@@ -103,13 +95,11 @@ def rdob():
     rdate = str(ryear) + "-" + str(rmm) + "-" + str(rdd)
     return rdate
 
-
 #VARIABLES CON INFO
 currentdate = datetime.now()
 CYEAR = int(currentdate.year)
 CYEARF = CYEAR - 18
 CYEARI = CYEAR - 60
-
 
 nombre1 = "Juan Faccio"
 nombre2 = "Julian Perez"
@@ -147,8 +137,6 @@ ciudad2 = "VGG"
 ciudad3 = "Perez"
 ciudad4 = "Rufino"
 
-
-
 def cargar_archivo_estudiantes(path):
     global archivo_logico_estudiantes
     archivo_logico_estudiantes.seek(0, 0)
@@ -174,10 +162,24 @@ def cargar_archivo_estudiantes(path):
 
     archivo_logico_estudiantes.close()
 
+def cargar_archivo_moderadores(path):
+	global archivo_logico_moderadores
+	archivo_logico_moderadores.seek(0,0)
+	moderador=moderadores()
+	moderador.email="mod1@utn.edu.ar"
+	moderador.contraseña="123456"
+	formato_moderadores(moderador)
+	pickle.dump(moderador,archivo_logico_moderadores)
+	archivo_logico_moderadores.flush()
+	archivo_logico_moderadores.close()
+
+
+
 
 def main():
 	global archivo_logico_estudiantes
 	global archivo_logico_administradores
+	global archivo_logico_moderadores
 	global arr_estudiantes
 	global arr_administradores
 	global arr_moderadores
@@ -189,9 +191,10 @@ def main():
 	archivo_logico_moderadores=verificar_archivo(archivo_fisico_moderadores)
 	arr_estudiantes=inicializar_arr(arr_estudiantes,4,estudiantes)
 	arr_administradores=inicializar_arr(arr_administradores,4,administradores)
-	#arr_moderadores=inicializar_arr(arr_moderadores,4,moderadores)
+	arr_moderadores=inicializar_arr(arr_moderadores,4,moderadores)
 	cargar_archivo_administradores(archivo_fisico_administradores)
 	cargar_archivo_estudiantes(archivo_fisico_estudiantes)
+	cargar_archivo_moderadores(archivo_fisico_moderadores)
 
 #ARREGLOS
 
