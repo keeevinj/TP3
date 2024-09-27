@@ -97,7 +97,10 @@ def cargar_archivo_administradores(path):
     archivo_logico_administradores.close()
 
 def rdob():
-
+    #rdob () es una funcion que crea de forma aleatoria la fecha de nacimiento
+    #se toma la fecha con datetime.now, luego se obtiene el anio actual y se guarda en una variable
+    #Se crean dos variables y se guardan en cada una el anio actual menos 18 y 60, por separado.
+    #determinando asi el intervalo de anio permitido a generar.
     rdd = str(random.randint(1,28))
     rmm = str(random.randint(1,12))
     ryear = str(random.randint(CYEARI,CYEARF))
@@ -111,7 +114,12 @@ def cargar_archivo_estudiantes(path):
     archivo_logico_estudiantes.seek(0, 0)
     estudiante = estudiantes()
     for i in range(0, 4):
-        #Explica esto Julian jajajs
+        #se cargan los cuatro estudiantes de forma automatica
+        #mediante el i, se va cambiando el valor de las variables
+        #Con globals, construyo el nombre de la variable existente y, al mismo tiempo, le adjudico al campo, 
+        #el valor del nombre de la variable construida.
+        #no se utilizan listas ni diccionarios, solo una funcion nativa relacionada con variables globales de python.
+        #Antes de guardar la informacion se formatea.
         estudiante.email = "estudiante" + str(i + 1) + "@ayed.com"
         estudiante.nombre = globals()[f"nombre{i + 1}"]
         estudiante.sexo = "M"
