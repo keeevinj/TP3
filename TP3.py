@@ -173,9 +173,6 @@ def cargar_archivo_moderadores(path):
 	archivo_logico_moderadores.flush()
 	archivo_logico_moderadores.close()
 
-
-
-
 def main():
 	global archivo_logico_estudiantes
 	global archivo_logico_administradores
@@ -196,6 +193,28 @@ def main():
 	cargar_archivo_estudiantes(archivo_fisico_estudiantes)
 	cargar_archivo_moderadores(archivo_fisico_moderadores)
 
+def print_menu_inicio():
+    print("0. Salir")
+    print("1. Login")
+    print("2. Registrarse")
+
+def validar(var,min,max):
+    aux=False
+    while aux == False:
+        if (var.isnumeric())==True:
+           opc=int(var)
+           if (opc<min or opc>max):
+                print("Opcion incorrecta.")
+                var=input("Ingrese la opcion correctamente: ")
+           else:
+               aux=True
+        elif (var.isnumeric())==False:
+            print("Opcion incorrecta.")
+            var=input("Ingrese la opcion correctamente: ")
+    var=int(var)
+    return var
+
+
 #ARREGLOS
 
 arr_estudiantes=[]
@@ -206,9 +225,21 @@ arr_moderadores=[]
 
 
 main()
+print_menu_inicio()
+opc=input("Ingrese opcion: ")
+opc=validar(opc,0,2)
 
-def print_menu_inicio():
-    print("0. Salir")
-    print("1. Login")
-    print("2. Registrarse")
+while opc != 0:
+    
+    if opc == 1:
+        login()
+        
+    else:
+        registrar()
+    
+    print_menu_inicio()
+    opc=input("Ingrese opcion: ")
+    opc=validar(opc,0,2) 
+
+
 
