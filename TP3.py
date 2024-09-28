@@ -205,13 +205,13 @@ def contador_estudiante():
     global archivo_fisico_estudiantes
     archivo_logico_estudiantes=verificar_archivo(archivo_fisico_estudiantes)
     #Obtengo tamaño del archivo
-    tamaño=os.path.getsize(archivo_logico_estudiantes)
+    tamaño=os.path.getsize(archivo_fisico_estudiantes)
     contador_estudiantes=0
     #Recorro hasta que 
     while archivo_logico_estudiantes.tell()<tamaño:
             estudiante=pickle.load(archivo_logico_estudiantes)
             if estudiante.email != "":
-                  contador_estudiante=contador_estudiante+1
+                  contador_estudiantes=contador_estudiantes+1
 
     archivo_logico_estudiantes.close()
     return contador_estudiantes
@@ -221,7 +221,7 @@ def contador_moderador():
     global archivo_fisico_moderadores
     archivo_logico_moderadores=verificar_archivo(archivo_fisico_moderadores)
     
-    tamaño=os.path.getsize(archivo_logico_moderadores)
+    tamaño=os.path.getsize(archivo_fisico_moderadores)
     contador_moderadores=0
     while archivo_logico_moderadores.tell()<tamaño:
             moderador=pickle.load(archivo_logico_moderadores)
@@ -236,7 +236,7 @@ def contador_administrador():
     global archivo_fisico_administradores
     archivo_logico_administradores=verificar_archivo(archivo_fisico_administradores)
     
-    tamaño=os.path.getsize(archivo_logico_administradores)
+    tamaño=os.path.getsize(archivo_fisico_administradores)
     contador_administradores=0
     while archivo_logico_administradores.tell()<tamaño:
             administrador=pickle.load(archivo_logico_administradores)
@@ -260,19 +260,90 @@ def check():
 #Iba a recorrer archivo por archivo.
 #Para buscar tengo que formatear el usuario y contrasenia.
 #Recien ahi puedo comparar
-def buscar(usuario,contrasenia):
-    pass
+def buscar(email,contraseña):
+    global usuario
+    global tipo_usuario
+    tipo_usuario=""
+    email=email.ljust(32)
+    contraseña=contraseña.ljust(32)
+    tam_est=os.path.getsize(archivo_fisico_estudiantes)
+    tam_adm=os.path.getsize(archivo_fisico_administradores)
+    tam_mod=os.path.getsize(archivo_fisico_moderadores)
+    archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
+    archivo_logico_administradores=open(archivo_fisico_administradores,"r+b")
+    archivo_logico_moderadores=open(archivo_fisico_moderadores,"r+b")
+    busqueda=False
+    busqueda_estudiante=False
+    busqueda_administradores=False
+    busqueda_moderadores=False
+    estudiante=estudiantes()
+    moderador=moderadores()
+    administrador=administradores()
+    while busqueda==False:
+        while archivo_logico_estudiantes.tell()<tam_est and busqueda_estudiante == False:
+            estudiante=pickle.load(archivo_logico_estudiantes)
+            if estudiante.email == email and estudiante.contraseña==contraseña:
+                if estudiante.estado==1:
+                    busqueda=True
+                    busqueda_estudiante=True
+                    busqueda_administradores=True
+                    busqueda_moderadores=True
+                    usuario=estudiante
+                    tipo_usuario="Estudiante"
+                else:
+                    busqueda=True
+                    busqueda_estudiante=True
+                    busqueda_administradores=True
+                    busqueda_moderadores=True
+                    usuario=estudiante
+                    tipo_usuario="Su usuario esta INACTIVO"
+        while archivo_logico_moderadores.tell()<tam_mod and busqueda_moderadores == False:
+            moderador=pickle.load(archivo_logico_moderadores)
+            if moderador.email == email and moderador.contraseña==contraseña:
+                busqueda=True
+                busqueda_administradores=True
+                busqueda_moderadores=True
+                usuario=moderador
+                tipo_usuario="Moderador"
+        while archivo_logico_administradores.tell()<tam_adm and busqueda_administradores == False:
+            administrador=pickle.load(archivo_logico_administradores)
+            if administrador.email == email and administrador.contraseña==contraseña:
+                busqueda=True
+                busqueda_administradores=True
+                usuario=moderador
+                tipo_usuario="Administrador"
+        if tipo_usuario=="":
+            busqueda=True
+            tipo_usuario="No encontrado"
+
+    return tipo_usuario
 
 
+def menu_estudiantes():
+    print("Soy estudiante")
+
+def menu_moderadores():
+    print("Soy moderador")
+
+def menu_administradores():
+    print("Soy administrador")
+
+def registrar():
+    print("Soy el registro")
 
 def login():
     if check() == True:
-        
-        usuario=input("Ingrese usuario: ")
-        contrasenia = getpass.getpass("Ingrese la contrasenia: ")
 
-        estado_login = buscar(usuario,contrasenia)
-        
+        intentos=0
+        while intentos <3:
+            email=input("Ingrese email: ")
+            contrasenia = getpass.getpass("Ingrese la contrasenia: ")
+            estado_login = buscar(email,contrasenia)
+            if estado_login == "No encontrado" or estado_login == "Su usuario esta INACTIVO":
+                print(estado_login)
+                intentos=intentos+1
+                if intentos != 3:
+                    print(f"Le quedan: {3-intentos} intentos")
         if estado_login == "Estudiante":
             menu_estudiantes()
         elif estado_login == "Moderador":
@@ -282,8 +353,8 @@ def login():
         else:
             print("Acceso denegado")
     else:
-        print("No se puede iniciar porque no hay 1 moderador y 4 estudiantes registrados.")
-        sleep(2)
+        print("No se puede iniciar porque no hay 1 administrador, 1 moderador y 4 estudiantes registrados.")
+        sleep(5)
         limpiar_pantalla()
 
 
@@ -335,6 +406,8 @@ ciudad1 = "Rosario"
 ciudad2 = "VGG"
 ciudad3 = "Perez"
 ciudad4 = "Rufino"
+
+usuario = [None]
 
 main()
 
