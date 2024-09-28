@@ -260,30 +260,38 @@ def check():
 #Iba a recorrer archivo por archivo.
 #Para buscar tengo que formatear el usuario y contrasenia.
 #Recien ahi puedo comparar
-def buscar(email,contraseña):
+def buscar(email,registro):
+    #Defino usuario para que sea una variable global donde se va a almacenar el registro (todos los datos) de quien se logea
     global usuario
+    #No se si hace falta que sea global tipo_usuario
     global tipo_usuario
     tipo_usuario=""
+    #Formateo email y contraseña para buscar
     email=email.ljust(32)
-    contraseña=contraseña.ljust(32)
+    #Busco los tamaños de los archivos
     tam_est=os.path.getsize(archivo_fisico_estudiantes)
     tam_adm=os.path.getsize(archivo_fisico_administradores)
     tam_mod=os.path.getsize(archivo_fisico_moderadores)
+    #Abro los archivos
     archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
     archivo_logico_administradores=open(archivo_fisico_administradores,"r+b")
     archivo_logico_moderadores=open(archivo_fisico_moderadores,"r+b")
+    #Seteo banderas
     busqueda=False
     busqueda_estudiante=False
     busqueda_administradores=False
     busqueda_moderadores=False
+    #Creo registros auxiliares para traer el registro del archivo y comparar
     estudiante=estudiantes()
     moderador=moderadores()
     administrador=administradores()
+    #Capaz es mas eficiente obtener el tamaño y abrir el archivo dentro de cada while.. Habria que probar
     while busqueda==False:
+        #Me fijo si esta en el final del archivo o si lo encontró.
         while archivo_logico_estudiantes.tell()<tam_est and busqueda_estudiante == False:
             estudiante=pickle.load(archivo_logico_estudiantes)
-            if estudiante.email == email and estudiante.contraseña==contraseña:
-                if estudiante.estado==1:
+            if estudiante.email == email:
+                if registro==True:
                     busqueda=True
                     busqueda_estudiante=True
                     busqueda_administradores=True
@@ -291,31 +299,50 @@ def buscar(email,contraseña):
                     usuario=estudiante
                     tipo_usuario="Estudiante"
                 else:
-                    busqueda=True
-                    busqueda_estudiante=True
-                    busqueda_administradores=True
-                    busqueda_moderadores=True
-                    usuario=estudiante
-                    tipo_usuario="Su usuario esta INACTIVO"
+                    contraseña = getpass.getpass("Ingrese la contrasenia: ")
+                    contraseña=contraseña.ljust(32)
+                    if estudiante.contraseña==contraseña:
+                        #Si lo encuentra, me fijo el estado.
+                        if estudiante.estado==1:
+                            busqueda=True
+                            busqueda_estudiante=True
+                            busqueda_administradores=True
+                            busqueda_moderadores=True
+                            usuario=estudiante
+                            tipo_usuario="Estudiante"
+                        else:
+                            busqueda=True
+                            busqueda_estudiante=True
+                            busqueda_administradores=True
+                            busqueda_moderadores=True
+                            usuario=estudiante
+                            tipo_usuario="Su usuario esta INACTIVO"
         while archivo_logico_moderadores.tell()<tam_mod and busqueda_moderadores == False:
             moderador=pickle.load(archivo_logico_moderadores)
-            if moderador.email == email and moderador.contraseña==contraseña:
-                busqueda=True
-                busqueda_administradores=True
-                busqueda_moderadores=True
-                usuario=moderador
-                tipo_usuario="Moderador"
+            if moderador.email == email:
+                contraseña = getpass.getpass("Ingrese la contrasenia: ")
+                contraseña=contraseña.ljust(32) 
+                if moderador.contraseña==contraseña:
+                    busqueda=True
+                    busqueda_administradores=True
+                    busqueda_moderadores=True
+                    usuario=moderador
+                    tipo_usuario="Moderador"
         while archivo_logico_administradores.tell()<tam_adm and busqueda_administradores == False:
             administrador=pickle.load(archivo_logico_administradores)
-            if administrador.email == email and administrador.contraseña==contraseña:
-                busqueda=True
-                busqueda_administradores=True
-                usuario=moderador
-                tipo_usuario="Administrador"
+            if administrador.email == email: 
+                contraseña = getpass.getpass("Ingrese la contrasenia: ")
+                contraseña=contraseña.ljust(32)
+                if administrador.contraseña==contraseña:
+                    busqueda=True
+                    busqueda_administradores=True
+                    usuario=moderador
+                    tipo_usuario="Administrador"
         if tipo_usuario=="":
             busqueda=True
             tipo_usuario="No encontrado"
-
+    #Sera trivial poner busqueda=True???
+    #Devuelvo el tipo de usuario encontrado, si es un estudiante desactivado o si no lo encontró
     return tipo_usuario
 
 
@@ -328,22 +355,57 @@ def menu_moderadores():
 def menu_administradores():
     print("Soy administrador")
 
-def registrar():
+def registro_estudiantes():
     print("Soy el registro")
+    email=input("Ingrese email: ")
+    tipo_usuario= buscar(email,True)
+    if tipo_usuario == "No encontrado":
+        nuevo_usuario=estudiantes()
+        nuevo_usuario.email=email
+        nuevo_usuario.contraseña = getpass.getpass("Ingrese la contraseña: ")
+        nuevo_usuario.nombre=input("Ingrese su nombre: ")
+        #Validar M o F
+        nuevo_usuario.sexo=input("Ingrese el sexo (M o F): ")
+        nuevo_usuario.estado=1
+        nuevo_usuario.hobbies=input("Ingrese sus hobbies: ")
+        nuevo_usuario.materia_fav=input("Ingrese su materia favorita: ")
+        nuevo_usuario.deporte_fav=input("Ingrese su deporte favorito: ")
+        nuevo_usuario.materia_fuerte=input("Ingrese su materia fuerte: ")
+        nuevo_usuario.materia_debil=input("Ingrese su materia debil: ")
+        nuevo_usuario.biografia=input("Ingrese su biografia: ")
+        nuevo_usuario.pais=input("Ingrese su pais: ")
+        nuevo_usuario.ciudad=input("Ingrese su ciudad: ")
+        #Revisar fecha de nacimiento
+        nuevo_usuario.fecha_nacimiento=input("Ingrese su fecha de nacimiento en formato YYYY-MM-DD: ")
+    else:
+        print("El mail ya esta en uso")
+        '''
+        if tipo_usuario == "Su usuario esta INACTIVO":
+            print("Su usuario del tipo estudiante esta INACTIVO")
+        elif tipo_usuario == "Administrador":
+            print("El mail utilizado es de una cuenta del tipo administrador")
+        else:
+            print("El mail utilizado es de una cuenta del tipo moderador")
+            '''
+    
 
 def login():
     if check() == True:
-
         intentos=0
         while intentos <3:
             email=input("Ingrese email: ")
-            contrasenia = getpass.getpass("Ingrese la contrasenia: ")
-            estado_login = buscar(email,contrasenia)
+            #Busco email y contraseña en los archivos
+            estado_login = buscar(email,False)
             if estado_login == "No encontrado" or estado_login == "Su usuario esta INACTIVO":
-                print(estado_login)
+                if estado_login == "No encontrado":
+                    print(estado_login)
+                else:
+                    print("Contraseña incorrecta")
                 intentos=intentos+1
                 if intentos != 3:
                     print(f"Le quedan: {3-intentos} intentos")
+            else:
+                intentos=3
         if estado_login == "Estudiante":
             menu_estudiantes()
         elif estado_login == "Moderador":
@@ -421,7 +483,7 @@ while opc != 0:
         login()
         
     else:
-        registrar()
+        registro_estudiantes()
     
     print_menu_inicio()
     opc=input("Ingrese opcion: ")
