@@ -200,6 +200,58 @@ def validar(var,min,max):
     var=int(var)
     return var
 
+#Se ingresa el campo a validar y la longitud maxima de caractere. Valida que este correcto
+def validar_campos_texto(campo_validar, longitud):
+    campo = input("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres): ")
+    while len(campo) > longitud:
+        limpiar_pantalla()
+        print("Ingrese el campo con la longitud adecuada:")
+        campo = input("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres): ")
+    return campo
+
+#Se ingresa el campo y mientras que sea distinto de M o F la iteracion continua
+def modulo_validar_sexo():
+    campo = input("Ingrese el sexo (M/F): ")
+    while campo != "M" and campo != "F":
+        limpiar_pantalla()
+        print("Ingrese el campo adecuadamente")
+        campo = input("Ingrese el sexo (M/F): ")
+
+#Validar fecha corrobora que la fecha se ingrese adecuadamente
+def validar_fecha(D, M, Y):
+
+    if D.isdigit() and M.isdigit() and Y.isdigit():
+        dd = int(D)
+        mm = int(M)
+        year = int(Y)
+        if CYEARI < year < CYEARF:
+            if 1 <= mm < 13:
+                if mm == 2:
+                    ddmax = 28
+                elif (mm == 4) or (mm == 6) or (mm == 9) or (mm == 11):
+                    ddmax = 30
+                else:
+                    ddmax = 31
+                if 1 <= dd <= ddmax:
+                    date = str(year) + "-" + str(mm) + "-" + str(dd)
+                    return date
+
+    return -1
+
+#un modulo para ingresar la fecha hasta que la misma sea ingresada correctamente
+def modulo_ingrese_fecha():
+    ndd = input("Ingrese día formato (DD): ")
+    nmm = input("Ingrese mes formato (MM): ")
+    nyear = input("Ingrese año formato (YYYY): ")
+    fecha = validar_fecha(ndd, nmm, nyear)
+    while fecha == -1:
+        limpiar_pantalla()
+        print("Ingrese una fecha válida")
+        ndd = input("Ingrese día formato (DD): ")
+        nmm = input("Ingrese mes formato (MM): ")
+        nyear = input("Ingrese año formato (YYYY): ")
+        fecha = validar_fecha(ndd, nmm, nyear)
+
 def contador_estudiante():
     
     global archivo_fisico_estudiantes
