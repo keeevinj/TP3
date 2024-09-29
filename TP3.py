@@ -216,6 +216,7 @@ def modulo_validar_sexo():
         limpiar_pantalla()
         print("Ingrese el campo adecuadamente")
         campo = input("Ingrese el sexo (M/F): ")
+    return campo
 
 #Validar fecha corrobora que la fecha se ingrese adecuadamente
 def validar_fecha(D, M, Y):
@@ -240,6 +241,7 @@ def validar_fecha(D, M, Y):
 
 #un modulo para ingresar la fecha hasta que la misma sea ingresada correctamente
 def modulo_ingrese_fecha():
+    print("Ingresando fecha de nacimiento DD-MM-YYYY")
     ndd = input("Ingrese día formato (DD): ")
     nmm = input("Ingrese mes formato (MM): ")
     nyear = input("Ingrese año formato (YYYY): ")
@@ -251,6 +253,7 @@ def modulo_ingrese_fecha():
         nmm = input("Ingrese mes formato (MM): ")
         nyear = input("Ingrese año formato (YYYY): ")
         fecha = validar_fecha(ndd, nmm, nyear)
+    return fecha
 
 def contador_estudiante():
     
@@ -308,10 +311,6 @@ def check():
         return False
 
 
-#Quede acá
-#Iba a recorrer archivo por archivo.
-#Para buscar tengo que formatear el usuario y contrasenia.
-#Recien ahi puedo comparar
 def buscar(email,registro):
     #Defino usuario para que sea una variable global donde se va a almacenar el registro (todos los datos) de quien se logea
     global usuario
@@ -372,31 +371,39 @@ def buscar(email,registro):
         while archivo_logico_moderadores.tell()<tam_mod and busqueda_moderadores == False:
             moderador=pickle.load(archivo_logico_moderadores)
             if moderador.email == email:
-                contraseña = getpass.getpass("Ingrese la contrasenia: ")
-                contraseña=contraseña.ljust(32) 
-                if moderador.contraseña==contraseña:
+                if registro==False:
+                    contraseña = getpass.getpass("Ingrese la contrasenia: ")
+                    contraseña=contraseña.ljust(32) 
+                    if moderador.contraseña==contraseña:
+                        busqueda=True
+                        busqueda_administradores=True
+                        busqueda_moderadores=True
+                        usuario=moderador
+                        tipo_usuario="Moderador"
+                else:
                     busqueda=True
+                    busqueda_estudiante=True
                     busqueda_administradores=True
                     busqueda_moderadores=True
-                    usuario=moderador
+                    usuario=estudiante
                     tipo_usuario="Moderador"
         while archivo_logico_administradores.tell()<tam_adm and busqueda_administradores == False:
             administrador=pickle.load(archivo_logico_administradores)
-            if administrador.email == email: 
-                contraseña = getpass.getpass("Ingrese la contrasenia: ")
-                contraseña=contraseña.ljust(32)
-                if administrador.contraseña==contraseña:
-                    busqueda=True
-                    busqueda_administradores=True
-                    usuario=moderador
-                    tipo_usuario="Administrador"
+            if administrador.email == email:
+                if registro==False:
+                    contraseña = getpass.getpass("Ingrese la contrasenia: ")
+                    contraseña=contraseña.ljust(32)
+                    if administrador.contraseña==contraseña:
+                        busqueda=True
+                        busqueda_administradores=True
+                        usuario=moderador
+                        tipo_usuario="Administrador"
         if tipo_usuario=="":
             busqueda=True
             tipo_usuario="No encontrado"
     #Sera trivial poner busqueda=True???
     #Devuelvo el tipo de usuario encontrado, si es un estudiante desactivado o si no lo encontró
     return tipo_usuario
-
 
 def menu_estudiantes():
     print("Soy estudiante")
@@ -408,7 +415,6 @@ def menu_administradores():
     print("Soy administrador")
 
 def registro_estudiantes():
-    print("Soy el registro")
     email=input("Ingrese email: ")
     tipo_usuario= buscar(email,True)
     if tipo_usuario == "No encontrado":
@@ -417,7 +423,7 @@ def registro_estudiantes():
         nuevo_usuario.contraseña = getpass.getpass("Ingrese la contraseña: ")
         nuevo_usuario.nombre=input("Ingrese su nombre: ")
         #Validar M o F
-        nuevo_usuario.sexo=input("Ingrese el sexo (M o F): ")
+        nuevo_usuario.sexo=modulo_validar_sexo()
         nuevo_usuario.estado=1
         nuevo_usuario.hobbies=input("Ingrese sus hobbies: ")
         nuevo_usuario.materia_fav=input("Ingrese su materia favorita: ")
@@ -428,7 +434,17 @@ def registro_estudiantes():
         nuevo_usuario.pais=input("Ingrese su pais: ")
         nuevo_usuario.ciudad=input("Ingrese su ciudad: ")
         #Revisar fecha de nacimiento
-        nuevo_usuario.fecha_nacimiento=input("Ingrese su fecha de nacimiento en formato YYYY-MM-DD: ")
+        nuevo_usuario.fecha_nacimiento=modulo_ingrese_fecha()
+        formato_estudiante(nuevo_usuario)
+        archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
+        tam_est=os.path.getsize(archivo_fisico_estudiantes)
+        while archivo_logico_estudiantes.tell()<tam_est:
+            aux=pickle.load(archivo_logico_estudiantes)
+        pickle.dump(nuevo_usuario,archivo_logico_estudiantes)
+        archivo_logico_estudiantes.flush()
+        archivo_logico_estudiantes.close()
+
+
     else:
         print("El mail ya esta en uso")
         '''
