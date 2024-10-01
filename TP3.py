@@ -107,8 +107,6 @@ def rdob():
     rdate = str(ryear) + "-" + str(rmm) + "-" + str(rdd)
     return rdate
 
-
-
 def cargar_archivo_estudiantes(path):
     global archivo_logico_estudiantes
     archivo_logico_estudiantes.seek(0, 0)
@@ -310,7 +308,6 @@ def check():
     else:
         return False
 
-
 def buscar(email,registro):
     #Defino usuario para que sea una variable global donde se va a almacenar el registro (todos los datos) de quien se logea
     global usuario
@@ -405,8 +402,117 @@ def buscar(email,registro):
     #Devuelvo el tipo de usuario encontrado, si es un estudiante desactivado o si no lo encontró
     return tipo_usuario
 
+def menu_principal_estudiantes():
+    print("1. Gestionar mi perfil")
+    print("2. Gestionar candidatos")
+    print("3. Matcheos")
+    print("4. Reportes estadisticos")
+    print("0. Salir")
+
+def menu_print_gestion_perfil():
+    print("1. Gestionar mi perfil")
+    print(" a. Editar mis datos personales")
+    print(" b. Eliminar mi perfil")
+    print(" c. Volver")
+
+def menu_editar_datos_personales(usuario):
+    # Asigno los datos del estudiante a la variable auxiliar.
+    aux=usuario
+    opc = 1
+    while opc != 0:
+        print("Sus datos actuales son: ")
+        print("Su nombre es: ", aux.nombre)
+        print("Su genero es: ", aux.sexo)
+        print("Su hobbie es: ", aux.hobbie)
+        print("Su materia favorita es: ", aux.materia_fav)
+        print("Su deporte favorito es: ", aux.deporte_fav)
+        print("Su materia fuerte es: ", aux.materia_fuerte)
+        print("Su materia debil es: ", aux.materia_debil)
+        print("Su biografia es: ", aux.biografia)
+        print("Su pais es: ", aux.pais)
+        print("Su ciudad es: ", aux.ciudad)
+        print("Su fecha de nacimiento es: ", aux.fecha_nacimiento)
+        print("Que dato desea cambiar?")
+        #Quede acá
+        print("1. Fecha de nacimiento")
+        print("2. Biografia")
+        print("3. Hobbie")
+        print("4. Nombre")
+        print("0. Salir")
+        opc=input("Ingrese la opcion: ")
+        opc=validar(opc,0,4)
+        match opc:
+            case 1:
+                fec = input("Ingrese la nueva fecha de nacimiento en formato YYYY-MM-DD : ")
+                fec = datetime.strptime(fec, '%Y-%m-%d').date()
+                hoy = datetime.now()
+                while (hoy.year < fec.year) or (hoy.year - fec.year) > 150:
+                    print("El anio no puede ser posterior al actual o anterior a 150 anios")
+                    fec = input("Ingrese la nueva fecha de nacimiento en formato YYYY-MM-DD : ")
+                    fec = datetime.strptime(fec, '%Y-%m-%d').date()
+                while (hoy.year == fec.year) and (hoy.month < fec.month):
+                    print("El mes no puede ser posterior al actual")
+                    fec = input("Ingrese la nueva fecha de nacimiento en formato YYYY-MM-DD : ")
+                    fec = datetime.strptime(fec, '%Y-%m-%d').date()
+                while (hoy.year == fec.year and hoy.month == fec.month and hoy.day < fec.day):
+                    print("El dia no puede ser posterior al actual")
+                    fec = input("Ingrese la nueva fecha de nacimiento en formato YYYY-MM-DD : ")
+                    fec = datetime.strptime(fec, '%Y-%m-%d').date()
+            case 2:
+                bio = input("Ingrese la nueva biografia: ")
+            case 3:
+                hobbie = input("Ingrese el nuevo hobbie: ")
+            case 4:
+                nombre= input("Ingrese el nuevo nombre: ")
+    # Asigno el valor de las variables auxiliares al estudiante
+    estudiantes[pos_estudiante][3] = nombre
+    estudiantes[pos_estudiante][4] = fec
+    estudiantes[pos_estudiante][5] = bio
+    estudiantes[pos_estudiante][6] = hobbie
+
+
+def menu_opc_gestion_perfil():
+    limpiar_pantalla()
+    menu_print_gestion_perfil()
+    opc = input("Ingrese una opcion: ")
+    while opc != "c":
+        while usuario.estado==1 and opc != "c":
+            match opc:
+                case "a":
+                    menu_editar_datos_personales(usuario)
+                case "b":
+                    menu_eliminar_perfil()
+                case "c":
+                    print("")
+                case _:
+                    print("Ingrese la opcion correctamente")
+                    sleep(2)   
+            limpiar_pantalla()
+            if estudiantes[pos_estudiante][2]=="ACTIVO":
+                menu_print_gestion_perfil()
+                opc = input("Ingrese una opcion: ")
+            else:
+                opc="c"
+
+
 def menu_estudiantes():
-    print("Soy estudiante")
+    opc = 1
+    while opc != 0 and usuario.estado==1:
+        limpiar_pantalla()
+        menu_principal_estudiantes()
+        opc=input("Ingrese su seleccion: ")
+        opc=validar(opc,0,4)
+        match opc:
+            case 1:
+                menu_opc_gestion_perfil()
+            case 2:
+                menu_opc_gestion_candidatos()
+            case 3:
+                menu_opc_matcheos()
+            case 4:
+                menu_opc_reportes()
+        limpiar_pantalla()
+        sleep(2)
 
 def menu_moderadores():
     print("Soy moderador")
@@ -438,24 +544,14 @@ def registro_estudiantes():
         formato_estudiante(nuevo_usuario)
         archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
         tam_est=os.path.getsize(archivo_fisico_estudiantes)
+        #Para que el puntero quede en el ultimo lugar, 
         while archivo_logico_estudiantes.tell()<tam_est:
             aux=pickle.load(archivo_logico_estudiantes)
         pickle.dump(nuevo_usuario,archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
         archivo_logico_estudiantes.close()
-
-
     else:
-        print("El mail ya esta en uso")
-        '''
-        if tipo_usuario == "Su usuario esta INACTIVO":
-            print("Su usuario del tipo estudiante esta INACTIVO")
-        elif tipo_usuario == "Administrador":
-            print("El mail utilizado es de una cuenta del tipo administrador")
-        else:
-            print("El mail utilizado es de una cuenta del tipo moderador")
-            '''
-    
+        print("El mail ya esta en uso")   
 
 def login():
     if check() == True:
