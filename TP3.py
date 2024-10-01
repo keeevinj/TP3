@@ -198,13 +198,25 @@ def validar(var,min,max):
     var=int(var)
     return var
 
-#Se ingresa el campo a validar y la longitud maxima de caractere. Valida que este correcto
+#Se ingresa el campo a validar entre comillas y la longitud maxima de caractere. Valida que este correcto y formatea el campo.
 def validar_campos_texto(campo_validar, longitud):
-    campo = input("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres): ")
+    campo = input("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres):")
     while len(campo) > longitud:
         limpiar_pantalla()
         print("Ingrese el campo con la longitud adecuada:")
-        campo = input("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres): ")
+        campo = input("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres):")
+    campo = campo.ljust(longitud," ")
+    return campo
+
+
+#Se ingresa la contrasenia a validar entre comillas y la longitud maxima de caractere. Valida que este correcto y formatea el campo.
+def validar_campos_contrasenia(campo_validar, longitud):
+    campo = getpass.getpass("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres):")
+    while len(campo) > longitud:
+        limpiar_pantalla()
+        print("Ingrese el campo con la longitud adecuada:")
+        campo = ("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres):")
+    campo = campo.ljust(longitud," ")
     return campo
 
 #Se ingresa el campo y mientras que sea distinto de M o F la iteracion continua
@@ -347,8 +359,7 @@ def buscar(email,registro):
                     usuario=estudiante
                     tipo_usuario="Estudiante"
                 else:
-                    contraseña = getpass.getpass("Ingrese la contrasenia: ")
-                    contraseña=contraseña.ljust(32)
+                    contraseña = validar_campos_contrasenia ("Contrasenia", 32)
                     if estudiante.contraseña==contraseña:
                         #Si lo encuentra, me fijo el estado.
                         if estudiante.estado==1:
@@ -369,8 +380,7 @@ def buscar(email,registro):
             moderador=pickle.load(archivo_logico_moderadores)
             if moderador.email == email:
                 if registro==False:
-                    contraseña = getpass.getpass("Ingrese la contrasenia: ")
-                    contraseña=contraseña.ljust(32) 
+                    contraseña = validar_campos_contrasenia ("Contrasenia", 32)
                     if moderador.contraseña==contraseña:
                         busqueda=True
                         busqueda_administradores=True
@@ -388,8 +398,7 @@ def buscar(email,registro):
             administrador=pickle.load(archivo_logico_administradores)
             if administrador.email == email:
                 if registro==False:
-                    contraseña = getpass.getpass("Ingrese la contrasenia: ")
-                    contraseña=contraseña.ljust(32)
+                    contraseña = gvalidar_campos_contrasenia ("Contrasenia", 32)
                     if administrador.contraseña==contraseña:
                         busqueda=True
                         busqueda_administradores=True
@@ -443,27 +452,13 @@ def menu_editar_datos_personales(usuario):
         opc=validar(opc,0,4)
         match opc:
             case 1:
-                fec = input("Ingrese la nueva fecha de nacimiento en formato YYYY-MM-DD : ")
-                fec = datetime.strptime(fec, '%Y-%m-%d').date()
-                hoy = datetime.now()
-                while (hoy.year < fec.year) or (hoy.year - fec.year) > 150:
-                    print("El anio no puede ser posterior al actual o anterior a 150 anios")
-                    fec = input("Ingrese la nueva fecha de nacimiento en formato YYYY-MM-DD : ")
-                    fec = datetime.strptime(fec, '%Y-%m-%d').date()
-                while (hoy.year == fec.year) and (hoy.month < fec.month):
-                    print("El mes no puede ser posterior al actual")
-                    fec = input("Ingrese la nueva fecha de nacimiento en formato YYYY-MM-DD : ")
-                    fec = datetime.strptime(fec, '%Y-%m-%d').date()
-                while (hoy.year == fec.year and hoy.month == fec.month and hoy.day < fec.day):
-                    print("El dia no puede ser posterior al actual")
-                    fec = input("Ingrese la nueva fecha de nacimiento en formato YYYY-MM-DD : ")
-                    fec = datetime.strptime(fec, '%Y-%m-%d').date()
+                fecha = modulo_ingrese_fecha()
             case 2:
-                bio = input("Ingrese la nueva biografia: ")
+                bio = validar_campos_texto("Biografia", 255)
             case 3:
-                hobbie = input("Ingrese el nuevo hobbie: ")
+                hobbie = validar_campos_texto("Hobbie", 255)
             case 4:
-                nombre= input("Ingrese el nuevo nombre: ")
+                nombre= validar_campos_texto("Nombre",32)
     # Asigno el valor de las variables auxiliares al estudiante
     estudiantes[pos_estudiante][3] = nombre
     estudiantes[pos_estudiante][4] = fec
@@ -521,24 +516,24 @@ def menu_administradores():
     print("Soy administrador")
 
 def registro_estudiantes():
-    email=input("Ingrese email: ")
+    email=validar_campos_texto("Email", 32)
     tipo_usuario= buscar(email,True)
     if tipo_usuario == "No encontrado":
         nuevo_usuario=estudiantes()
         nuevo_usuario.email=email
-        nuevo_usuario.contraseña = getpass.getpass("Ingrese la contraseña: ")
-        nuevo_usuario.nombre=input("Ingrese su nombre: ")
+        nuevo_usuario.contraseña = validar_campos_contrasenia ("Contrasenia", 32)
+        nuevo_usuario.nombre = validar_campos_texto("Nombre", 32)
         #Validar M o F
-        nuevo_usuario.sexo=modulo_validar_sexo()
+        nuevo_usuario.sexo = modulo_validar_sexo()
         nuevo_usuario.estado=1
-        nuevo_usuario.hobbies=input("Ingrese sus hobbies: ")
-        nuevo_usuario.materia_fav=input("Ingrese su materia favorita: ")
-        nuevo_usuario.deporte_fav=input("Ingrese su deporte favorito: ")
-        nuevo_usuario.materia_fuerte=input("Ingrese su materia fuerte: ")
-        nuevo_usuario.materia_debil=input("Ingrese su materia debil: ")
-        nuevo_usuario.biografia=input("Ingrese su biografia: ")
-        nuevo_usuario.pais=input("Ingrese su pais: ")
-        nuevo_usuario.ciudad=input("Ingrese su ciudad: ")
+        nuevo_usuario.hobbies = validar_campos_texto("Hobbies", 255)
+        nuevo_usuario.materia_fav = validar_campos_texto("Materia Favorita", 16)
+        nuevo_usuario.deporte_fav = validar_campos_texto("Deporte Favorito", 16)
+        nuevo_usuario.materia_fuerte = validar_campos_texto("Materia Fuerte", 16)
+        nuevo_usuario.materia_debil = validar_campos_texto("Materia Debil", 16)
+        nuevo_usuario.biografia = validar_campos_texto("Biografia", 255)
+        nuevo_usuario.pais = validar_campos_texto("Pais", 32)
+        nuevo_usuario.ciudad = validar_campos_texto("Ciudad", 32)
         #Revisar fecha de nacimiento
         nuevo_usuario.fecha_nacimiento=modulo_ingrese_fecha()
         formato_estudiante(nuevo_usuario)
@@ -557,7 +552,7 @@ def login():
     if check() == True:
         intentos=0
         while intentos <3:
-            email=input("Ingrese email: ")
+            email = validar_campos_texto("Email", 32)
             #Busco email y contraseña en los archivos
             estado_login = buscar(email,False)
             if estado_login == "No encontrado" or estado_login == "Su usuario esta INACTIVO":
