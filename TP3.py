@@ -504,7 +504,7 @@ def menu_editar_datos_personales(usuario):
         tam_reg=archivo_logico_estudiantes.tell()
         cant_reg=tam_est/tam_reg
         i=0
-        #Esto esta mal, cuando hace el dump me lo deja en el registro siguiente
+        #Esto esta mal, me guarda el registro al final. El viernes lo corrijo
         if usuario.nombre == pos.nombre:
             archivo_logico_estudiantes.seek(i*tam_reg,0)
             pickle.dump(aux,archivo_logico_estudiantes)
