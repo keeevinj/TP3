@@ -271,6 +271,7 @@ def contador_estudiante():
     archivo_logico_estudiantes=verificar_archivo(archivo_fisico_estudiantes)
     #Obtengo tamaño del archivo
     tamaño=os.path.getsize(archivo_fisico_estudiantes)
+    archivo_logico_estudiantes.seek(0,0)
     contador_estudiantes=0
     #Recorro hasta que 
     while archivo_logico_estudiantes.tell()<tamaño:
@@ -285,7 +286,7 @@ def contador_moderador():
     
     global archivo_fisico_moderadores
     archivo_logico_moderadores=verificar_archivo(archivo_fisico_moderadores)
-    
+    archivo_logico_moderadores.seek(0,0)
     tamaño=os.path.getsize(archivo_fisico_moderadores)
     contador_moderadores=0
     while archivo_logico_moderadores.tell()<tamaño:
@@ -300,7 +301,7 @@ def contador_administrador():
     
     global archivo_fisico_administradores
     archivo_logico_administradores=verificar_archivo(archivo_fisico_administradores)
-    
+    archivo_logico_administradores.seek(0,0)
     tamaño=os.path.getsize(archivo_fisico_administradores)
     contador_administradores=0
     while archivo_logico_administradores.tell()<tamaño:
@@ -426,13 +427,28 @@ def menu_print_gestion_perfil():
 
 def menu_editar_datos_personales(usuario):
     # Asigno los datos del estudiante a la variable auxiliar.
-    aux=usuario
+    aux=estudiantes()
+    #aux=usuario
+    aux.email = usuario.email
+    aux.nombre = usuario.nombre
+    aux.sexo = usuario.sexo
+    aux.contraseña = usuario.contraseña
+    aux.estado = usuario.estado
+    aux.hobbies = usuario.hobbies
+    aux.materia_fav = usuario.materia_fav
+    aux.deporte_fav = usuario.deporte_fav
+    aux.materia_fuerte = usuario.materia_fuerte
+    aux.materia_debil = usuario.materia_debil
+    aux.biografia = usuario.biografia
+    aux.pais = usuario.pais
+    aux.ciudad = usuario.ciudad
+    aux.fecha_nacimiento = usuario.fecha_nacimiento
     opc = 1
     while opc != 0:
         print("Sus datos actuales son: ")
         print("Su nombre es: ", aux.nombre)
         print("Su genero es: ", aux.sexo)
-        print("Su hobbie es: ", aux.hobbie)
+        print("Su hobbie es: ", aux.hobbies)
         print("Su materia favorita es: ", aux.materia_fav)
         print("Su deporte favorito es: ", aux.deporte_fav)
         print("Su materia fuerte es: ", aux.materia_fuerte)
@@ -441,29 +457,65 @@ def menu_editar_datos_personales(usuario):
         print("Su pais es: ", aux.pais)
         print("Su ciudad es: ", aux.ciudad)
         print("Su fecha de nacimiento es: ", aux.fecha_nacimiento)
+        print("-------------------------------------------------------------")
         print("Que dato desea cambiar?")
-        #Quede acá
-        print("1. Fecha de nacimiento")
-        print("2. Biografia")
+        print("1. Nombre")
+        print("2. Genero")
         print("3. Hobbie")
-        print("4. Nombre")
+        print("4. Materia favorita")
+        print("5. Deporte favorito")
+        print("6. Materia fuerte")
+        print("7. Materia debil")
+        print("8. Biografia")
+        print("9. Pais")
+        print("10. Ciudad")
+        print("11. Fecha de nacimiento")
         print("0. Salir")
         opc=input("Ingrese la opcion: ")
-        opc=validar(opc,0,4)
+        opc=validar(opc,0,11)
         match opc:
             case 1:
-                fecha = modulo_ingrese_fecha()
+                aux.nombre=validar_campos_texto("Nombre",32)
             case 2:
-                bio = validar_campos_texto("Biografia", 255)
+                aux.sexo=modulo_validar_sexo()
             case 3:
-                hobbie = validar_campos_texto("Hobbie", 255)
+                aux.hobbies = validar_campos_texto("Hobbie", 255)
             case 4:
-                nombre= validar_campos_texto("Nombre",32)
-    # Asigno el valor de las variables auxiliares al estudiante
-    estudiantes[pos_estudiante][3] = nombre
-    estudiantes[pos_estudiante][4] = fec
-    estudiantes[pos_estudiante][5] = bio
-    estudiantes[pos_estudiante][6] = hobbie
+                aux.materia_fav = validar_campos_texto("Materia favorita", 16)
+            case 5:
+                aux.deporte_fav = validar_campos_texto("Deporte favorito",16)
+            case 6:
+                aux.materia_fuerte = validar_campos_texto("Materia fuerte",16)
+            case 7:
+                aux.materia_debil = validar_campos_texto("Materia debil",16)
+            case 8:
+                aux.biografia = validar_campos_texto ("Biografia",255)
+            case 9:
+                aux.pais = validar_campos_texto("Pais",32)
+            case 10:
+                aux.ciudad = validar_campos_texto("Ciudad",32)
+            case 11:
+                fecha = modulo_ingrese_fecha()
+        formato_estudiante(aux)
+        archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
+        tam_est=os.path.getsize(archivo_fisico_estudiantes)
+        archivo_logico_estudiantes.seek(0,0)
+        pos=pickle.load(archivo_logico_estudiantes)
+        tam_reg=archivo_logico_estudiantes.tell()
+        cant_reg=tam_est/tam_reg
+        i=0
+        #Esto esta mal, cuando hace el dump me lo deja en el registro siguiente
+        if usuario.nombre == pos.nombre:
+            archivo_logico_estudiantes.seek(i*tam_reg,0)
+            pickle.dump(aux,archivo_logico_estudiantes)
+        else:
+            while archivo_logico_estudiantes.tell() < tam_est and usuario.nombre != pos.nombre:
+                i=i+1
+                pos=pickle.load(archivo_logico_estudiantes)
+            archivo_logico_estudiantes.seek(i*tam_reg,0)
+            pickle.dump(aux,archivo_logico_estudiantes)
+        archivo_logico_estudiantes.flush()
+        archivo_logico_estudiantes.close()
 
 
 def menu_opc_gestion_perfil():
@@ -483,7 +535,8 @@ def menu_opc_gestion_perfil():
                     print("Ingrese la opcion correctamente")
                     sleep(2)   
             limpiar_pantalla()
-            if estudiantes[pos_estudiante][2]=="ACTIVO":
+            #ver
+            if usuario.estado==1:
                 menu_print_gestion_perfil()
                 opc = input("Ingrese una opcion: ")
             else:
