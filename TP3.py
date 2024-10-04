@@ -200,22 +200,22 @@ def validar(var,min,max):
 
 #Se ingresa el campo a validar entre comillas y la longitud maxima de caractere. Valida que este correcto y formatea el campo.
 def validar_campos_texto(campo_validar, longitud):
-    campo = input("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres):")
+    campo = input("Ingrese " + campo_validar + " (máximo " + str(longitud) + " caracteres):")
     while len(campo) > longitud:
         limpiar_pantalla()
         print("Ingrese el campo con la longitud adecuada:")
-        campo = input("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres):")
+        campo = input("Ingrese " + campo_validar + " (máximo " + str(longitud) + " caracteres):")
     campo = campo.ljust(longitud," ")
     return campo
 
 
 #Se ingresa la contrasenia a validar entre comillas y la longitud maxima de caractere. Valida que este correcto y formatea el campo.
 def validar_campos_contrasenia(campo_validar, longitud):
-    campo = getpass.getpass("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres):")
+    campo = getpass.getpass("Ingrese " + campo_validar + " (máximo " + str(longitud) + " caracteres):")
     while len(campo) > longitud:
         limpiar_pantalla()
         print("Ingrese el campo con la longitud adecuada:")
-        campo = ("Ingrese " + str(campo_validar) + " (máximo " + str(longitud) + " caracteres):")
+        campo = ("Ingrese " + campo_validar + " (máximo " + str(longitud) + " caracteres):")
     campo = campo.ljust(longitud," ")
     return campo
 
