@@ -566,6 +566,7 @@ def menu_eliminar_perfil(usuario):
     match opc:
         case 0:
             usuario.estado = 0
+            formato_estudiante(usuario)
             pos=buscar_email_estudiante(usuario.email)
             archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
             tam_est=os.path.getsize(archivo_fisico_estudiantes)
