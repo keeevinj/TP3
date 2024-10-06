@@ -613,11 +613,12 @@ def menu_editar_datos_personales():
                 fecha = modulo_ingrese_fecha()
         ######Ver ACA
         #####Edite el 3er estudiante y me lo escribio en el lugar del 4to tambien.
-        formato_estudiante(aux)
-        tam_reg=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
-        archivo_logico_estudiantes.seek((aux.idregistro) * tam_reg,0)
-        pickle.dump(aux,archivo_logico_estudiantes)
-        archivo_logico_estudiantes.flush()
+        if opc != 0:
+            formato_estudiante(aux)
+            tam_reg=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
+            archivo_logico_estudiantes.seek((aux.idregistro+1) * tam_reg,0)
+            pickle.dump(aux,archivo_logico_estudiantes)
+            archivo_logico_estudiantes.flush()
 '''        archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
         tam_est=os.path.getsize(archivo_fisico_estudiantes)
         archivo_logico_estudiantes.seek(0,0)
