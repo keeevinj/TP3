@@ -159,16 +159,6 @@ def cargar_archivo_estudiantes(path):
         formato_estudiante(estudiante)
         pickle.dump(estudiante, archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
-    for i in range(4,5):
-        estudiante = estudiantes()
-        estudiante.idregistro = i
-        estudiante.email = "estudiante" + str(i + 1) + "@ayed.com"
-        estudiante.contraseña = str(111222 + 111111 * i)
-        estudiante.estado = False
-        formato_estudiante(estudiante)
-        archivo_logico_estudiantes.seek(0,2)
-        pickle.dump(estudiante, archivo_logico_estudiantes)
-        archivo_logico_estudiantes.flush()
 
 
 def cargar_archivo_admin_mod(path, archivologico, nombre, clase):
@@ -298,7 +288,7 @@ def validar(minimo,maximo):
     opc = input("ingrese una opcion del " + str(minimo) + " al " + str(maximo) + ": ")
     opc = validar_opcion_numerica(opc, minimo, maximo)
     while opc == -1:
-        limpiar_pantalla()
+        #limpiar_pantalla()
         print ("La opcion es incorrecta")
         opc = input("ingrese una opcion del " + str(minimo) + " al " + str(maximo) + ": ")
         opc = validar_opcion_numerica(opc, minimo, maximo)
@@ -411,10 +401,21 @@ def validar_email_duplicado(archivofisico, archivologico, correo):
             pos = archivologico.tell()
             usuario = pickle.load(archivologico)
         if (usuario.email == correo):
-            return -1
+                return pos
         else:
-            return pos
+            return -1
 
+def tamaño_registro(archivofisico,archivologico):
+    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
+    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
+    tamaño_total = os.path.getsize(archivofisico)
+    if tamaño_total == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivologico.seek (0,0)
+        reg = pickle.load (archivologico)
+    tamaño = archivologico.tell()
+    return tamaño
 
 def login():
     global opc
@@ -439,13 +440,25 @@ def login():
                 busco_administrador = validar_usuario(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
 
         if busco_estudiante != -1:
-            intentos = 0
+            usuario=estudiantes()
+            tam=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
+            pos = busco_estudiante//tam
+            archivo_logico_estudiantes.seek(pos,0)
+            usuario=pickle.load(archivo_logico_estudiantes)
             menu_estudiantes()
         elif busco_moderador != -1:
-            intentos = 0
+            usuario=moderadores()
+            tam=tamaño_registro(archivo_fisico_moderadores,archivo_logico_moderadores)
+            pos = busco_moderador//tam
+            archivo_logico_moderadores.seek(pos,0)
+            usuario=pickle.load(archivo_logico_moderadores)
             menu_moderadores()
         elif busco_administrador != -1:
-            intentos = 0
+            usuario=administradores()
+            tam=tamaño_registro(archivo_fisico_administradores,archivo_logico_administradores)
+            pos = busco_administrador//tam
+            archivo_logico_administradores.seek(pos,0)
+            usuario=pickle.load(archivo_logico_administradores)
             menu_administradores()
         elif intentos == 3:
             opc = 0
@@ -458,32 +471,30 @@ def login():
 
 def validar_correo_duplicado():
 
-    email_nuevo = validar_campos_texto("Email", 32)
-    busco_email_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email_nuevo)
-    busco_email_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email_nuevo)
-    busco_email_administrador = validar_email_duplicado(archivo_fisico_administradores, archivo_logico_administradores, email_nuevo)
-    while (busco_email_estudiante == -1) and (busco_email_moderador == -1) and (busco_email_administrador == -1):
-        print("El email se encuentra en uso")
         email_nuevo = validar_campos_texto("Email", 32)
         busco_email_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email_nuevo)
         busco_email_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email_nuevo)
         busco_email_administrador = validar_email_duplicado(archivo_fisico_administradores, archivo_logico_administradores, email_nuevo)
-    return email_nuevo
+        while (busco_email_estudiante != -1) and (busco_email_moderador != -1) and (busco_email_administrador != -1):
+            print("El email se encuentra en uso")
+            email_nuevo = validar_campos_texto("Email", 32)
+            busco_email_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email_nuevo)
+            busco_email_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email_nuevo)
+            busco_email_administrador = validar_email_duplicado(archivo_fisico_administradores, archivo_logico_administradores, email_nuevo)
+        return email_nuevo
 
-##################################ESTOY ACA#######################################################################
+###################ACA
+
 def registro_estudiantes():
     global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
     global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
-    global opc
-
     email = validar_campos_texto("Email", 32)
-    password = validar_campos_contrasenia ("Contrasenia", 32)
-    busco_estudiante = validar_usuario_false(archivo_fisico_estudiantes, archivo_logico_estudiantes, email, password)
-    busco_moderador = validar_usuario_false(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
-    if (busco_estudiante != -1):
+    busco_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email)
+    busco_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email)
+    if (busco_estudiante == -1 and busco_moderador == -1):
         nuevo_usuario = estudiantes()
-        nuevo_usuario.email = validar_correo_duplicado()
-        nuevo_usuario.contraseña = validar_campos_contrasenia ("Contrasenia", 32)
+        nuevo_usuario.email = email
+        nuevo_usuario.contraseña = validar_campos_contrasenia("Contrasenia", 32)
         nuevo_usuario.nombre = validar_campos_texto("Nombre", 32)
         nuevo_usuario.sexo = modulo_validar_sexo()
         nuevo_usuario.estado = True
@@ -496,14 +507,15 @@ def registro_estudiantes():
         nuevo_usuario.pais = validar_campos_texto("Pais", 32)
         nuevo_usuario.ciudad = validar_campos_texto("Ciudad", 32)
         nuevo_usuario.fecha_nacimiento = modulo_ingrese_fecha()
-        archivo_logico_estudiantes.seek(busco_estudiante)
+        formato_estudiante(nuevo_usuario)
+        archivo_logico_estudiantes.seek(0,0)
+        tam_est=os.path.getsize(archivo_fisico_estudiantes)
+        while archivo_logico_estudiantes.tell()<tam_est:
+            aux=pickle.load(archivo_logico_estudiantes)
         pickle.dump(nuevo_usuario,archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
-    elif (busco_moderador != -1):
-        nuevo_usuario = moderadores()
-        nuevo_usuario.email = validar_correo_duplicado()
     else:
-        print("El mail es invalido")
+        print("El mail ya esta en uso")
 
 
 
@@ -521,7 +533,10 @@ def menu_print_gestion_perfil():
     print(" b. Eliminar mi perfil")
     print(" c. Volver")
 
-def menu_editar_datos_personales(usuario):
+###################ACA
+
+def menu_editar_datos_personales():
+    global usuario
     # Asigno los datos del estudiante a la variable auxiliar.
     aux=estudiantes()
     #aux=usuario
@@ -599,7 +614,6 @@ def menu_editar_datos_personales(usuario):
         tam_reg=archivo_logico_estudiantes.tell()
         cant_reg=tam_est/tam_reg
         i=0
-        #Esto esta mal, me guarda el registro al final. El viernes lo corrijo
         if usuario.nombre == pos.nombre:
             archivo_logico_estudiantes.seek(i*tam_reg,0)
             pickle.dump(aux,archivo_logico_estudiantes)
@@ -610,23 +624,49 @@ def menu_editar_datos_personales(usuario):
             archivo_logico_estudiantes.seek(i*tam_reg,0)
             pickle.dump(aux,archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
+        #archivo_logico_estudiantes.close()
 
+###################ACA
+
+def menu_eliminar_perfil():
+    global usuario
+    limpiar_pantalla()
+    print("Confirmar eliminacion de perfil")
+    print("0. Si")
+    print("1. No")
+    opc=input("Ingrese una opcion: ")
+    opc=validar(opc,0,1)
+    match opc:
+        case 0:
+            usuario.estado = False
+            pos=validar_usuario(archivo_fisico_estudiantes,archivo_logico_estudiantes,usuario.email,usuario.contraseña)
+            archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
+            tam_est=os.path.getsize(archivo_fisico_estudiantes)
+            reg=pickle.load(archivo_logico_estudiantes)
+            tam_reg=archivo_logico_estudiantes.tell()
+            cant_reg=tam_est//tam_reg
+            archivo_logico_estudiantes.seek(pos*tam_reg,0)
+            pickle.dump(usuario,archivo_logico_estudiantes)
+            archivo_logico_estudiantes.flush()
+        case 1:
+            print("")
 
 
 def menu_opc_gestion_perfil():
+    global usuario
     limpiar_pantalla()
     menu_print_gestion_perfil()
     opc = validaralfabeticamente("abc", "a", "c")
     while opc != "c":
-        while usuario.estado==1 and opc != "c":
+        while usuario.estado==True and opc != "c":
             match opc:
                 case "a":
-                    menu_editar_datos_personales(usuario)
+                    menu_editar_datos_personales()
                 case "b":
                     menu_eliminar_perfil()
                 case "c":
                     print("")
-            if usuario.estado==1:
+            if usuario.estado==True:
                 menu_print_gestion_perfil()
                 opc = input("Ingrese una opcion: ")
             else:
@@ -671,14 +711,13 @@ main()
 
 print_menu_inicio()
 opc = validar(0,2)
-
 while opc != 0:
     if opc == 1:
         login()
     elif opc == 2:
         registro_estudiantes()
-    elif opc == 0:
-        print("Hasta luego")
     print_menu_inicio()
     opc = validar(0,2)
+
+
 
