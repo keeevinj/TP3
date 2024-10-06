@@ -159,6 +159,16 @@ def cargar_archivo_estudiantes(path):
         formato_estudiante(estudiante)
         pickle.dump(estudiante, archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
+    for i in range(4,5):
+        estudiante = estudiantes()
+        estudiante.idregistro = i
+        estudiante.email = "estudiante" + str(i + 1) + "@ayed.com"
+        estudiante.contraseña = str(111222 + 111111 * i)
+        estudiante.estado = False
+        formato_estudiante(estudiante)
+        archivo_logico_estudiantes.seek(0,2)
+        pickle.dump(estudiante, archivo_logico_estudiantes)
+        archivo_logico_estudiantes.flush()
 
 
 def cargar_archivo_admin_mod(path, archivologico, nombre, clase):
@@ -401,9 +411,9 @@ def validar_email_duplicado(archivofisico, archivologico, correo):
             pos = archivologico.tell()
             usuario = pickle.load(archivologico)
         if (usuario.email == correo):
-                return pos
-        else:
             return -1
+        else:
+            return pos
 
 
 def login():
@@ -429,10 +439,13 @@ def login():
                 busco_administrador = validar_usuario(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
 
         if busco_estudiante != -1:
+            intentos = 0
             menu_estudiantes()
         elif busco_moderador != -1:
+            intentos = 0
             menu_moderadores()
         elif busco_administrador != -1:
+            intentos = 0
             menu_administradores()
         elif intentos == 3:
             opc = 0
@@ -445,22 +458,24 @@ def login():
 
 def validar_correo_duplicado():
 
+    email_nuevo = validar_campos_texto("Email", 32)
+    busco_email_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email_nuevo)
+    busco_email_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email_nuevo)
+    busco_email_administrador = validar_email_duplicado(archivo_fisico_administradores, archivo_logico_administradores, email_nuevo)
+    while (busco_email_estudiante == -1) and (busco_email_moderador == -1) and (busco_email_administrador == -1):
+        print("El email se encuentra en uso")
         email_nuevo = validar_campos_texto("Email", 32)
         busco_email_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email_nuevo)
         busco_email_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email_nuevo)
         busco_email_administrador = validar_email_duplicado(archivo_fisico_administradores, archivo_logico_administradores, email_nuevo)
-        while (busco_email_estudiante != -1) and (busco_email_moderador != -1) and (busco_email_administrador != -1):
-            print("El email se encuentra en uso")
-            email_nuevo = validar_campos_texto("Email", 32)
-            busco_email_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email_nuevo)
-            busco_email_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email_nuevo)
-            busco_email_administrador = validar_email_duplicado(archivo_fisico_administradores, archivo_logico_administradores, email_nuevo)
-        return email_nuevo
+    return email_nuevo
 
 ##################################ESTOY ACA#######################################################################
 def registro_estudiantes():
     global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
     global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
+    global opc
+
     email = validar_campos_texto("Email", 32)
     password = validar_campos_contrasenia ("Contrasenia", 32)
     busco_estudiante = validar_usuario_false(archivo_fisico_estudiantes, archivo_logico_estudiantes, email, password)
@@ -482,16 +497,13 @@ def registro_estudiantes():
         nuevo_usuario.ciudad = validar_campos_texto("Ciudad", 32)
         nuevo_usuario.fecha_nacimiento = modulo_ingrese_fecha()
         archivo_logico_estudiantes.seek(busco_estudiante)
-        tam_est=os.path.getsize(archivo_fisico_estudiantes)
-        while archivo_logico_estudiantes.tell()<tam_est:
-            aux=pickle.load(archivo_logico_estudiantes)
         pickle.dump(nuevo_usuario,archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
-    if (busco_moderador != -1)
-
-
+    elif (busco_moderador != -1):
+        nuevo_usuario = moderadores()
+        nuevo_usuario.email = validar_correo_duplicado()
     else:
-        print("El mail ya esta en uso")
+        print("El mail es invalido")
 
 
 
@@ -598,7 +610,7 @@ def menu_editar_datos_personales(usuario):
             archivo_logico_estudiantes.seek(i*tam_reg,0)
             pickle.dump(aux,archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
-        archivo_logico_estudiantes.close()
+
 
 
 def menu_opc_gestion_perfil():
@@ -665,9 +677,8 @@ while opc != 0:
         login()
     elif opc == 2:
         registro_estudiantes()
-    elif opc != 0:
-        print_menu_inicio()
-        opc = validar(0,2)
-
-
+    elif opc == 0:
+        print("Hasta luego")
+    print_menu_inicio()
+    opc = validar(0,2)
 
