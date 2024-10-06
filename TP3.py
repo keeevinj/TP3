@@ -384,6 +384,8 @@ def validar_usuario(archivofisico, archivologico, correo, password):
                 return pos
             elif ((archivologico == archivo_logico_estudiantes) or (archivologico == archivo_logico_moderadores)) and (usuario.estado == True):
                 return pos
+            else:
+                return -1
         else:
             return -1
 
@@ -419,6 +421,7 @@ def tamaño_registro(archivofisico,archivologico):
 
 def login():
     global opc
+    global usuario
     if check() == True:
         email = validar_campos_texto("Email", 32)
         password = validar_campos_contrasenia ("Contrasenia", 32)
@@ -443,21 +446,21 @@ def login():
             usuario=estudiantes()
             tam=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
             pos = busco_estudiante//tam
-            archivo_logico_estudiantes.seek(pos,0)
+            archivo_logico_estudiantes.seek(pos*tam,0)
             usuario=pickle.load(archivo_logico_estudiantes)
             menu_estudiantes()
         elif busco_moderador != -1:
             usuario=moderadores()
             tam=tamaño_registro(archivo_fisico_moderadores,archivo_logico_moderadores)
             pos = busco_moderador//tam
-            archivo_logico_moderadores.seek(pos,0)
+            archivo_logico_moderadores.seek(pos*tam,0)
             usuario=pickle.load(archivo_logico_moderadores)
             menu_moderadores()
         elif busco_administrador != -1:
             usuario=administradores()
             tam=tamaño_registro(archivo_fisico_administradores,archivo_logico_administradores)
             pos = busco_administrador//tam
-            archivo_logico_administradores.seek(pos,0)
+            archivo_logico_administradores.seek(pos*tam,0)
             usuario=pickle.load(archivo_logico_administradores)
             menu_administradores()
         elif intentos == 3:
@@ -483,8 +486,6 @@ def validar_correo_duplicado():
             busco_email_administrador = validar_email_duplicado(archivo_fisico_administradores, archivo_logico_administradores, email_nuevo)
         return email_nuevo
 
-###################ACA
-
 def registro_estudiantes():
     global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
     global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
@@ -492,7 +493,11 @@ def registro_estudiantes():
     busco_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email)
     busco_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email)
     if (busco_estudiante == -1 and busco_moderador == -1):
+        tam_registro=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
+        tamaño=os.path.getsize(archivo_fisico_estudiantes)
+        cant_reg=tamaño//tam_registro
         nuevo_usuario = estudiantes()
+        nuevo_usuario.idregistro = cant_reg-1
         nuevo_usuario.email = email
         nuevo_usuario.contraseña = validar_campos_contrasenia("Contrasenia", 32)
         nuevo_usuario.nombre = validar_campos_texto("Nombre", 32)
@@ -517,9 +522,6 @@ def registro_estudiantes():
     else:
         print("El mail ya esta en uso")
 
-
-
-
 def menu_principal_estudiantes():
     print("1. Gestionar mi perfil")
     print("2. Gestionar candidatos")
@@ -537,9 +539,12 @@ def menu_print_gestion_perfil():
 
 def menu_editar_datos_personales():
     global usuario
+    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
+    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
     # Asigno los datos del estudiante a la variable auxiliar.
     aux=estudiantes()
     #aux=usuario
+    aux.idregistro = usuario.idregistro
     aux.email = usuario.email
     aux.nombre = usuario.nombre
     aux.sexo = usuario.sexo
@@ -606,8 +611,14 @@ def menu_editar_datos_personales():
                 aux.ciudad = validar_campos_texto("Ciudad",32)
             case 11:
                 fecha = modulo_ingrese_fecha()
+        ######Ver ACA
+        #####Edite el 3er estudiante y me lo escribio en el lugar del 4to tambien.
         formato_estudiante(aux)
-        archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
+        tam_reg=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
+        archivo_logico_estudiantes.seek((aux.idregistro) * tam_reg,0)
+        pickle.dump(aux,archivo_logico_estudiantes)
+        archivo_logico_estudiantes.flush()
+'''        archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
         tam_est=os.path.getsize(archivo_fisico_estudiantes)
         archivo_logico_estudiantes.seek(0,0)
         pos=pickle.load(archivo_logico_estudiantes)
@@ -621,31 +632,27 @@ def menu_editar_datos_personales():
             while archivo_logico_estudiantes.tell() < tam_est and usuario.nombre != pos.nombre:
                 i=i+1
                 pos=pickle.load(archivo_logico_estudiantes)
-            archivo_logico_estudiantes.seek(i*tam_reg,0)
-            pickle.dump(aux,archivo_logico_estudiantes)
-        archivo_logico_estudiantes.flush()
+                '''
         #archivo_logico_estudiantes.close()
 
 ###################ACA
 
 def menu_eliminar_perfil():
     global usuario
+    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
+    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
     limpiar_pantalla()
     print("Confirmar eliminacion de perfil")
     print("0. Si")
     print("1. No")
-    opc=input("Ingrese una opcion: ")
-    opc=validar(opc,0,1)
+    opc=validar(0,1)
     match opc:
         case 0:
             usuario.estado = False
-            pos=validar_usuario(archivo_fisico_estudiantes,archivo_logico_estudiantes,usuario.email,usuario.contraseña)
+            tam_registro=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
+            pos=usuario.idregistro
             archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
-            tam_est=os.path.getsize(archivo_fisico_estudiantes)
-            reg=pickle.load(archivo_logico_estudiantes)
-            tam_reg=archivo_logico_estudiantes.tell()
-            cant_reg=tam_est//tam_reg
-            archivo_logico_estudiantes.seek(pos*tam_reg,0)
+            archivo_logico_estudiantes.seek(pos*tam_registro,0)
             pickle.dump(usuario,archivo_logico_estudiantes)
             archivo_logico_estudiantes.flush()
         case 1:
@@ -674,8 +681,9 @@ def menu_opc_gestion_perfil():
 
 
 def menu_estudiantes():
+    global usuario
     opc = 1
-    while opc != 0:
+    while opc != 0 and usuario.estado==True:
         limpiar_pantalla()
         menu_principal_estudiantes()
         opc=validar(0,4)
@@ -705,7 +713,7 @@ def menu_administradores():
 
 #---------------------------------PROGRAMA---------------------------------#
 
-
+usuario = [None]
 
 main()
 
