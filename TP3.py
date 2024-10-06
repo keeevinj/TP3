@@ -517,7 +517,7 @@ def registro_estudiantes():
     else:
         print("El mail ya esta en uso")
 
-
+#-------------------------------------MENU ESTUDIANTES-----------------------------------#
 
 
 def menu_principal_estudiantes():
@@ -527,16 +527,54 @@ def menu_principal_estudiantes():
     print("4. Reportes estadisticos")
     print("0. Salir")
 
+def menu_estudiantes():
+    opc = 1
+    while opc != 0:
+        limpiar_pantalla()
+        menu_principal_estudiantes()
+        opc=validar(0,4)
+        match opc:
+            case 1:
+                menu_opc_gestion_perfil()
+            case 2:
+                menu_opc_gestion_candidatos()
+            case 3:
+                menu_opc_matcheos()
+            case 4:
+                menu_opc_reportes()
+        limpiar_pantalla()
+        sleep(2)
+
+#---------------------------MENU GESTION PERFIL--------------------------------#
+
 def menu_print_gestion_perfil():
     print("1. Gestionar mi perfil")
     print(" a. Editar mis datos personales")
     print(" b. Eliminar mi perfil")
     print(" c. Volver")
 
-###################ACA
+def menu_opc_gestion_perfil():
+    limpiar_pantalla()
+    menu_print_gestion_perfil()
+    opc = validaralfabeticamente("abc", "a", "c")
+    while opc != "c":
+        while usuario.estado==1 and opc != "c":
+            match opc:
+                case "a":
+                    menu_editar_datos_personales(usuario)
+                case "b":
+                    menu_eliminar_perfil()
+                case "c":
+                    print("")
+            if usuario.estado==1:
+                menu_print_gestion_perfil()
+                opc = input("Ingrese una opcion: ")
+            else:
+                opc="c"
 
-def menu_editar_datos_personales():
-    global usuario
+
+
+def menu_editar_datos_personales(usuario):
     # Asigno los datos del estudiante a la variable auxiliar.
     aux=estudiantes()
     #aux=usuario
@@ -614,6 +652,7 @@ def menu_editar_datos_personales():
         tam_reg=archivo_logico_estudiantes.tell()
         cant_reg=tam_est/tam_reg
         i=0
+        #Esto esta mal, me guarda el registro al final. El viernes lo corrijo
         if usuario.nombre == pos.nombre:
             archivo_logico_estudiantes.seek(i*tam_reg,0)
             pickle.dump(aux,archivo_logico_estudiantes)
@@ -624,72 +663,13 @@ def menu_editar_datos_personales():
             archivo_logico_estudiantes.seek(i*tam_reg,0)
             pickle.dump(aux,archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
-        #archivo_logico_estudiantes.close()
-
-###################ACA
-
-def menu_eliminar_perfil():
-    global usuario
-    limpiar_pantalla()
-    print("Confirmar eliminacion de perfil")
-    print("0. Si")
-    print("1. No")
-    opc=input("Ingrese una opcion: ")
-    opc=validar(opc,0,1)
-    match opc:
-        case 0:
-            usuario.estado = False
-            pos=validar_usuario(archivo_fisico_estudiantes,archivo_logico_estudiantes,usuario.email,usuario.contraseña)
-            archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
-            tam_est=os.path.getsize(archivo_fisico_estudiantes)
-            reg=pickle.load(archivo_logico_estudiantes)
-            tam_reg=archivo_logico_estudiantes.tell()
-            cant_reg=tam_est//tam_reg
-            archivo_logico_estudiantes.seek(pos*tam_reg,0)
-            pickle.dump(usuario,archivo_logico_estudiantes)
-            archivo_logico_estudiantes.flush()
-        case 1:
-            print("")
 
 
-def menu_opc_gestion_perfil():
-    global usuario
-    limpiar_pantalla()
-    menu_print_gestion_perfil()
-    opc = validaralfabeticamente("abc", "a", "c")
-    while opc != "c":
-        while usuario.estado==True and opc != "c":
-            match opc:
-                case "a":
-                    menu_editar_datos_personales()
-                case "b":
-                    menu_eliminar_perfil()
-                case "c":
-                    print("")
-            if usuario.estado==True:
-                menu_print_gestion_perfil()
-                opc = input("Ingrese una opcion: ")
-            else:
-                opc="c"
 
 
-def menu_estudiantes():
-    opc = 1
-    while opc != 0:
-        limpiar_pantalla()
-        menu_principal_estudiantes()
-        opc=validar(0,4)
-        match opc:
-            case 1:
-                menu_opc_gestion_perfil()
-            case 2:
-                menu_opc_gestion_candidatos()
-            case 3:
-                menu_opc_matcheos()
-            case 4:
-                menu_opc_reportes()
-        limpiar_pantalla()
-        sleep(2)
+
+
+
 
 def menu_moderadores():
     print("Soy moderador")
@@ -711,13 +691,14 @@ main()
 
 print_menu_inicio()
 opc = validar(0,2)
+
 while opc != 0:
     if opc == 1:
         login()
     elif opc == 2:
         registro_estudiantes()
+    elif opc == 0:
+        print("Hasta luego")
     print_menu_inicio()
     opc = validar(0,2)
-
-
 
