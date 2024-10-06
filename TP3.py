@@ -443,6 +443,7 @@ def menu_editar_datos_personales(usuario):
     aux.pais = usuario.pais
     aux.ciudad = usuario.ciudad
     aux.fecha_nacimiento = usuario.fecha_nacimiento
+    #Habra otra opcion para hacer esto?
     opc = 1
     while opc != 0:
         print("Sus datos actuales son: ")
@@ -496,26 +497,87 @@ def menu_editar_datos_personales(usuario):
                 aux.ciudad = validar_campos_texto("Ciudad",32)
             case 11:
                 fecha = modulo_ingrese_fecha()
-        formato_estudiante(aux)
-        archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
-        tam_est=os.path.getsize(archivo_fisico_estudiantes)
-        archivo_logico_estudiantes.seek(0,0)
-        pos=pickle.load(archivo_logico_estudiantes)
-        tam_reg=archivo_logico_estudiantes.tell()
-        cant_reg=tam_est/tam_reg
-        i=0
-        #Esto esta mal, me guarda el registro al final. El viernes lo corrijo
-        if usuario.nombre == pos.nombre:
-            archivo_logico_estudiantes.seek(i*tam_reg,0)
-            pickle.dump(aux,archivo_logico_estudiantes)
-        else:
-            while archivo_logico_estudiantes.tell() < tam_est and usuario.nombre != pos.nombre:
-                i=i+1
+        if opc !=0:
+            #Formateo el registro
+            formato_estudiante(aux)
+            pos=buscar_email_estudiante(aux.email)
+            '''
+            archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
+            tam_est=os.path.getsize(archivo_fisico_estudiantes)
+            archivo_logico_estudiantes.seek(0,0)
+            pos=pickle.load(archivo_logico_estudiantes)
+            tam_reg=archivo_logico_estudiantes.tell()
+            cant_reg=tam_est//tam_reg
+            archivo_logico_estudiantes.seek(0,0)
+            pos=pickle.load(archivo_logico_estudiantes)
+            i=0
+            #Abro archivo
+            #Obtengo tamaño y calculo registros
+            #Dejo el puntero al inicio y cargo el primer registro
+            #Lo comparo y veo si lo encuentra.
+            #Pero siempre lo va a encontrar...
+            while i < cant_reg and usuario.nombre != pos.nombre:
                 pos=pickle.load(archivo_logico_estudiantes)
-            archivo_logico_estudiantes.seek(i*tam_reg,0)
-            pickle.dump(aux,archivo_logico_estudiantes)
-        archivo_logico_estudiantes.flush()
-        archivo_logico_estudiantes.close()
+                i=i+1
+            if usuario.nombre == pos.nombre:
+                    archivo_logico_estudiantes.seek(i*tam_reg,0)
+                    pickle.dump(aux,archivo_logico_estudiantes)
+            '''
+            if pos != -1:
+                archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
+                tam_est=os.path.getsize(archivo_fisico_estudiantes)
+                reg=pickle.load(archivo_logico_estudiantes)
+                tam_reg=archivo_logico_estudiantes.tell()
+                cant_reg=tam_est//tam_reg
+                archivo_logico_estudiantes.seek(pos*tam_reg,0)
+                pickle.dump(aux,archivo_logico_estudiantes)
+                archivo_logico_estudiantes.flush()
+                archivo_logico_estudiantes.close()
+
+
+#Hay que ver si podemos hacer una funcion universal para buscar la posicion del registro en los archivos
+def buscar_email_estudiante(email):
+    archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
+    tam_est=os.path.getsize(archivo_fisico_estudiantes)
+    archivo_logico_estudiantes.seek(0,0)
+    pos=pickle.load(archivo_logico_estudiantes)
+    tam_reg=archivo_logico_estudiantes.tell()
+    cant_reg=tam_est//tam_reg
+    archivo_logico_estudiantes.seek(0,0)
+    pos=pickle.load(archivo_logico_estudiantes)
+    i=0
+    while i < cant_reg and email != pos.email:
+        pos=pickle.load(archivo_logico_estudiantes)
+        i=i+1
+    if email == pos.email:
+        pos=i
+    else:
+        pos=-1
+    return pos
+
+
+def menu_eliminar_perfil(usuario):
+    limpiar_pantalla()
+    print("Confirmar eliminacion de perfil")
+    print("0. Si")
+    print("1. No")
+    opc=input("Ingrese una opcion: ")
+    opc=validar(opc,0,1)
+    match opc:
+        case 0:
+            usuario.estado = 0
+            pos=buscar_email_estudiante(usuario.email)
+            archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
+            tam_est=os.path.getsize(archivo_fisico_estudiantes)
+            reg=pickle.load(archivo_logico_estudiantes)
+            tam_reg=archivo_logico_estudiantes.tell()
+            cant_reg=tam_est//tam_reg
+            archivo_logico_estudiantes.seek(pos*tam_reg,0)
+            pickle.dump(usuario,archivo_logico_estudiantes)
+            archivo_logico_estudiantes.flush()
+            archivo_logico_estudiantes.close()
+        case 1:
+            print("")
 
 
 def menu_opc_gestion_perfil():
@@ -528,7 +590,7 @@ def menu_opc_gestion_perfil():
                 case "a":
                     menu_editar_datos_personales(usuario)
                 case "b":
-                    menu_eliminar_perfil()
+                    menu_eliminar_perfil(usuario)
                 case "c":
                     print("")
                 case _:
@@ -602,6 +664,7 @@ def registro_estudiantes():
         print("El mail ya esta en uso")   
 
 def login():
+    #Podria dejar la posicion como variable global asi no la tengo que buscar en cada submenu
     if check() == True:
         intentos=0
         while intentos <3:
@@ -610,6 +673,8 @@ def login():
             estado_login = buscar(email,False)
             if estado_login == "No encontrado" or estado_login == "Su usuario esta INACTIVO":
                 if estado_login == "No encontrado":
+                    print(estado_login)
+                elif estado_login == "Su usuario esta INACTIVO":
                     print(estado_login)
                 else:
                     print("Contraseña incorrecta")
