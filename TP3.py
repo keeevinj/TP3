@@ -698,6 +698,213 @@ def menu_eliminar_perfil():
         case 1:
             print("")
 
+
+#-------------------------------------MENU MODERADORES-----------------------------------#
+
+def menu_principal_moderadores():
+    print("1. Gestionar usuarios")
+    print("   a. Desactivar usuarios")
+    print("   b. Volver")
+    print("2. Gestionar reportes")
+    print("   a. Ver reportes")
+    print("   b. Volver")
+    print("3. Reportes estadisticos")
+    print("4. Bonus track 1")
+    print("5. Bonus track 2")
+    print("0. Salir")
+
+def menu_moderadores():
+    opc = 1
+    while opc != 0:
+        limpiar_pantalla()
+        menu_principal_moderadores()
+        opc= validar(0,5)
+        match opc:
+            case 1:
+                menu_opc_gestion_usuarios()
+            case 2:
+                menu_opc_gestion_reportes()
+            case 3:
+                print("En construccion..")
+            case 4:
+                bonus_track_1()
+            case 5:
+                bonus_track_2()
+        limpiar_pantalla()
+
+#-----------------------------------MENU GESTION DE USUARIOS---------------------------------#
+
+def menu_opc_gestion_usuarios():
+    limpiar_pantalla()
+    menu_print_gestion_usuarios()
+    opc = validaralfabeticamente("ab", "a", "b")
+    while opc != "b":
+        match opc:
+            case "a":
+                menu_gestion_usuarios()
+        limpiar_pantalla()
+        menu_print_gestion_usuarios()
+        opc = validaralfabeticamente("ab", "a", "b")
+
+
+
+def menu_gestion_usuarios():
+    listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
+    opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)")
+    while opcion1 !="N":
+        limpiar_pantalla()
+        listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
+        usuario_eliminar = input("Ingrese ID o Nombre y Apellido del usuario a eliminar: ")
+        if usuario_eliminar.isdigit():
+            usuario_eliminar = int(usuario_eliminar)
+            usuario_eliminar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 1)
+            if usuario_eliminar != -1:
+                id_eliminar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 2)
+                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                usuario = estudiantes ()
+                usuario = pickle.load(archivo_logico_estudiantes)
+                desactivar_estudiante (usuario)
+                formato_estudiante(usuario)
+                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                pickle.dump(usuario, archivo_logico_estudiantes)
+                archivo_logico_estudiantes.flush()
+            else:
+                print ("Campo Incorrecto o no encontrado")
+    ######### FALTA BORRARLOS DE LOS REPORTES Y LIKES#######
+        elif len(usuario_eliminar) < 32:
+            usuario_eliminar = usuario_eliminar.ljust(32," ")
+            usuario_eliminar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 1)
+            if usuario_eliminar != -1:
+                id_eliminar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 2)
+                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                usuario = estudiantes ()
+                usuario = pickle.load(archivo_logico_estudiantes)
+                desactivar_estudiante (usuario)
+                formato_estudiante(usuario)
+                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                pickle.dump(usuario, archivo_logico_estudiantes)
+                archivo_logico_estudiantes.flush()
+    ######### FALTA BORRARLOS DE LOS REPORTES Y LIKES#######
+            else:
+                print ("Campo Incorrecto o no encontrado")
+        listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
+        opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)")
+
+
+
+
+def listado_general_estudiantes (archivofisico, archivologico):
+    global archivo_fisico_estudiantes, archivo_logico_estudiantes, archivo_fisico_reportes, archivo_logico_reportes
+
+    tam = os.path.getsize(archivofisico)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivologico.seek (0,0)
+        while (archivologico.tell() < tam):
+            usuario = pickle.load(archivologico)
+            if usuario.estado == True:
+                print (f" El estudiante {usuario.idregistro} es {usuario.nombre}")
+
+
+def validar_idregistro (archivofisico, archivologico, parametro, condicion):
+    global archivo_fisico_estudiantes, archivo_logico_estudiantes
+
+    numero = condicion
+    pos = 0
+    tam = os.path.getsize(archivofisico)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivologico.seek (0,0)
+        usuario = pickle.load (archivologico)
+        while (archivologico.tell() < tam) and (usuario.idregistro != parametro):
+            pos = archivologico.tell()
+            usuario = pickle.load(archivologico)
+        if usuario.idregistro == parametro:
+            if numero == 1:
+                return pos
+            elif numero == 2:
+                return usuario.idregistro
+        else:
+            return -1
+
+def validar_nombre (archivofisico, archivologico, parametro, condicion):
+    global archivo_fisico_estudiantes, archivo_logico_estudiantes
+
+    numero = condicion
+    pos = 0
+    tam = os.path.getsize(archivofisico)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivologico.seek (0,0)
+        usuario = pickle.load (archivologico)
+        while (archivologico.tell() < tam) and (usuario.nombre != parametro):
+            pos = archivologico.tell()
+            usuario = pickle.load(archivologico)
+        if usuario.nombre == parametro:
+            if numero == 1:
+                return pos
+            elif numero == 2:
+                return usuario.nombre
+        else:
+            return -1
+
+def desactivar_estudiante (self):
+
+        self.email = " "
+        self.nombre = " "
+        self.sexo = " "
+        self.contraseña = " "
+        self.estado = False
+        self.hobbies = " "
+        self.materia_fav = " "
+        self.deporte_fav = " "
+        self.materia_fuerte = " "
+        self.materia_debil = " "
+        self.biografia = " "
+        self.pais = " "
+        self.ciudad = " "
+        self.fecha_nacimiento = " "
+
+
+def anular_usuarioreportado (archivofisico, archivologico, parametro):
+    global archivo_fisico_reportes, archivo_logico_reportes, id_eliminar
+
+    pos = 0
+    tam = os.path.getsize(archivofisico)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivologico.seek (0,0)
+        while archivologico.tell() < tam:
+            pos = archivologico.tell()
+            reporte = pickle.load(archivologico)
+            if reporte.idreportante == parametro:
+                reporte.reportanteestado = False
+            archivologico.seek(pos, 0)
+            pickle.dump(reporte, archivologico)
+            archivologico.flush()
+
+def anular_usuarioreportante (archivofisico, archivologico, parametro):
+    global archivo_fisico_reportes, archivo_logico_reportes, id_eliminar
+
+    pos = 0
+    tam = os.path.getsize(archivofisico)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivologico.seek (0,0)
+        while archivologico.tell() < tam:
+            pos = archivologico.tell()
+            reporte = pickle.load(archivologico)
+            if reporte.idreportado == parametro:
+                reporte.reportadoestado = False
+            archivologico.seek(pos, 0)
+            pickle.dump(reporte, archivologico)
+            archivologico.flush()
+
 def menu_moderadores():
     print("Soy moderador")
 
