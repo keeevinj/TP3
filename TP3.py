@@ -49,11 +49,17 @@ class administradores:
         self.email = ""
         self.contraseña = ""
 
-#------------------------------ARREGLOS----------------------------#
-
-arr_estudiantes = estudiantes()
-arr_administradores = administradores()
-arr_moderadores = moderadores()
+class reportes:
+    def __init__(self):
+        self.nroreporte = 0
+        self.idreportante = 0
+        self.reportanteestado = False
+        self.idreportado = 0
+        self.reportadoestado = False
+        self.razon = ""
+        self.estadoreporte = False
+        self.detalles = ""
+        self.idmoderador = 0
 
 
 #-------------------------------FORMATEO----------------------------#
@@ -76,6 +82,10 @@ def formato_estudiante(self):
 def formato_admin_mod(self):
     self.email = self.email.ljust(32)
     self.contraseña = self.contraseña.ljust(32)
+
+def formato_reportes(self):
+    self.razon = self.razon.ljust(50)
+    self.detalles = self.detalles.ljust(255)
 
 
 #--------------------------------VERIFICAR ARCHIVO---------------------------#
@@ -133,6 +143,14 @@ ciudad2 = "VGG"
 ciudad3 = "Perez"
 ciudad4 = "Rufino"
 
+#----------------------------RAZON DE REPORTES-----------------------------------#
+
+razon1 = "Dislike bombing"
+razon2 = "No me devolvio el like"
+razon3 = "Difamacion"
+razon4 = "Es un amigo Buitre"
+razon5 = "Otra"
+
 
 #--------------------------CARGA DE DATOS AUTOMATICO-----------------------------#
 
@@ -175,6 +193,24 @@ def cargar_archivo_admin_mod(path, archivologico, nombre, clase):
     pickle.dump(variable,archivologico)
     archivologico.flush()
 
+def cargar_archivo_reportes(path, archivologico):
+    global archivo_fisico_reportes, archivo_logico_reportes
+
+    archivologico.seek(0, 0)
+    for i in range(0, 4):
+        reporte = reportes()
+        reporte.nroreporte = i
+        reporte.idreportante = 0
+        reporte.reportanteestado = True
+        reporte.idreportado = 4 - i
+        reporte.reportadoestado = True
+        reporte.razon = globals()[f"razon{random.randint(1, 4)}"]
+        reporte.estadoreporte = 0
+        reporte.detalles = ""
+        reporte.idmoderador = ""
+        formato_reportes(reporte)
+        pickle.dump(reporte, archivologico)
+        archivologico.flush()
 
 
 def rdob():
@@ -187,26 +223,24 @@ def rdob():
 
 
 def main():
-    global archivo_logico_estudiantes
-    global archivo_logico_administradores
-    global archivo_logico_moderadores
-    global archivo_fisico_estudiantes  
-    global archivo_fisico_administradores
-    global archivo_fisico_moderadores
-    global arr_estudiantes
-    global arr_administradores
-    global arr_moderadores
+    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores, archivo_logico_reportes
+    global archivo_fisico_estudiantes, archivo_fisico_administradores, archivo_fisico_moderadores, archivo_fisico_reportes
+
     #archivo_fisico_xxxxxxxx="ruta de este .py" + \\xxxxxxxx.dat 
     archivo_fisico_estudiantes = os.getcwd()+"\\estudiantes.dat"
     archivo_fisico_administradores = os.getcwd()+"\\administradores.dat"
     archivo_fisico_moderadores = os.getcwd()+"\\moderadores.dat"
+    archivo_fisico_reportes = os.getcwd()+"\\reportes.dat"
+
     archivo_logico_estudiantes = verificar_archivo(archivo_fisico_estudiantes)
     archivo_logico_administradores = verificar_archivo(archivo_fisico_administradores)
     archivo_logico_moderadores = verificar_archivo(archivo_fisico_moderadores)
+    archivo_logico_reportes = verificar_archivo(archivo_fisico_reportes)
 
     cargar_archivo_admin_mod(archivo_fisico_moderadores, archivo_logico_moderadores, "moderador", moderadores)
     cargar_archivo_admin_mod(archivo_fisico_administradores, archivo_logico_administradores, "administrador", administradores)
     cargar_archivo_estudiantes(archivo_fisico_estudiantes)
+    cargar_archivo_reportes (archivo_fisico_reportes, archivo_logico_reportes)
 
 
 #----------------------------VALIDAR CAMPOS / OPCIONES GENERAL-------------------------------#
