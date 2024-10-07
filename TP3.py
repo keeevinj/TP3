@@ -507,7 +507,8 @@ def registro_estudiantes():
     email = validar_campos_texto("Email", 32)
     busco_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email)
     busco_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email)
-    if (busco_estudiante == -1 and busco_moderador == -1):
+    busco_administrador = validar_email_duplicado(archivo_fisico_administradores, archivo_logico_administradores, email)	
+    if (busco_estudiante == -1 and busco_moderador == -1 and busco_administrador == -1):
         tam_registro=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
         tamaño=os.path.getsize(archivo_fisico_estudiantes)
         cant_reg=tamaño//tam_registro
