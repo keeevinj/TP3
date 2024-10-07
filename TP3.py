@@ -145,7 +145,7 @@ ciudad4 = "Rufino"
 
 #----------------------------RAZON DE REPORTES-----------------------------------#
 
-razon1 = "Dislike bombing"
+razon1 = "Unlike bombing"
 razon2 = "No me devolvio el like"
 razon3 = "Difamacion"
 razon4 = "Es un amigo Buitre"
