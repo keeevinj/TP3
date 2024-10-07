@@ -521,9 +521,8 @@ def registro_estudiantes():
         archivo_logico_estudiantes.flush()
     else:
         print("El mail ya esta en uso")
-
+		
 #-------------------------------------MENU ESTUDIANTES-----------------------------------#
-
 
 def menu_principal_estudiantes():
     print("1. Gestionar mi perfil")
@@ -533,8 +532,9 @@ def menu_principal_estudiantes():
     print("0. Salir")
 
 def menu_estudiantes():
+    global usuario
     opc = 1
-    while opc != 0:
+    while opc != 0 and usuario.estado==True:
         limpiar_pantalla()
         menu_principal_estudiantes()
         opc=validar(0,4)
@@ -559,27 +559,27 @@ def menu_print_gestion_perfil():
     print(" c. Volver")
 
 def menu_opc_gestion_perfil():
+    global usuario
     limpiar_pantalla()
     menu_print_gestion_perfil()
     opc = validaralfabeticamente("abc", "a", "c")
     while opc != "c":
-        while usuario.estado==1 and opc != "c":
+        while usuario.estado==True and opc != "c":
             match opc:
                 case "a":
-                    menu_editar_datos_personales(usuario)
+                    menu_editar_datos_personales()
                 case "b":
                     menu_eliminar_perfil()
                 case "c":
                     print("")
-            if usuario.estado==1:
+            if usuario.estado==True:
                 menu_print_gestion_perfil()
                 opc = input("Ingrese una opcion: ")
             else:
                 opc="c"
 
-
-
-def menu_editar_datos_personales(usuario):
+def menu_editar_datos_personales():
+    global usuario
     global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
     global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
     # Asigno los datos del estudiante a la variable auxiliar.
@@ -656,6 +656,7 @@ def menu_editar_datos_personales(usuario):
             formato_estudiante(aux)
             tam_reg=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
             #No se porque se agrega uno al idregistro pero sino pisa el anterior jajaja
+            #Debe ser porque no hago el picke.load
             archivo_logico_estudiantes.seek((aux.idregistro+1) * tam_reg,0)
             pickle.dump(aux,archivo_logico_estudiantes)
             archivo_logico_estudiantes.flush()
@@ -681,58 +682,11 @@ def menu_eliminar_perfil():
         case 1:
             print("")
 
-
-def menu_opc_gestion_perfil():
-    global usuario
-    limpiar_pantalla()
-    menu_print_gestion_perfil()
-    opc = validaralfabeticamente("abc", "a", "c")
-    while opc != "c":
-        while usuario.estado==True and opc != "c":
-            match opc:
-                case "a":
-                    menu_editar_datos_personales()
-                case "b":
-                    menu_eliminar_perfil()
-                case "c":
-                    print("")
-            if usuario.estado==True:
-                menu_print_gestion_perfil()
-                opc = input("Ingrese una opcion: ")
-            else:
-                opc="c"
-
-
-def menu_estudiantes():
-    global usuario
-    opc = 1
-    while opc != 0 and usuario.estado==True:
-        limpiar_pantalla()
-        menu_principal_estudiantes()
-        opc=validar(0,4)
-        match opc:
-            case 1:
-                menu_opc_gestion_perfil()
-            case 2:
-                menu_opc_gestion_candidatos()
-            case 3:
-                menu_opc_matcheos()
-            case 4:
-                menu_opc_reportes()
-        limpiar_pantalla()
-        sleep(2)
-
 def menu_moderadores():
     print("Soy moderador")
 
 def menu_administradores():
     print("Soy administrador")
-
-
-
-
-
-
 
 #---------------------------------PROGRAMA---------------------------------#
 
