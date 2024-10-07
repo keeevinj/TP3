@@ -57,7 +57,7 @@ class reportes:
         self.idreportado = 0
         self.reportadoestado = False
         self.razon = ""
-        self.estadoreporte = False
+        self.estadoreporte = 0
         self.detalles = ""
         self.idmoderador = 0
 
