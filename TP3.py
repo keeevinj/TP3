@@ -347,25 +347,6 @@ def check():
         return False
 
 
-def validar_usuario_false(archivofisico, archivologico, correo, password):
-    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
-    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
-    pos = 0
-    tam = os.path.getsize(archivofisico)
-    if tam == 0:
-        print("no se puede hacer la consulta, cargar datos primero")
-    else:
-        archivologico.seek (0,0)
-        usuario = pickle.load (archivologico)
-        while (archivologico.tell() < tam) and (usuario.email != correo):
-            pos = archivologico.tell()
-            usuario = pickle.load(archivologico)
-        if (usuario.email == correo) and (usuario.contraseña == password) and (usuario.estado == False):
-                return pos
-        else:
-            return -1
-
-
 def validar_usuario(archivofisico, archivologico, correo, password):
     global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
     global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
