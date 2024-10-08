@@ -350,6 +350,13 @@ def validaralfabeticamente(string, letrainicial, letrafinal):
         opc = validar_opcion_alfabetica(opc, string)
     return opc
 
+def validar_mientras (titulo, condicion1, condicion2):
+    campo = input (titulo)
+    while campo != condicion1 and campo != condicion2:
+        print ("La opcion es incorrecta")
+        campo = input (titulo)
+    return campo
+
 
 #--------------------------------MENU PRINCIPAL---------------------------------#
 
@@ -750,7 +757,7 @@ def menu_opc_gestion_usuarios():
 
 def menu_gestion_usuarios():
     listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
-    opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)")
+    opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
     while opcion1 !="N":
         limpiar_pantalla()
         listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
@@ -788,7 +795,7 @@ def menu_gestion_usuarios():
             else:
                 print ("Campo Incorrecto o no encontrado")
         listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
-        opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)")
+        opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
 
 
 
@@ -893,7 +900,7 @@ def anular_usuarioreportado (archivofisico, archivologico, parametro):
 def menu_gestion_reportes():
     global archivo_fisico_reportes, archivo_logico_reportes, usuario
     listado_general_reportes (archivo_fisico_reportes, archivo_logico_reportes)
-    opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ")
+    opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ", "S", "N")
     while opcion != "N":
         limpiar_pantalla()
         listado_general_reportes (archivo_fisico_reportes, archivo_logico_reportes)
@@ -957,7 +964,7 @@ def menu_gestion_reportes():
                     archivo_logico_reportes.flush()
         limpiar_pantalla()
         listado_general_reportes (archivo_fisico_reportes, archivo_logico_reportes)
-        opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ")
+        opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ","S", "N")
 
 
 def buscar_nro_reporte (archivofisico, archivologico, parametro):
