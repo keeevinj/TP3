@@ -66,26 +66,26 @@ class reportes:
 
 def formato_estudiante(self):
 
-    self.email = self.email.ljust(32)
-    self.nombre = self.nombre.ljust(32)
-    self.contraseña = self.contraseña.ljust(32)
-    self.hobbies = self.hobbies.ljust(255)
-    self.materia_fav = self.materia_fav.ljust(16)
-    self.deporte_fav = self.deporte_fav.ljust(16)
-    self.materia_fuerte = self.materia_fuerte.ljust(16)
-    self.materia_debil = self.materia_debil.ljust(16)
-    self.biografia = self.biografia.ljust(255)
-    self.pais = self.pais.ljust(32)
-    self.ciudad = self.ciudad.ljust(32)
-    self.fecha_nacimiento = self.fecha_nacimiento.ljust(10)
+    self.email = self.email.ljust(32, " ")
+    self.nombre = self.nombre.ljust(32, " ")
+    self.contraseña = self.contraseña.ljust(32, " ")
+    self.hobbies = self.hobbies.ljust(255, " ")
+    self.materia_fav = self.materia_fav.ljust(16, " ")
+    self.deporte_fav = self.deporte_fav.ljust(16, " ")
+    self.materia_fuerte = self.materia_fuerte.ljust(16, " ")
+    self.materia_debil = self.materia_debil.ljust(16, " ")
+    self.biografia = self.biografia.ljust(255, " ")
+    self.pais = self.pais.ljust(32, " ")
+    self.ciudad = self.ciudad.ljust(32, " ")
+    self.fecha_nacimiento = self.fecha_nacimiento.ljust(10, " ")
         
 def formato_admin_mod(self):
-    self.email = self.email.ljust(32)
-    self.contraseña = self.contraseña.ljust(32)
+    self.email = self.email.ljust(32, " ")
+    self.contraseña = self.contraseña.ljust(32, " ")
 
 def formato_reportes(self):
-    self.razon = self.razon.ljust(50)
-    self.detalles = self.detalles.ljust(255)
+    self.razon = self.razon.ljust(50, " ")
+    self.detalles = self.detalles.ljust(255, " ")
 
 
 #--------------------------------VERIFICAR ARCHIVO---------------------------#
