@@ -184,7 +184,7 @@ def cargar_archivo_admin_mod(path, archivologico, nombre, clase):
 
     archivologico.seek(0,0)
     variable = clase ()
-    variable.idregistro = 0
+    variable.idregistro = 1
     variable.email = (nombre) + "0@utn.edu.ar"
     variable.contraseña = "123456"
     if nombre == "moderador":
@@ -207,7 +207,7 @@ def cargar_archivo_reportes(path, archivologico):
         reporte.razon = globals()[f"razon{random.randint(1, 4)}"]
         reporte.estadoreporte = 0
         reporte.detalles = ""
-        reporte.idmoderador = ""
+        reporte.idmoderador = 0
         formato_reportes(reporte)
         pickle.dump(reporte, archivologico)
         archivologico.flush()
