@@ -757,45 +757,47 @@ def menu_opc_gestion_usuarios():
 
 def menu_gestion_usuarios():
     listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
-    opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
+    opcion1 = validar_mientras ("Desea desactivar un usuario (S/N)", "S", "N")
     while opcion1 !="N":
         limpiar_pantalla()
         listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
-        usuario_eliminar = input("Ingrese ID o Nombre y Apellido del usuario a eliminar: ")
-        if usuario_eliminar.isdigit():
-            usuario_eliminar = int(usuario_eliminar)
-            usuario_eliminar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 1)
-            if usuario_eliminar != -1:
-                id_eliminar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 2)
-                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+        usuario_desactivar = input("Ingrese ID o Nombre y Apellido del usuario a desactivar: ")
+        if usuario_desactivar.isdigit():
+            usuario_desactivar = int(usuario_desactivar)
+            usuario_desactivar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_desactivar, 1)
+            if usuario_desactivar != -1:
+                id_desactivar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_desactivar, 2)
+                archivo_logico_estudiantes.seek(usuario_desactivar,0)
                 usuario = estudiantes ()
                 usuario = pickle.load(archivo_logico_estudiantes)
-                desactivar_estudiante (usuario)
-                formato_estudiante(usuario)
-                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                usuario.estado = False
+                archivo_logico_estudiantes.seek(usuario_desactivar,0)
                 pickle.dump(usuario, archivo_logico_estudiantes)
                 archivo_logico_estudiantes.flush()
+                anular_usuarioenreporte (archivo_fisico_reportes, archivo_logico_reportes, id_desactivar, 1)
+                anular_usuarioenreporte (archivo_fisico_reportes, archivo_logico_reportes, id_desactivar, 2)
             else:
-                print ("Campo Incorrecto o no encontrado")
-    ######### FALTA BORRARLOS DE LOS REPORTES Y LIKES#######
-        elif len(usuario_eliminar) < 32:
-            usuario_eliminar = usuario_eliminar.ljust(32," ")
-            usuario_eliminar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 1)
-            if usuario_eliminar != -1:
-                id_eliminar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 2)
-                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                print("No se encontro")
+                sleep(1)
+        elif len(usuario_desactivar) < 32:
+            usuario_desactivar = usuario_desactivar.ljust(32," ")
+            usuario_desactivar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_desactivar, 1)
+            if usuario_desactivar != -1:
+                id_desactivar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_desactivar, 2)
+                archivo_logico_estudiantes.seek(usuario_desactivar,0)
                 usuario = estudiantes ()
                 usuario = pickle.load(archivo_logico_estudiantes)
-                desactivar_estudiante (usuario)
-                formato_estudiante(usuario)
-                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                usuario.estado = False
+                archivo_logico_estudiantes.seek(usuario_desactivar,0)
                 pickle.dump(usuario, archivo_logico_estudiantes)
                 archivo_logico_estudiantes.flush()
-    ######### FALTA BORRARLOS DE LOS REPORTES Y LIKES#######
+                anular_usuarioenreporte (archivo_fisico_reportes, archivo_logico_reportes, id_desactivar, 1)
+                anular_usuarioenreporte (archivo_fisico_reportes, archivo_logico_reportes, id_desactivar, 2)
             else:
-                print ("Campo Incorrecto o no encontrado")
+                print("No se encontro")
+                sleep(1)
         listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
-        opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
+        opcion1 = validar_mientras ("Desea desactivar un usuario (S/N)", "S", "N")
 
 
 
@@ -876,9 +878,10 @@ def desactivar_estudiante (self):
         self.fecha_nacimiento = " "
 
 
-def anular_usuarioreportado (archivofisico, archivologico, parametro):
-    global archivo_fisico_reportes, archivo_logico_reportes, id_eliminar
+def anular_usuarioenreporte (archivofisico, archivologico, parametro, condicion):
+    global archivo_fisico_reportes, archivo_logico_reportes
 
+    numero = condicion
     pos = 0
     tam = os.path.getsize(archivofisico)
     if tam == 0:
@@ -887,12 +890,18 @@ def anular_usuarioreportado (archivofisico, archivologico, parametro):
         archivologico.seek (0,0)
         while archivologico.tell() < tam:
             pos = archivologico.tell()
+            reporte = reportes ()
             reporte = pickle.load(archivologico)
-            if reporte.idreportante == parametro:
-                reporte.reportanteestado = False
-            archivologico.seek(pos, 0)
-            pickle.dump(reporte, archivologico)
-            archivologico.flush()
+            if numero == 1 and reporte.idreportante == parametro:
+                    reporte.reportanteestado = False
+                    archivologico.seek(pos,0)
+                    pickle.dump(reporte, archivologico)
+                    archivologico.flush()
+            elif numero == 2 and reporte.idreportado == parametro:
+                    reporte.reportadoestado = False
+                    archivologico.seek(pos,0)
+                    pickle.dump(reporte, archivologico)
+                    archivologico.flush()
 
 #----------------------------------MENU GESTIONAR REPORTES-----------------------------#
 
