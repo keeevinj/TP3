@@ -860,23 +860,6 @@ def validar_nombre (archivofisico, archivologico, parametro, condicion):
         else:
             return -1
 
-def desactivar_estudiante (self):
-
-        self.email = " "
-        self.nombre = " "
-        self.sexo = " "
-        self.contraseña = " "
-        self.estado = False
-        self.hobbies = " "
-        self.materia_fav = " "
-        self.deporte_fav = " "
-        self.materia_fuerte = " "
-        self.materia_debil = " "
-        self.biografia = " "
-        self.pais = " "
-        self.ciudad = " "
-        self.fecha_nacimiento = " "
-
 
 def anular_usuarioenreporte (archivofisico, archivologico, parametro, condicion):
     global archivo_fisico_reportes, archivo_logico_reportes
@@ -1023,6 +1006,73 @@ def mostrar_reporte (reporte):
 
 def menu_moderadores():
     print("Soy moderador")
+#-------------------------------------MENU ADMINISTRADORES------------------------------#
+
+
+
+#-------------------- MENU ELIMINAR UN USUARIO (FALTA INCLUIR LOS MODERADORES------------------#
+
+menu_eliminar_estudiante_moderador():
+    listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
+    opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
+    while opcion1 !="N":
+        limpiar_pantalla()
+        listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
+        usuario_eliminar = input("Ingrese ID o Nombre y Apellido del usuario a eliminar: ")
+        if usuario_eliminar.isdigit():
+            usuario_eliminar = int(usuario_eliminar)
+            usuario_eliminar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 1)
+            if usuario_eliminar != -1:
+                id_eliminar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 2)
+                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                usuario = estudiantes ()
+                usuario = pickle.load(archivo_logico_estudiantes)
+                desactivar_estudiante (usuario)
+                formato_estudiante(usuario)
+                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                pickle.dump(usuario, archivo_logico_estudiantes)
+                archivo_logico_estudiantes.flush()
+            else:
+                print ("Campo Incorrecto o no encontrado")
+    ######### FALTA BORRARLOS DE LOS REPORTES Y LIKES#######
+        elif len(usuario_eliminar) < 32:
+            usuario_eliminar = usuario_eliminar.ljust(32," ")
+            usuario_eliminar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 1)
+            if usuario_eliminar != -1:
+                id_eliminar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 2)
+                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                usuario = estudiantes ()
+                usuario = pickle.load(archivo_logico_estudiantes)
+                desactivar_estudiante (usuario)
+                formato_estudiante(usuario)
+                archivo_logico_estudiantes.seek(usuario_eliminar,0)
+                pickle.dump(usuario, archivo_logico_estudiantes)
+                archivo_logico_estudiantes.flush()
+    ######### FALTA BORRARLOS DE LOS REPORTES Y LIKES#######
+            else:
+                print ("Campo Incorrecto o no encontrado")
+        listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
+        opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
+
+
+def desactivar_estudiante (self):
+
+        self.email = " "
+        self.nombre = " "
+        self.sexo = " "
+        self.contraseña = " "
+        self.estado = False
+        self.hobbies = " "
+        self.materia_fav = " "
+        self.deporte_fav = " "
+        self.materia_fuerte = " "
+        self.materia_debil = " "
+        self.biografia = " "
+        self.pais = " "
+        self.ciudad = " "
+        self.fecha_nacimiento = " "
+
+
 
 def menu_administradores():
     print("Soy administrador")
