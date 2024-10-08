@@ -917,8 +917,6 @@ def menu_gestion_reportes():
         if reporte_numero.isdigit():
             reporte_numero = int(reporte_numero)
             reporte_numero = buscar_nro_reporte (archivo_fisico_reportes, archivo_logico_reportes, reporte_numero)
-            print(reporte_numero)
-            sleep(2)
             if reporte_numero != -1:
                 print("Que desea hacer:")
                 print("1. Tomar el reporte y desactivar usuario")
@@ -940,8 +938,7 @@ def menu_gestion_reportes():
                     archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
                     a_usuario = estudiantes ()
                     a_usuario = pickle.load(archivo_logico_estudiantes)
-                    desactivar_estudiante (a_usuario)
-                    formato_estudiante(a_usuario)
+                    a_usuario.estado = False
                     archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
                     pickle.dump(a_usuario, archivo_logico_estudiantes)
                     archivo_logico_estudiantes.flush()
