@@ -271,14 +271,6 @@ def validar_campos_contrasenia(campo_validar, longitud):
     campo = campo.ljust(longitud," ")
     return campo
 
-def modulo_validar_sexo():
-    campo = input("Ingrese el sexo (M/F): ")
-    while campo != "M" and campo != "F":
-        limpiar_pantalla()
-        print("Ingrese el campo adecuadamente")
-        campo = input("Ingrese el sexo (M/F): ")
-    return campo
-
 def validar_fecha(D, M, Y):
 
     if D.isdigit() and M.isdigit() and Y.isdigit():
@@ -526,7 +518,7 @@ def registro_estudiantes():
         nuevo_usuario.email = email
         nuevo_usuario.contraseña = validar_campos_contrasenia("Contrasenia", 32)
         nuevo_usuario.nombre = validar_campos_texto("Nombre", 32)
-        nuevo_usuario.sexo = modulo_validar_sexo()
+        nuevo_usuario.sexo = validar_mientras ("Ingrese el sexo (M/F): ", "S", "N")
         nuevo_usuario.estado = True
         nuevo_usuario.hobbies = validar_campos_texto("Hobbies", 255)
         nuevo_usuario.materia_fav = validar_campos_texto("Materia Favorita", 16)
@@ -658,7 +650,7 @@ def menu_editar_datos_personales():
             case 1:
                 aux.nombre=validar_campos_texto("Nombre",32)
             case 2:
-                aux.sexo=modulo_validar_sexo()
+                aux.sexo=validar_mientras ("Ingrese el sexo (M/F): ", "S", "N")
             case 3:
                 aux.hobbies = validar_campos_texto("Hobbie", 255)
             case 4:
