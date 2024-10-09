@@ -429,7 +429,6 @@ def tamaño_registro(archivofisico,archivologico):
     return tamaño
 
 def login():
-    global opc
     global usuario
     if check() == True:
         email = validar_campos_texto("Email", 32)
@@ -473,7 +472,7 @@ def login():
             usuario=pickle.load(archivo_logico_administradores)
             menu_administradores()
         elif intentos == 3:
-            opc = 0
+            salida = True
             email = 0
             password = 0
     else:
@@ -1117,18 +1116,23 @@ def menu_administradores():
 #---------------------------------PROGRAMA---------------------------------#
 
 usuario = [None]
-
+global salida
 main()
 
 print_menu_inicio()
 opc = validar(0,2)
-while opc != 0:
+salida = False
+
+while opc != 0 and salida == False:
     if opc == 1:
         login()
     elif opc == 2:
         registro_estudiantes()
-    print_menu_inicio()
-    opc = validar(0,2)
+    elif opc == 0 or salida == True:
+        print ("Hasta Luego")
+    if opc != 0:
+        print_menu_inicio()
+        opc = validar(0,2)
 
 
 
