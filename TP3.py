@@ -383,9 +383,7 @@ def check():
 
 
 def validar_usuario(archivofisico, archivologico, correo, password):
-    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
-    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
-    pos = 0
+
     tam = os.path.getsize(archivofisico)
     if tam == 0:
         print("no se puede hacer la consulta, cargar datos primero")
@@ -406,9 +404,7 @@ def validar_usuario(archivofisico, archivologico, correo, password):
             return -1
 
 def validar_email_duplicado(archivofisico, archivologico, correo):
-    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
-    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
-    pos = 0
+
     tam = os.path.getsize(archivofisico)
     if tam == 0:
         print("no se puede hacer la consulta, cargar datos primero")
@@ -424,8 +420,7 @@ def validar_email_duplicado(archivofisico, archivologico, correo):
             return -1
 
 def tamaño_registro(archivofisico,archivologico):
-    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
-    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
+
     tamaño_total = os.path.getsize(archivofisico)
     if tamaño_total == 0:
         print("no se puede hacer la consulta, cargar datos primero")
@@ -503,8 +498,6 @@ def validar_correo_duplicado():
         return email_nuevo
 
 def registro_estudiantes():
-    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
-    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
     email = validar_campos_texto("Email", 32)
     busco_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email)
     busco_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email)
@@ -597,8 +590,6 @@ def menu_opc_gestion_perfil():
 
 def menu_editar_datos_personales():
     global usuario
-    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
-    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
     # Asigno los datos del estudiante a la variable auxiliar.
     aux=estudiantes()
     #aux=usuario
@@ -719,18 +710,16 @@ def menu_print_gestion_candidatos():
     print(" c. Volver")
 
 def menu_ver_candidatos(usuario):
-    global archivo_fisico_estudiantes
-    global archivo_logico_estudiantes
-    archivologico=archivo_logico_estudiantes
+
     estudiante = estudiantes()
     pos = 0
     tam = os.path.getsize(archivo_fisico_estudiantes)
     if tam == 0:
         print("no se puede hacer la consulta, cargar datos primero")
     else:
-        archivologico.seek (0,0)
-        estudiante = pickle.load(archivologico)
-        while (archivologico.tell() < tam) and (usuario.email != estudiante.email):
+        archivo_logico_estudiantes.seek (0,0)
+        estudiante = pickle.load(archivo_logico_estudiantes)
+        while (archivo_logico_estudiantes.tell() < tam) and (usuario.email != estudiante.email):
             print("-------------------------------------------------------------")
             print("Estudiante N°: ",estudiante.idregistro)
             print("Su nombre es: ", estudiante.nombre)
@@ -746,8 +735,8 @@ def menu_ver_candidatos(usuario):
             print("Su fecha de nacimiento es: ", estudiante.fecha_nacimiento)
             print("Su edad es: ",calcularedad(estudiante.fecha_nacimiento))
             print("-------------------------------------------------------------")
-            pos = archivologico.tell()
-            usuario = pickle.load(archivologico)
+            pos = archivo_logico_estudiantes.tell()
+            usuario = pickle.load(archivo_logico_estudiantes)
     print("¿Desea dar me gusta a algun estudiante?")
     print("S/N")
     opc=validaralfabeticamente("NS","N","S")
