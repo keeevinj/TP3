@@ -361,8 +361,6 @@ def print_menu_inicio():
 
 
 def contador_general (archivologico, archivofisico):
-    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
-    archivologico = archivologico
     tamaño = os.path.getsize(archivofisico)
     archivologico.seek (0,0)
     contador = 0
@@ -671,8 +669,6 @@ def menu_editar_datos_personales():
 
 def menu_eliminar_perfil():
     global usuario
-    global archivo_fisico_estudiantes, archivo_fisico_moderadores, archivo_fisico_administradores
-    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores
     limpiar_pantalla()
     print("Confirmar eliminacion de perfil")
     print("0. Si")
@@ -870,7 +866,6 @@ def menu_gestion_usuarios():
 
 
 def listado_general_estudiantes (archivofisico, archivologico):
-    global archivo_fisico_estudiantes, archivo_logico_estudiantes, archivo_fisico_reportes, archivo_logico_reportes
 
     tam = os.path.getsize(archivofisico)
     if tam == 0:
@@ -884,7 +879,6 @@ def listado_general_estudiantes (archivofisico, archivologico):
 
 
 def validar_idregistro (archivofisico, archivologico, parametro, condicion):
-    global archivo_fisico_estudiantes, archivo_logico_estudiantes
 
     numero = condicion
     pos = 0
@@ -906,7 +900,6 @@ def validar_idregistro (archivofisico, archivologico, parametro, condicion):
             return -1
 
 def validar_nombre (archivofisico, archivologico, parametro, condicion):
-    global archivo_fisico_estudiantes, archivo_logico_estudiantes
 
     numero = condicion
     pos = 0
@@ -929,7 +922,6 @@ def validar_nombre (archivofisico, archivologico, parametro, condicion):
 
 
 def anular_usuarioenreporte (archivofisico, archivologico, parametro, condicion):
-    global archivo_fisico_reportes, archivo_logico_reportes
 
     numero = condicion
     pos = 0
@@ -957,7 +949,7 @@ def anular_usuarioenreporte (archivofisico, archivologico, parametro, condicion)
 
 
 def menu_gestion_reportes():
-    global archivo_fisico_reportes, archivo_logico_reportes, usuario
+    global usuario
     listado_general_reportes (archivo_fisico_reportes, archivo_logico_reportes)
     opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ", "S", "N")
     while opcion != "N":
@@ -1024,7 +1016,6 @@ def menu_gestion_reportes():
 
 
 def buscar_nro_reporte (archivofisico, archivologico, parametro):
-    global archivo_fisico_reportes, archivo_logico_reportes
 
     pos = 0
     tam = os.path.getsize(archivofisico)
@@ -1044,7 +1035,6 @@ def buscar_nro_reporte (archivofisico, archivologico, parametro):
 
 
 def listado_general_reportes (archivofisico, archivologico):
-    global archivo_fisico_reportes, archivo_logico_reportes
 
     tam = os.path.getsize(archivofisico)
     if tam == 0:
