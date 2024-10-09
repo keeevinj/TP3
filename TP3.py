@@ -381,7 +381,7 @@ def check():
 
 
 def validar_usuario(archivofisico, archivologico, correo, password):
-
+    pos = 0
     tam = os.path.getsize(archivofisico)
     if tam == 0:
         print("no se puede hacer la consulta, cargar datos primero")
@@ -402,7 +402,7 @@ def validar_usuario(archivofisico, archivologico, correo, password):
             return -1
 
 def validar_email_duplicado(archivofisico, archivologico, correo):
-
+    pos = 0
     tam = os.path.getsize(archivofisico)
     if tam == 0:
         print("no se puede hacer la consulta, cargar datos primero")
