@@ -17,6 +17,10 @@ def limpiar_pantalla():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 #--------------------------------REGISTROS-------------------------------#
+class likes:
+    def __init__(self):
+        self.idrem=0
+        self.iddest=0
 class estudiantes:
     def __init__(self):
         #Asigno atributos
@@ -231,11 +235,13 @@ def main():
     archivo_fisico_administradores = os.getcwd()+"\\administradores.dat"
     archivo_fisico_moderadores = os.getcwd()+"\\moderadores.dat"
     archivo_fisico_reportes = os.getcwd()+"\\reportes.dat"
+    archivo_fisico_likes = os.getcwd()+"\\likes.dat"
 
     archivo_logico_estudiantes = verificar_archivo(archivo_fisico_estudiantes)
     archivo_logico_administradores = verificar_archivo(archivo_fisico_administradores)
     archivo_logico_moderadores = verificar_archivo(archivo_fisico_moderadores)
     archivo_logico_reportes = verificar_archivo(archivo_fisico_reportes)
+    archivo_logico_likes = verificar_archivo(archivo_fisico_likes)
 
     cargar_archivo_admin_mod(archivo_fisico_moderadores, archivo_logico_moderadores, "moderador", moderadores)
     cargar_archivo_admin_mod(archivo_fisico_administradores, archivo_logico_administradores, "administrador", administradores)
@@ -254,7 +260,6 @@ def validar_campos_texto(campo_validar, longitud):
     campo = campo.ljust(longitud," ")
     return campo
 
-
 def validar_campos_contrasenia(campo_validar, longitud):
     campo = getpass.getpass("Ingrese " + campo_validar + " (máximo " + str(longitud) + " caracteres):")
     while len(campo) > longitud:
@@ -271,7 +276,6 @@ def modulo_validar_sexo():
         print("Ingrese el campo adecuadamente")
         campo = input("Ingrese el sexo (M/F): ")
     return campo
-
 
 def validar_fecha(D, M, Y):
 
@@ -308,7 +312,6 @@ def modulo_ingrese_fecha():
         fecha = validar_fecha(ndd, nmm, nyear)
     return fecha
 
-
 def validar_opcion_numerica(opcion, minimo, maximo):
 
     if opcion.isdigit():
@@ -316,7 +319,6 @@ def validar_opcion_numerica(opcion, minimo, maximo):
         if minimo <= opcion <= maximo:
             return opcion
     return -1
-
 
 def validar(minimo,maximo):
     opc = input("ingrese una opcion del " + str(minimo) + " al " + str(maximo) + ": ")
@@ -327,8 +329,6 @@ def validar(minimo,maximo):
         opc = input("ingrese una opcion del " + str(minimo) + " al " + str(maximo) + ": ")
         opc = validar_opcion_numerica(opc, minimo, maximo)
     return opc
-
-
 
 def validar_opcion_alfabetica(opcion, string):
     i = 0
@@ -705,6 +705,86 @@ def menu_eliminar_perfil():
         case 1:
             print("")
 
+#---------------------------MENU GESTIONAR CANDIDATOS--------------------------------#
+
+def calcularedad(fechadenacimiento):
+    hoy = currentdate
+    if fechadenacimiento != 0:
+        fechadenacimiento = datetime.strptime(fechadenacimiento, '%Y-%m-%d')
+        edad = hoy.year-fechadenacimiento.year
+        if (hoy.month, hoy.day) < (fechadenacimiento.month, fechadenacimiento.day):
+            edad = edad-1
+    else:
+        edad=0    
+    return edad
+
+def menu_print_gestion_candidatos():
+    print("2. Gestionar candidatos")
+    print(" a. Ver candidatos")
+    print(" b. Reportar candidato")
+    print(" c. Volver")
+
+def menu_ver_candidatos(usuario):
+    global archivo_fisico_estudiantes
+    global archivo_logico_estudiantes
+    archivologico=archivo_logico_estudiantes
+    estudiante = estudiantes()
+    pos = 0
+    tam = os.path.getsize(archivo_fisico_estudiantes)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivologico.seek (0,0)
+        estudiante = pickle.load(archivologico)
+        while (archivologico.tell() < tam) and (usuario.email != estudiante.email):
+            print("-------------------------------------------------------------")
+            print("Estudiante N°: ",estudiante.idregistro)
+            print("Su nombre es: ", estudiante.nombre)
+            print("Su genero es: ", estudiante.sexo)
+            print("Su hobbie es: ", estudiante.hobbies)
+            print("Su materia favorita es: ", estudiante.materia_fav)
+            print("Su deporte favorito es: ", estudiante.deporte_fav)
+            print("Su materia fuerte es: ", estudiante.materia_fuerte)
+            print("Su materia debil es: ", estudiante.materia_debil)
+            print("Su biografia es: ", estudiante.biografia)
+            print("Su pais es: ", estudiante.pais)
+            print("Su ciudad es: ", estudiante.ciudad)
+            print("Su fecha de nacimiento es: ", estudiante.fecha_nacimiento)
+            print("Su edad es: ",calcularedad(estudiante.fecha_nacimiento))
+            print("-------------------------------------------------------------")
+            pos = archivologico.tell()
+            usuario = pickle.load(archivologico)
+    print("¿Desea dar me gusta a algun estudiante?")
+    print("S/N")
+    opc=validaralfabeticamente("NS","N","S")
+    if opc != "N":
+        usuario_id=input("Ingrese ID del estudiante a dar me gusta: ")
+        usuario_id=validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_id, 2)
+        while usuario_id==-1:
+            usuario_id=input("Ingrese ID del estudiante a dar me gusta: ")
+            usuario_id=validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_id, 2)
+            
+
+######QUEDE ACA
+######KEVIN
+
+def menu_opc_gestion_candidatos():
+    global usuario
+    limpiar_pantalla()
+    menu_print_gestion_candidatos()
+    opc = validaralfabeticamente("abc", "a", "c")
+    while opc != "c":
+        while opc != "c":
+            match opc:
+                case "a":
+                    menu_ver_candidatos(usuario)
+                case "b":
+                    menu_reportar_candidato()
+                case "c":
+                    print("")
+            menu_print_gestion_perfil()
+            opc = input("Ingrese una opcion: ")
+
 
 #-------------------------------------MENU MODERADORES-----------------------------------#
 
@@ -741,6 +821,11 @@ def menu_moderadores():
 
 #-----------------------------------MENU GESTION DE USUARIOS---------------------------------#
 
+def menu_print_gestion_usuarios():
+    print("1. Gestionar usuarios")
+    print("   a. Desactivar usuarios")
+    print("   b. Volver")
+
 def menu_opc_gestion_usuarios():
     limpiar_pantalla()
     menu_print_gestion_usuarios()
@@ -752,7 +837,6 @@ def menu_opc_gestion_usuarios():
         limpiar_pantalla()
         menu_print_gestion_usuarios()
         opc = validaralfabeticamente("ab", "a", "b")
-
 
 
 def menu_gestion_usuarios():
