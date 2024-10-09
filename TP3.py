@@ -518,7 +518,7 @@ def registro_estudiantes():
         nuevo_usuario.email = email
         nuevo_usuario.contraseña = validar_campos_contrasenia("Contrasenia", 32)
         nuevo_usuario.nombre = validar_campos_texto("Nombre", 32)
-        nuevo_usuario.sexo = validar_mientras ("Ingrese el sexo (M/F): ", "S", "N")
+        nuevo_usuario.sexo = validar_mientras ("Ingrese el sexo (M/F): ", "M", "F")
         nuevo_usuario.estado = True
         nuevo_usuario.hobbies = validar_campos_texto("Hobbies", 255)
         nuevo_usuario.materia_fav = validar_campos_texto("Materia Favorita", 16)
@@ -650,7 +650,7 @@ def menu_editar_datos_personales():
             case 1:
                 aux.nombre=validar_campos_texto("Nombre",32)
             case 2:
-                aux.sexo=validar_mientras ("Ingrese el sexo (M/F): ", "S", "N")
+                aux.sexo=validar_mientras ("Ingrese el sexo (M/F): ", "M", "F")
             case 3:
                 aux.hobbies = validar_campos_texto("Hobbie", 255)
             case 4:
