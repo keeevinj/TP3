@@ -158,8 +158,7 @@ razon5 = "Otra"
 
 #--------------------------CARGA DE DATOS AUTOMATICO-----------------------------#
 
-def cargar_archivo_estudiantes(path):
-    global archivo_logico_estudiantes
+def cargar_archivo_estudiantes():
     archivo_logico_estudiantes.seek(0, 0)
     for i in range(0, 4):
         estudiante = estudiantes()
@@ -183,24 +182,29 @@ def cargar_archivo_estudiantes(path):
         archivo_logico_estudiantes.flush()
 
 
-def cargar_archivo_admin_mod(path, archivologico, nombre, clase):
-    global archivo_logico_administradores, archivo_logico_moderadores
+def cargar_archivo_admin_mod(tipodeusuario, clase):
 
-    archivologico.seek(0,0)
+    if tipodeusuario == "moderador":
+        archivo_logico_moderadores.seek(0,0)
+    elif tipodeusuario == "administrador":
+        archivo_logico_administradores.seek(0,0)
     variable = clase ()
     variable.idregistro = 1
-    variable.email = (nombre) + "0@utn.edu.ar"
+    variable.email = (tipodeusuario) + "0@utn.edu.ar"
     variable.contraseña = "123456"
-    if nombre == "moderador":
+    if tipodeusuario == "moderador":
         variable.estado = True
-    formato_admin_mod(variable)
-    pickle.dump(variable,archivologico)
-    archivologico.flush()
+        formato_admin_mod(variable)
+        pickle.dump(variable,archivo_logico_moderadores)
+        archivo_logico_moderadores.flush()
+    if tipodeusuario == "administrador":
+        formato_admin_mod(variable)
+        pickle.dump(variable,archivo_logico_administradores)
+        archivo_logico_administradores.flush()
 
-def cargar_archivo_reportes(path, archivologico):
-    global archivo_fisico_reportes, archivo_logico_reportes
+def cargar_archivo_reportes():
 
-    archivologico.seek(0, 0)
+    archivo_logico_reportes.seek(0, 0)
     for i in range(0, 4):
         reporte = reportes()
         reporte.nroreporte = i
@@ -213,8 +217,8 @@ def cargar_archivo_reportes(path, archivologico):
         reporte.detalles = ""
         reporte.idmoderador = 0
         formato_reportes(reporte)
-        pickle.dump(reporte, archivologico)
-        archivologico.flush()
+        pickle.dump(reporte, archivo_logico_reportes)
+        archivo_logico_reportes.flush()
 
 
 def rdob():
@@ -235,18 +239,16 @@ def main():
     archivo_fisico_administradores = os.getcwd()+"\\administradores.dat"
     archivo_fisico_moderadores = os.getcwd()+"\\moderadores.dat"
     archivo_fisico_reportes = os.getcwd()+"\\reportes.dat"
-    archivo_fisico_likes = os.getcwd()+"\\likes.dat"
 
     archivo_logico_estudiantes = verificar_archivo(archivo_fisico_estudiantes)
     archivo_logico_administradores = verificar_archivo(archivo_fisico_administradores)
     archivo_logico_moderadores = verificar_archivo(archivo_fisico_moderadores)
     archivo_logico_reportes = verificar_archivo(archivo_fisico_reportes)
-    archivo_logico_likes = verificar_archivo(archivo_fisico_likes)
 
-    cargar_archivo_admin_mod(archivo_fisico_moderadores, archivo_logico_moderadores, "moderador", moderadores)
-    cargar_archivo_admin_mod(archivo_fisico_administradores, archivo_logico_administradores, "administrador", administradores)
-    cargar_archivo_estudiantes(archivo_fisico_estudiantes)
-    cargar_archivo_reportes (archivo_fisico_reportes, archivo_logico_reportes)
+    cargar_archivo_admin_mod("moderador", moderadores)
+    cargar_archivo_admin_mod("administrador", administradores)
+    cargar_archivo_estudiantes()
+    cargar_archivo_reportes ()
 
 
 #----------------------------VALIDAR CAMPOS / OPCIONES GENERAL-------------------------------#
