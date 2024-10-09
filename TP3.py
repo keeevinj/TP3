@@ -933,15 +933,15 @@ def anular_usuarioenreporte (parametro, condicion):
 
 def menu_gestion_reportes():
     global usuario
-    listado_general_reportes (archivo_fisico_reportes, archivo_logico_reportes)
+    listado_general_reportes ()
     opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ", "S", "N")
     while opcion != "N":
         limpiar_pantalla()
-        listado_general_reportes (archivo_fisico_reportes, archivo_logico_reportes)
+        listado_general_reportes ()
         reporte_numero = input ("Ingrese el nro de reporte:")
         if reporte_numero.isdigit():
             reporte_numero = int(reporte_numero)
-            reporte_numero = buscar_nro_reporte (archivo_fisico_reportes, archivo_logico_reportes, reporte_numero)
+            reporte_numero = buscar_nro_reporte (reporte_numero)
             if reporte_numero != -1:
                 print("Que desea hacer:")
                 print("1. Tomar el reporte y desactivar usuario")
@@ -959,7 +959,7 @@ def menu_gestion_reportes():
                     auxiliar_idreportado = int(auxreportar.idreportado)
 
                     #DESDE ACA DESACTIVA AL USUARIO#
-                    auxiliar_idreportado = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, auxiliar_idreportado, 1)
+                    auxiliar_idreportado = validar_idregistro_nombre (auxiliar_idreportado, 1)
                     archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
                     a_usuario = estudiantes ()
                     a_usuario = pickle.load(archivo_logico_estudiantes)
@@ -987,29 +987,28 @@ def menu_gestion_reportes():
                     archivo_logico_reportes.seek(reporte_numero,0)
                     auxreportar = reportes ()
                     auxreportar = pickle.load(archivo_logico_reportes)
-                    auxiliar_idreportado = int(auxreportar.idreportado)
                     auxreportar.estadoreporte = opc
                     auxreportar.idmoderador = id_mod
                     archivo_logico_reportes.seek(reporte_numero,0)
                     pickle.dump(auxreportar, archivo_logico_reportes)
                     archivo_logico_reportes.flush()
         limpiar_pantalla()
-        listado_general_reportes (archivo_fisico_reportes, archivo_logico_reportes)
+        listado_general_reportes ()
         opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ","S", "N")
 
 
-def buscar_nro_reporte (archivofisico, archivologico, parametro):
+def buscar_nro_reporte (parametro):
 
     pos = 0
-    tam = os.path.getsize(archivofisico)
+    tam = os.path.getsize(archivo_fisico_reportes)
     if tam == 0:
         print("no se puede hacer la consulta, cargar datos primero")
     else:
-        archivologico.seek (0,0)
-        reporte = pickle.load (archivologico)
-        while (archivologico.tell() < tam) and (reporte.nroreporte != parametro):
-            pos = archivologico.tell()
-            reporte = pickle.load(archivologico)
+        archivo_logico_reportes.seek (0,0)
+        reporte = pickle.load (archivo_logico_reportes)
+        while (archivo_logico_reportes.tell() < tam) and (reporte.nroreporte != parametro):
+            pos = archivo_logico_reportes.tell()
+            reporte = pickle.load(archivo_logico_reportes)
         if reporte.nroreporte == parametro  and reporte.idmoderador == 0:
             return pos
         else:
@@ -1017,15 +1016,15 @@ def buscar_nro_reporte (archivofisico, archivologico, parametro):
 
 
 
-def listado_general_reportes (archivofisico, archivologico):
+def listado_general_reportes ():
 
-    tam = os.path.getsize(archivofisico)
+    tam = os.path.getsize(archivo_fisico_reportes)
     if tam == 0:
         print("no se puede hacer la consulta, cargar datos primero")
     else:
-        archivologico.seek (0,0)
-        while (archivologico.tell() < tam):
-            reporte = pickle.load(archivologico)
+        archivo_logico_reportes.seek (0,0)
+        while (archivo_logico_reportes.tell() < tam):
+            reporte = pickle.load(archivo_logico_reportes)
             if reporte.reportanteestado == True and reporte.reportadoestado == True and reporte.estadoreporte == 0:
                 mostrar_reporte (reporte)
 
@@ -1043,7 +1042,6 @@ def mostrar_reporte (reporte):
 
                 ---------------------------------------------------------------------------------------------------------------------------------------
                     ''')
-
 
 #-------------------------------------MENU ADMINISTRADORES------------------------------#
 
