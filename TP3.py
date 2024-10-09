@@ -819,131 +819,114 @@ def menu_opc_gestion_usuarios():
 
 
 def menu_gestion_usuarios():
-    listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
+    listado_general_estudiantes ()
     opcion1 = validar_mientras ("Desea desactivar un usuario (S/N)", "S", "N")
     while opcion1 !="N":
         limpiar_pantalla()
-        listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
+        listado_general_estudiantes ()
         usuario_desactivar = input("Ingrese ID o Nombre y Apellido del usuario a desactivar: ")
         if usuario_desactivar.isdigit():
             usuario_desactivar = int(usuario_desactivar)
-            usuario_desactivar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_desactivar, 1)
+            usuario_desactivar = validar_idregistro_nombre(usuario_desactivar, 1)
             if usuario_desactivar != -1:
-                id_desactivar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_desactivar, 2)
                 archivo_logico_estudiantes.seek(usuario_desactivar,0)
                 usuario = estudiantes ()
                 usuario = pickle.load(archivo_logico_estudiantes)
                 usuario.estado = False
+                id_desactivar = usuario.idregistro
                 archivo_logico_estudiantes.seek(usuario_desactivar,0)
                 pickle.dump(usuario, archivo_logico_estudiantes)
                 archivo_logico_estudiantes.flush()
-                anular_usuarioenreporte (archivo_fisico_reportes, archivo_logico_reportes, id_desactivar, 1)
-                anular_usuarioenreporte (archivo_fisico_reportes, archivo_logico_reportes, id_desactivar, 2)
+                anular_usuarioenreporte (id_desactivar, 1)
+                anular_usuarioenreporte (id_desactivar, 2)
             else:
                 print("No se encontro")
                 sleep(1)
         elif len(usuario_desactivar) < 32:
             usuario_desactivar = usuario_desactivar.ljust(32," ")
-            usuario_desactivar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_desactivar, 1)
+            usuario_desactivar = validar_idregistro_nombre (usuario_desactivar, 2)
             if usuario_desactivar != -1:
-                id_desactivar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_desactivar, 2)
                 archivo_logico_estudiantes.seek(usuario_desactivar,0)
                 usuario = estudiantes ()
                 usuario = pickle.load(archivo_logico_estudiantes)
                 usuario.estado = False
+                id_desactivar = usuario.idregistro
                 archivo_logico_estudiantes.seek(usuario_desactivar,0)
                 pickle.dump(usuario, archivo_logico_estudiantes)
                 archivo_logico_estudiantes.flush()
-                anular_usuarioenreporte (archivo_fisico_reportes, archivo_logico_reportes, id_desactivar, 1)
-                anular_usuarioenreporte (archivo_fisico_reportes, archivo_logico_reportes, id_desactivar, 2)
+                anular_usuarioenreporte (id_desactivar, 1)
+                anular_usuarioenreporte (id_desactivar, 2)
             else:
                 print("No se encontro")
                 sleep(1)
-        listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
+        listado_general_estudiantes ()
         opcion1 = validar_mientras ("Desea desactivar un usuario (S/N)", "S", "N")
 
 
 
 
-def listado_general_estudiantes (archivofisico, archivologico):
+def listado_general_estudiantes ():
 
-    tam = os.path.getsize(archivofisico)
+    tam = os.path.getsize(archivo_fisico_estudiantes)
     if tam == 0:
         print("no se puede hacer la consulta, cargar datos primero")
     else:
-        archivologico.seek (0,0)
-        while (archivologico.tell() < tam):
-            usuario = pickle.load(archivologico)
-            if usuario.estado == True:
-                print (f" El estudiante {usuario.idregistro} es {usuario.nombre}")
+        archivo_logico_estudiantes.seek (0,0)
+        while (archivo_logico_estudiantes.tell() < tam):
+            variable = pickle.load(archivo_logico_estudiantes)
+            if variable.estado == True:
+                print (f" El estudiante {variable.idregistro} es {variable.nombre}")
 
 
-def validar_idregistro (archivofisico, archivologico, parametro, condicion):
+def validar_idregistro_nombre (parametro, condicion):
 
-    numero = condicion
     pos = 0
-    tam = os.path.getsize(archivofisico)
+    tam = os.path.getsize(archivo_fisico_estudiantes)
     if tam == 0:
         print("no se puede hacer la consulta, cargar datos primero")
     else:
-        archivologico.seek (0,0)
-        usuario = pickle.load (archivologico)
-        while (archivologico.tell() < tam) and (usuario.idregistro != parametro):
-            pos = archivologico.tell()
-            usuario = pickle.load(archivologico)
-        if usuario.idregistro == parametro:
-            if numero == 1:
+        archivo_logico_estudiantes.seek (0,0)
+        variable = pickle.load (archivo_logico_estudiantes)
+        if condicion == 1:
+            while (archivo_logico_estudiantes.tell() < tam) and (variable.idregistro != parametro):
+                pos = archivo_logico_estudiantes.tell()
+                variable = pickle.load(archivo_logico_estudiantes)
+            if variable.idregistro == parametro:
                 return pos
-            elif numero == 2:
-                return usuario.idregistro
-        else:
-            return -1
-
-def validar_nombre (archivofisico, archivologico, parametro, condicion):
-
-    numero = condicion
-    pos = 0
-    tam = os.path.getsize(archivofisico)
-    if tam == 0:
-        print("no se puede hacer la consulta, cargar datos primero")
-    else:
-        archivologico.seek (0,0)
-        usuario = pickle.load (archivologico)
-        while (archivologico.tell() < tam) and (usuario.nombre != parametro):
-            pos = archivologico.tell()
-            usuario = pickle.load(archivologico)
-        if usuario.nombre == parametro:
-            if numero == 1:
+            else:
+                return -1
+        elif condicion == 2:
+            while (archivo_logico_estudiantes.tell() < tam) and (variable.nombre != parametro):
+                pos = archivo_logico_estudiantes.tell()
+                variable = pickle.load(archivo_logico_estudiantes)
+            if variable.nombre == parametro:
                 return pos
-            elif numero == 2:
-                return usuario.nombre
-        else:
-            return -1
+            else:
+                return -1
 
 
-def anular_usuarioenreporte (archivofisico, archivologico, parametro, condicion):
+def anular_usuarioenreporte (parametro, condicion):
 
-    numero = condicion
     pos = 0
-    tam = os.path.getsize(archivofisico)
+    tam = os.path.getsize(archivo_fisico_reportes)
     if tam == 0:
         print("no se puede hacer la consulta, cargar datos primero")
     else:
-        archivologico.seek (0,0)
-        while archivologico.tell() < tam:
-            pos = archivologico.tell()
+        archivo_logico_reportes.seek (0,0)
+        while archivo_logico_reportes.tell() < tam:
+            pos = archivo_logico_reportes.tell()
             reporte = reportes ()
-            reporte = pickle.load(archivologico)
-            if numero == 1 and reporte.idreportante == parametro:
+            reporte = pickle.load(archivo_logico_reportes)
+            if condicion == 1 and reporte.idreportante == parametro:
                     reporte.reportanteestado = False
-                    archivologico.seek(pos,0)
-                    pickle.dump(reporte, archivologico)
-                    archivologico.flush()
-            elif numero == 2 and reporte.idreportado == parametro:
+                    archivo_logico_reportes.seek(pos,0)
+                    pickle.dump(reporte, archivo_logico_reportes)
+                    archivo_logico_reportes.flush()
+            elif condicion == 2 and reporte.idreportado == parametro:
                     reporte.reportadoestado = False
-                    archivologico.seek(pos,0)
-                    pickle.dump(reporte, archivologico)
-                    archivologico.flush()
+                    archivo_logico_reportes.seek(pos,0)
+                    pickle.dump(reporte, archivo_logico_reportes)
+                    archivo_logico_reportes.flush()
 
 #----------------------------------MENU GESTIONAR REPORTES-----------------------------#
 
