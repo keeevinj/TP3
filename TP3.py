@@ -1004,15 +1004,15 @@ def mostrar_reporte (reporte):
                 ---------------------------------------------------------------------------------------------------------------------------------------
                     ''')
 
-def menu_moderadores():
-    print("Soy moderador")
+'''def menu_moderadores():
+    print("Soy moderador")'''
 #-------------------------------------MENU ADMINISTRADORES------------------------------#
 
 
 
 #-------------------- MENU ELIMINAR UN USUARIO (FALTA INCLUIR LOS MODERADORES------------------#
 
-menu_eliminar_estudiante_moderador():
+def menu_eliminar_estudiante_moderador():
     listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
     opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
     while opcion1 !="N":
