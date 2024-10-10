@@ -906,16 +906,6 @@ def menu_gestion_usuarios():
         listado_general_estudiantes ()
         opcion1 = validar_mientras ("Desea desactivar un usuario (S/N)", "S", "N")
 
-def desactivar_usuario (parametro):
-    auxiliar_idreportado = parametro
-    auxiliar_idreportado = validar_idregistro_nombre (auxiliar_idreportado, 1)
-    archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
-    a_usuario = estudiantes ()
-    a_usuario = pickle.load(archivo_logico_estudiantes)
-    a_usuario.estado = False
-    archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
-    pickle.dump(a_usuario, archivo_logico_estudiantes)
-    archivo_logico_estudiantes.flush()
 
 
 def listado_general_estudiantes ():
@@ -1089,6 +1079,19 @@ def mostrar_reporte (reporte):
 
                 ---------------------------------------------------------------------------------------------------------------------------------------
                     ''')
+
+
+
+def desactivar_usuario (parametro):
+    auxiliar_idreportado = parametro
+    auxiliar_idreportado = validar_idregistro_nombre (auxiliar_idreportado, 1)
+    archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
+    a_usuario = estudiantes ()
+    a_usuario = pickle.load(archivo_logico_estudiantes)
+    a_usuario.estado = False
+    archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
+    pickle.dump(a_usuario, archivo_logico_estudiantes)
+    archivo_logico_estudiantes.flush()
 
 #-------------------------------------MENU ADMINISTRADORES------------------------------#
 
