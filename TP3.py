@@ -306,6 +306,8 @@ def validar_fecha(D, M, Y):
                     ddmax = 31
                 if 1 <= dd <= ddmax:
                     date = str(year) + "-" + str(mm) + "-" + str(dd)
+		    date = datetime.strptime(date, "%Y-%m-%d").date()
+		    date = str(date)
                     return date
 
     return -1
