@@ -1108,50 +1108,122 @@ def desactivar_usuario (parametro):
 
 
 
-#-------------------- MENU ELIMINAR UN USUARIO (FALTA INCLUIR LOS MODERADORES------------------#
-
 def menu_eliminar_estudiante_moderador():
-    listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
-    opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
-    while opcion1 !="N":
-        limpiar_pantalla()
-        listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
-        usuario_eliminar = input("Ingrese ID o Nombre y Apellido del usuario a eliminar: ")
-        if usuario_eliminar.isdigit():
-            usuario_eliminar = int(usuario_eliminar)
-            usuario_eliminar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 1)
-            if usuario_eliminar != -1:
-                id_eliminar = validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 2)
-                archivo_logico_estudiantes.seek(usuario_eliminar,0)
-                usuario = estudiantes ()
-                usuario = pickle.load(archivo_logico_estudiantes)
-                borrar_estudiante (usuario)
-                formato_estudiante(usuario)
-                archivo_logico_estudiantes.seek(usuario_eliminar,0)
-                pickle.dump(usuario, archivo_logico_estudiantes)
-                archivo_logico_estudiantes.flush()
-            else:
-                print ("Campo Incorrecto o no encontrado")
-    ######### FALTA BORRARLOS DE LOS REPORTES Y LIKES#######
-        elif len(usuario_eliminar) < 32:
-            usuario_eliminar = usuario_eliminar.ljust(32," ")
-            usuario_eliminar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 1)
-            if usuario_eliminar != -1:
-                id_eliminar = validar_nombre (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_eliminar, 2)
-                archivo_logico_estudiantes.seek(usuario_eliminar,0)
-                usuario = estudiantes ()
-                usuario = pickle.load(archivo_logico_estudiantes)
-                borrar_estudiante (usuario)
-                formato_estudiante(usuario)
-                archivo_logico_estudiantes.seek(usuario_eliminar,0)
-                pickle.dump(usuario, archivo_logico_estudiantes)
-                archivo_logico_estudiantes.flush()
-    ######### FALTA BORRARLOS DE LOS REPORTES Y LIKES#######
-            else:
-                print ("Campo Incorrecto o no encontrado")
-        listado_general_estudiantes (archivo_fisico_estudiantes, archivo_logico_estudiantes)
-        opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
 
+
+    opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
+    contador_estudiante = contador_inactivos (archivo_logico_estudiantes, archivo_fisico_estudiantes)
+    contador_moderadores = contador_inactivos (archivo_logico_moderadores, archivo_fisico_moderadores)
+    while opcion1 !="N":
+        opcion2 = validar_mientras ("Desea eliminar un Estudiante (E) o un Moderador (M): ", "E", "M")
+        if opcion2 == "E" and contador_estudiante != -1:
+            limpiar_pantalla()
+            listado_general_estudiantes ()
+            usuario_desactivar = input("Ingrese ID o Nombre y Apellido del usuario a desactivar: ")
+            if usuario_desactivar.isdigit():
+                usuario_desactivar = int(usuario_desactivar)
+                usuario_desactivar = validar_idregistro_nombre(usuario_desactivar, 1)
+                if usuario_desactivar != -1:
+                    id_eliminar = borrado_logico_estudiante(usuario_desactivar)
+                    anular_usuarioenreporte (id_eliminar)
+                else:
+                    print ("Campo Incorrecto o no encontrado")
+                    sleep(5)
+            elif len(usuario_desactivar) < 32:
+                usuario_desactivar = usuario_desactivar.ljust(32," ")
+                usuario_desactivar = validar_idregistro_nombre (usuario_desactivar, 2)
+                if usuario_desactivar != -1:
+                    id_eliminar = borrado_logico_estudiante(usuario_desactivar)
+                    anular_usuarioenreporte (id_eliminar)
+                else:
+                    print ("Campo Incorrecto o no encontrado")
+                    sleep(5)
+        if opcion2 == "M" and contador_moderadores !=-1:
+            listado_general_moderadores ()
+            usuario_desactivar = input("Ingrese ID del moderador a eliminar: ")
+            if usuario_desactivar.isdigit():
+                usuario_desactivar = int(usuario_desactivar)
+                usuario_desactivar = validar_idregistro_moderador (usuario_desactivar)
+                if usuario_desactivar != -1:
+                    desactivar_moderador (usuario_desactivar)
+
+        limpiar_pantalla()
+        opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
+        contador_estudiante = contador_inactivos (archivo_logico_estudiantes, archivo_fisico_estudiantes)
+        contador_moderadores = contador_inactivos (archivo_logico_moderadores, archivo_fisico_moderadores)
+        if contador_estudiante == -1 and contador_moderadores == -1:
+            opcion1 = "N"
+
+
+
+def desactivar_moderador (parametro):
+    auxiliar_id = parametro
+    auxiliar_id = validar_idregistro_nombre (auxiliar_id, 1)
+    archivo_logico_moderadores.seek(auxiliar_id,0)
+    a_usuario = moderadores ()
+    a_usuario = pickle.load(archivo_logico_moderadores)
+    a_usuario.email = ""
+    a_usuario.contraseña = ""
+    a_usuario.email = a_usuario.email.ljust(32, " ")
+    a_usuario.contraseña = a_usuario.contraseña.ljust(32, " ")
+    a_usuario.estado = False
+    archivo_logico_moderadores.seek(auxiliar_id,0)
+    pickle.dump(a_usuario, archivo_logico_moderadores)
+    archivo_logico_moderadores.flush()
+
+def contador_inactivos (archivologico, archivofisico):
+    tamaño = os.path.getsize(archivofisico)
+    archivologico.seek (0,0)
+    contador = 0
+    while archivologico.tell() < tamaño:
+        variable = pickle.load(archivologico)
+        if variable.estado == True:
+            return 1
+    return -1
+
+
+
+def validar_idregistro_moderador (parametro):
+    pos = 0
+    tam = os.path.getsize(archivo_fisico_moderadores)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivo_logico_moderadores.seek (0,0)
+        variable = pickle.load (archivo_logico_moderadores)
+        while (archivo_logico_moderadores.tell() < tam) and (variable.idregistro != parametro):
+            pos = archivo_logico_moderadores.tell()
+            variable = pickle.load(archivo_logico_moderadores)
+        if variable.idregistro == parametro:
+            return pos
+        else:
+            return -1
+
+
+def listado_general_moderadores ():
+    tam = os.path.getsize(archivo_fisico_moderadores)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivo_logico_moderadores.seek (0,0)
+        while (archivo_logico_moderadores.tell() < tam):
+            variable = pickle.load(archivo_logico_moderadores)
+            if variable.estado == True:
+                print (f" Moderador {variable.idregistro} ID registro")
+
+
+
+def borrado_logico_estudiante(parametro):
+    archivo_logico_estudiantes.seek(parametro,0)
+    variable = estudiantes ()
+    variable = pickle.load(archivo_logico_estudiantes)
+    id_desactivar = variable.idregistro
+    borrar_estudiante (variable)
+    formato_estudiante(variable)
+    archivo_logico_estudiantes.seek(parametro,0)
+    pickle.dump(variable, archivo_logico_estudiantes)
+    archivo_logico_estudiantes.flush()
+    return id_desactivar
 
 def borrar_estudiante (self):
 
@@ -1169,11 +1241,6 @@ def borrar_estudiante (self):
         self.pais = " "
         self.ciudad = " "
         self.fecha_nacimiento = " "
-
-
-
-def menu_administradores():
-    print("Soy administrador")
 
 #---------------------------------PROGRAMA---------------------------------#
 
