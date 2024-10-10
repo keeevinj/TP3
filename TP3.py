@@ -12,6 +12,7 @@ from datetime import datetime
 import os.path
 import pickle
 import io
+import math
 
 def limpiar_pantalla():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -112,6 +113,7 @@ currentdate = datetime.now()
 CYEAR = int(currentdate.year)
 CYEARF = CYEAR - 18
 CYEARI = CYEAR - 60
+DPY = 365
 
 nombre1 = "Juan Faccio"
 nombre2 = "Julian Perez"
@@ -238,6 +240,8 @@ def rdob():
     rmm = str(random.randint(1,12))
     ryear = str(random.randint(CYEARI,CYEARF))
     rdate = str(ryear) + "-" + str(rmm) + "-" + str(rdd)
+    rdate = datetime.strptime(rdate, "%Y-%m-%d").date()
+    rdate = str(rdate)
     return rdate
 
 
@@ -702,24 +706,7 @@ def menu_eliminar_perfil():
 
 #---------------------------MENU GESTIONAR CANDIDATOS--------------------------------#
 
-##################VER CALCULO DE EDAD#########################
-'''def calcularedad(fechadenacimiento):
-    hoy = currentdate
-    #fechadenacimiento = fechadenacimiento[:-4]
-    if fechadenacimiento != 0:
-        fechadenacimiento = datetime.strptime(fechadenacimiento, '%Y-%m-%d')
-        edad = hoy.year-fechadenacimiento.year
-        if (hoy.month, hoy.day) < (fechadenacimiento.month, fechadenacimiento.day):
-            edad = edad-1
-    else:
-        edad=0    
-    return edad'''
 
-'''def calcularedad(DOB):
-    age = datetime.now().date() - DOB
-    age = math.floor(age.days / DPY)
-    age = str(age)
-    return age'''
 
 
 def menu_print_gestion_candidatos():
@@ -740,6 +727,9 @@ def menu_ver_candidatos():
         estudiante = pickle.load(archivo_logico_estudiantes)
         while (archivo_logico_estudiantes.tell() < tam):
             if (usuario.email != estudiante.email):
+                edad = estudiante.fecha_nacimiento
+                edad = datetime.strptime(edad, "%Y-%m-%d").date()
+                edad = calcularedad(edad)
                 print("-------------------------------------------------------------")
                 print("Estudiante N°: ",estudiante.idregistro)
                 print("Su nombre es: ", estudiante.nombre)
@@ -753,10 +743,8 @@ def menu_ver_candidatos():
                 print("Su pais es: ", estudiante.pais)
                 print("Su ciudad es: ", estudiante.ciudad)
                 print("Su fecha de nacimiento es: ", estudiante.fecha_nacimiento)
-                #####################ver##########################
-                #print("Su edad es: ",calcularedad(estudiante.fecha_nacimiento))
+                print("Su edad es: ", edad)
                 print("-------------------------------------------------------------")
-                #pos = archivo_logico_estudiantes.tell()
             estudiante = pickle.load(archivo_logico_estudiantes)
     print("¿Desea dar me gusta a algun estudiante?")
     print("S/N")
@@ -777,6 +765,13 @@ def menu_ver_candidatos():
             aux=pickle.load(archivo_logico_likes)
         pickle.dump(like,archivo_logico_likes)
         archivo_logico_likes.flush()
+
+
+def calcularedad(fecha):
+    edad = datetime.now().date() - fecha
+    edad = math.floor(edad.days / DPY)
+    edad = str(edad)
+    return edad
         
 def busca_likes(id_rem,id_dest):
     archivo_logico_likes.seek(0,0)
