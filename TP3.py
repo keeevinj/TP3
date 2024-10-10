@@ -887,7 +887,7 @@ def menu_gestion_usuarios():
             usuario_desactivar = int(usuario_desactivar)
             usuario_desactivar = validar_idregistro_nombre(usuario_desactivar, 1)
             if usuario_desactivar != -1:
-		desactivar_usuario (usuario_desactivar)
+                id_desactivar= desactivar_devolver_id (usuario_desactivar)
                 anular_usuarioenreporte (id_desactivar, 1)
                 anular_usuarioenreporte (id_desactivar, 2)
             else:
@@ -897,7 +897,7 @@ def menu_gestion_usuarios():
             usuario_desactivar = usuario_desactivar.ljust(32," ")
             usuario_desactivar = validar_idregistro_nombre (usuario_desactivar, 2)
             if usuario_desactivar != -1:
-		desactivar_usuario (usuario_desactivar)
+                id_desactivar= desactivar_devolver_id (usuario_desactivar)
                 anular_usuarioenreporte (id_desactivar, 1)
                 anular_usuarioenreporte (id_desactivar, 2)
             else:
@@ -905,6 +905,17 @@ def menu_gestion_usuarios():
                 sleep(1)
         listado_general_estudiantes ()
         opcion1 = validar_mientras ("Desea desactivar un usuario (S/N)", "S", "N")
+
+def desactivar_devolver_id (parametro):
+    archivo_logico_estudiantes.seek(parametro,0)
+    variable = estudiantes ()
+    variable = pickle.load(archivo_logico_estudiantes)
+    variable.estado = False
+    id_desactivar = variable.idregistro
+    archivo_logico_estudiantes.seek(parametro,0)
+    pickle.dump(variable, archivo_logico_estudiantes)
+    archivo_logico_estudiantes.flush()
+    return id_desactivar
 
 
 
