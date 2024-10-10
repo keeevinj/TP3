@@ -937,7 +937,6 @@ def listado_general_estudiantes ():
 
 
 def validar_idregistro_nombre (parametro, condicion):
-    parametro=int(parametro)
     pos = 0
     tam = os.path.getsize(archivo_fisico_estudiantes)
     if tam == 0:
@@ -946,6 +945,8 @@ def validar_idregistro_nombre (parametro, condicion):
         archivo_logico_estudiantes.seek (0,0)
         variable = pickle.load (archivo_logico_estudiantes)
         if condicion == 1:
+            #Agregue esto porque parametro lo leia como string y el tipo de dato en el registro es INT entonces no comparaba bien.
+            parametro=int(parametro)
             while (archivo_logico_estudiantes.tell() < tam) and (variable.idregistro != parametro):
                 pos = archivo_logico_estudiantes.tell()
                 variable = pickle.load(archivo_logico_estudiantes)
