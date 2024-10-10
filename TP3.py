@@ -507,7 +507,7 @@ def validar_correo_duplicado():
         busco_email_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email_nuevo)
         busco_email_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email_nuevo)
         busco_email_administrador = validar_email_duplicado(archivo_fisico_administradores, archivo_logico_administradores, email_nuevo)
-        while (busco_email_estudiante != -1) and (busco_email_moderador != -1) and (busco_email_administrador != -1):
+        while (busco_email_estudiante != -1) or (busco_email_moderador != -1) or (busco_email_administrador != -1):
             print("El email se encuentra en uso")
             email_nuevo = validar_campos_texto("Email", 32)
             busco_email_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email_nuevo)
