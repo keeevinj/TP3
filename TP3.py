@@ -887,14 +887,7 @@ def menu_gestion_usuarios():
             usuario_desactivar = int(usuario_desactivar)
             usuario_desactivar = validar_idregistro_nombre(usuario_desactivar, 1)
             if usuario_desactivar != -1:
-                archivo_logico_estudiantes.seek(usuario_desactivar,0)
-                usuario = estudiantes ()
-                usuario = pickle.load(archivo_logico_estudiantes)
-                usuario.estado = False
-                id_desactivar = usuario.idregistro
-                archivo_logico_estudiantes.seek(usuario_desactivar,0)
-                pickle.dump(usuario, archivo_logico_estudiantes)
-                archivo_logico_estudiantes.flush()
+		desactivar_usuario (usuario_desactivar)
                 anular_usuarioenreporte (id_desactivar, 1)
                 anular_usuarioenreporte (id_desactivar, 2)
             else:
@@ -904,14 +897,7 @@ def menu_gestion_usuarios():
             usuario_desactivar = usuario_desactivar.ljust(32," ")
             usuario_desactivar = validar_idregistro_nombre (usuario_desactivar, 2)
             if usuario_desactivar != -1:
-                archivo_logico_estudiantes.seek(usuario_desactivar,0)
-                usuario = estudiantes ()
-                usuario = pickle.load(archivo_logico_estudiantes)
-                usuario.estado = False
-                id_desactivar = usuario.idregistro
-                archivo_logico_estudiantes.seek(usuario_desactivar,0)
-                pickle.dump(usuario, archivo_logico_estudiantes)
-                archivo_logico_estudiantes.flush()
+		desactivar_usuario (usuario_desactivar)
                 anular_usuarioenreporte (id_desactivar, 1)
                 anular_usuarioenreporte (id_desactivar, 2)
             else:
@@ -920,7 +906,16 @@ def menu_gestion_usuarios():
         listado_general_estudiantes ()
         opcion1 = validar_mientras ("Desea desactivar un usuario (S/N)", "S", "N")
 
-
+def desactivar_usuario (parametro):
+    auxiliar_idreportado = parametro
+    auxiliar_idreportado = validar_idregistro_nombre (auxiliar_idreportado, 1)
+    archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
+    a_usuario = estudiantes ()
+    a_usuario = pickle.load(archivo_logico_estudiantes)
+    a_usuario.estado = False
+    archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
+    pickle.dump(a_usuario, archivo_logico_estudiantes)
+    archivo_logico_estudiantes.flush()
 
 
 def listado_general_estudiantes ():
@@ -1018,14 +1013,7 @@ def menu_gestion_reportes():
                     auxiliar_idreportado = int(auxreportar.idreportado)
 
                     #DESDE ACA DESACTIVA AL USUARIO#
-                    auxiliar_idreportado = validar_idregistro_nombre (auxiliar_idreportado, 1)
-                    archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
-                    a_usuario = estudiantes ()
-                    a_usuario = pickle.load(archivo_logico_estudiantes)
-                    a_usuario.estado = False
-                    archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
-                    pickle.dump(a_usuario, archivo_logico_estudiantes)
-                    archivo_logico_estudiantes.flush()
+                    desactivar_usuario (auxiliar_idereportado)
 
                     #DESDE ACA MODIFICA EL REPORTE#
                     auxreportar.reportadoestado = False
@@ -1123,7 +1111,7 @@ def menu_eliminar_estudiante_moderador():
                 archivo_logico_estudiantes.seek(usuario_eliminar,0)
                 usuario = estudiantes ()
                 usuario = pickle.load(archivo_logico_estudiantes)
-                desactivar_estudiante (usuario)
+                borrar_estudiante (usuario)
                 formato_estudiante(usuario)
                 archivo_logico_estudiantes.seek(usuario_eliminar,0)
                 pickle.dump(usuario, archivo_logico_estudiantes)
@@ -1139,7 +1127,7 @@ def menu_eliminar_estudiante_moderador():
                 archivo_logico_estudiantes.seek(usuario_eliminar,0)
                 usuario = estudiantes ()
                 usuario = pickle.load(archivo_logico_estudiantes)
-                desactivar_estudiante (usuario)
+                borrar_estudiante (usuario)
                 formato_estudiante(usuario)
                 archivo_logico_estudiantes.seek(usuario_eliminar,0)
                 pickle.dump(usuario, archivo_logico_estudiantes)
@@ -1151,7 +1139,7 @@ def menu_eliminar_estudiante_moderador():
         opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
 
 
-def desactivar_estudiante (self):
+def borrar_estudiante (self):
 
         self.email = " "
         self.nombre = " "
