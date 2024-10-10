@@ -19,7 +19,9 @@ def limpiar_pantalla():
 #--------------------------------REGISTROS-------------------------------#
 class likes:
     def __init__(self):
+        #ID remitente
         self.idrem=0
+        #ID destinatario
         self.iddest=0
 class estudiantes:
     def __init__(self):
@@ -220,6 +222,16 @@ def cargar_archivo_reportes():
         pickle.dump(reporte, archivo_logico_reportes)
         archivo_logico_reportes.flush()
 
+def cargar_archivo_likes():
+
+    archivo_logico_likes.seek(0,0)
+    for i in range(0,4):
+        like=likes()
+        like.idrem=random.randint(1,4)
+        like.iddest=random.randint(1,4)
+        pickle.dump(like,archivo_logico_likes)
+        archivo_logico_likes.flush()
+
 
 def rdob():
     rdd = str(random.randint(1,28))
@@ -231,24 +243,27 @@ def rdob():
 
 
 def main():
-    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores, archivo_logico_reportes
-    global archivo_fisico_estudiantes, archivo_fisico_administradores, archivo_fisico_moderadores, archivo_fisico_reportes
+    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores, archivo_logico_reportes, archivo_logico_likes
+    global archivo_fisico_estudiantes, archivo_fisico_administradores, archivo_fisico_moderadores, archivo_fisico_reportes, archivo_fisico_likes
 
     #archivo_fisico_xxxxxxxx="ruta de este .py" + \\xxxxxxxx.dat 
     archivo_fisico_estudiantes = os.getcwd()+"\\estudiantes.dat"
     archivo_fisico_administradores = os.getcwd()+"\\administradores.dat"
     archivo_fisico_moderadores = os.getcwd()+"\\moderadores.dat"
     archivo_fisico_reportes = os.getcwd()+"\\reportes.dat"
+    archivo_fisico_likes = os.getcwd()+"\\likes.dat"
 
     archivo_logico_estudiantes = verificar_archivo(archivo_fisico_estudiantes)
     archivo_logico_administradores = verificar_archivo(archivo_fisico_administradores)
     archivo_logico_moderadores = verificar_archivo(archivo_fisico_moderadores)
     archivo_logico_reportes = verificar_archivo(archivo_fisico_reportes)
+    archivo_logico_likes = verificar_archivo(archivo_fisico_likes)
 
     cargar_archivo_admin_mod("moderador", moderadores)
     cargar_archivo_admin_mod("administrador", administradores)
     cargar_archivo_estudiantes()
-    cargar_archivo_reportes ()
+    cargar_archivo_reportes()
+    cargar_archivo_likes()
 
 
 #----------------------------VALIDAR CAMPOS / OPCIONES GENERAL-------------------------------#
@@ -687,8 +702,10 @@ def menu_eliminar_perfil():
 
 #---------------------------MENU GESTIONAR CANDIDATOS--------------------------------#
 
-def calcularedad(fechadenacimiento):
+##################VER CALCULO DE EDAD#########################
+'''def calcularedad(fechadenacimiento):
     hoy = currentdate
+    #fechadenacimiento = fechadenacimiento[:-4]
     if fechadenacimiento != 0:
         fechadenacimiento = datetime.strptime(fechadenacimiento, '%Y-%m-%d')
         edad = hoy.year-fechadenacimiento.year
@@ -696,7 +713,14 @@ def calcularedad(fechadenacimiento):
             edad = edad-1
     else:
         edad=0    
-    return edad
+    return edad'''
+
+'''def calcularedad(DOB):
+    age = datetime.now().date() - DOB
+    age = math.floor(age.days / DPY)
+    age = str(age)
+    return age'''
+
 
 def menu_print_gestion_candidatos():
     print("2. Gestionar candidatos")
@@ -704,8 +728,8 @@ def menu_print_gestion_candidatos():
     print(" b. Reportar candidato")
     print(" c. Volver")
 
-def menu_ver_candidatos(usuario):
-
+def menu_ver_candidatos():
+    global usuario
     estudiante = estudiantes()
     pos = 0
     tam = os.path.getsize(archivo_fisico_estudiantes)
@@ -714,34 +738,69 @@ def menu_ver_candidatos(usuario):
     else:
         archivo_logico_estudiantes.seek (0,0)
         estudiante = pickle.load(archivo_logico_estudiantes)
-        while (archivo_logico_estudiantes.tell() < tam) and (usuario.email != estudiante.email):
-            print("-------------------------------------------------------------")
-            print("Estudiante N°: ",estudiante.idregistro)
-            print("Su nombre es: ", estudiante.nombre)
-            print("Su genero es: ", estudiante.sexo)
-            print("Su hobbie es: ", estudiante.hobbies)
-            print("Su materia favorita es: ", estudiante.materia_fav)
-            print("Su deporte favorito es: ", estudiante.deporte_fav)
-            print("Su materia fuerte es: ", estudiante.materia_fuerte)
-            print("Su materia debil es: ", estudiante.materia_debil)
-            print("Su biografia es: ", estudiante.biografia)
-            print("Su pais es: ", estudiante.pais)
-            print("Su ciudad es: ", estudiante.ciudad)
-            print("Su fecha de nacimiento es: ", estudiante.fecha_nacimiento)
-            print("Su edad es: ",calcularedad(estudiante.fecha_nacimiento))
-            print("-------------------------------------------------------------")
-            pos = archivo_logico_estudiantes.tell()
-            usuario = pickle.load(archivo_logico_estudiantes)
+        while (archivo_logico_estudiantes.tell() < tam):
+            if (usuario.email != estudiante.email):
+                print("-------------------------------------------------------------")
+                print("Estudiante N°: ",estudiante.idregistro)
+                print("Su nombre es: ", estudiante.nombre)
+                print("Su genero es: ", estudiante.sexo)
+                print("Su hobbie es: ", estudiante.hobbies)
+                print("Su materia favorita es: ", estudiante.materia_fav)
+                print("Su deporte favorito es: ", estudiante.deporte_fav)
+                print("Su materia fuerte es: ", estudiante.materia_fuerte)
+                print("Su materia debil es: ", estudiante.materia_debil)
+                print("Su biografia es: ", estudiante.biografia)
+                print("Su pais es: ", estudiante.pais)
+                print("Su ciudad es: ", estudiante.ciudad)
+                print("Su fecha de nacimiento es: ", estudiante.fecha_nacimiento)
+                #####################ver##########################
+                #print("Su edad es: ",calcularedad(estudiante.fecha_nacimiento))
+                print("-------------------------------------------------------------")
+                #pos = archivo_logico_estudiantes.tell()
+            estudiante = pickle.load(archivo_logico_estudiantes)
     print("¿Desea dar me gusta a algun estudiante?")
     print("S/N")
     opc=validaralfabeticamente("NS","N","S")
     if opc != "N":
         usuario_id=input("Ingrese ID del estudiante a dar me gusta: ")
-        usuario_id=validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_id, 2)
+        dest=int(usuario_id)
+        usuario_id=validar_idregistro_nombre(usuario_id, 1)
         while usuario_id==-1:
             usuario_id=input("Ingrese ID del estudiante a dar me gusta: ")
-            usuario_id=validar_idregistro (archivo_fisico_estudiantes, archivo_logico_estudiantes, usuario_id, 2)
-            
+            dest=int(usuario_id)
+            usuario_id=validar_idregistro_nombre(usuario_id, 1)
+        like=likes()
+        like.idrem=usuario.idregistro
+        like.iddest=dest
+        archivo_logico_likes.seek(0,0)
+        while archivo_logico_likes.tell()<os.path.getsize(archivo_fisico_likes):
+            aux=pickle.load(archivo_logico_likes)
+        pickle.dump(like,archivo_logico_likes)
+        archivo_logico_likes.flush()
+        
+def busca_likes(id_rem,id_dest):
+    archivo_logico_likes.seek(0,0)
+    like=likes()
+    like=pickle.load(archivo_logico_likes)
+    while archivo_logico_likes.tell()<os.path.getsize(archivo_fisico_likes) and (like.idrem != id_rem and like.iddest != id_dest):
+        like=pickle.load(archivo_logico_likes)
+    if (like.idrem == id_rem and like.iddest == id_dest):
+        print("Le dio like!")
+    else:
+        print("No le dio like")
+
+def busca_match(id_rem,id_dest):
+    archivo_logico_likes.seek(0,0)
+    like=likes()
+    like=pickle.load(archivo_logico_likes)
+    while archivo_logico_likes.tell()<os.path.getsize(archivo_fisico_likes) and ((like.idrem != id_rem and like.iddest != id_dest) or (like.idrem != id_dest and like.iddest != id_rem)):
+        like=pickle.load(archivo_logico_likes)
+    if (like.idrem == id_rem and like.iddest == id_dest) or (like.idrem == id_dest and like.iddest == id_rem):
+        print("Hubo match!")
+    else:
+        print("No hubo match")
+
+
 
 ######QUEDE ACA
 ######KEVIN
@@ -755,12 +814,12 @@ def menu_opc_gestion_candidatos():
         while opc != "c":
             match opc:
                 case "a":
-                    menu_ver_candidatos(usuario)
+                    menu_ver_candidatos()
                 case "b":
                     menu_reportar_candidato()
                 case "c":
                     print("")
-            menu_print_gestion_perfil()
+            menu_print_gestion_candidatos()
             opc = input("Ingrese una opcion: ")
 
 
@@ -878,7 +937,7 @@ def listado_general_estudiantes ():
 
 
 def validar_idregistro_nombre (parametro, condicion):
-
+    parametro=int(parametro)
     pos = 0
     tam = os.path.getsize(archivo_fisico_estudiantes)
     if tam == 0:
