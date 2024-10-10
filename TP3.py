@@ -888,8 +888,7 @@ def menu_gestion_usuarios():
             usuario_desactivar = validar_idregistro_nombre(usuario_desactivar, 1)
             if usuario_desactivar != -1:
                 id_desactivar= desactivar_devolver_id (usuario_desactivar)
-                anular_usuarioenreporte (id_desactivar, 1)
-                anular_usuarioenreporte (id_desactivar, 2)
+                anular_usuarioenreporte (id_desactivar)
             else:
                 print("No se encontro")
                 sleep(1)
@@ -898,8 +897,7 @@ def menu_gestion_usuarios():
             usuario_desactivar = validar_idregistro_nombre (usuario_desactivar, 2)
             if usuario_desactivar != -1:
                 id_desactivar= desactivar_devolver_id (usuario_desactivar)
-                anular_usuarioenreporte (id_desactivar, 1)
-                anular_usuarioenreporte (id_desactivar, 2)
+                anular_usuarioenreporte (id_desactivar)
             else:
                 print("No se encontro")
                 sleep(1)
@@ -972,12 +970,12 @@ def anular_usuarioenreporte (parametro, condicion):
             pos = archivo_logico_reportes.tell()
             reporte = reportes ()
             reporte = pickle.load(archivo_logico_reportes)
-            if condicion == 1 and reporte.idreportante == parametro:
+            if reporte.idreportante == parametro:
                     reporte.reportanteestado = False
                     archivo_logico_reportes.seek(pos,0)
                     pickle.dump(reporte, archivo_logico_reportes)
                     archivo_logico_reportes.flush()
-            elif condicion == 2 and reporte.idreportado == parametro:
+            elif reporte.idreportado == parametro:
                     reporte.reportadoestado = False
                     archivo_logico_reportes.seek(pos,0)
                     pickle.dump(reporte, archivo_logico_reportes)
