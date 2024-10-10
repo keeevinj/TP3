@@ -766,11 +766,11 @@ def menu_ver_candidatos():
 
 
 def calcularedad(fecha):
-	edad = datetime.strptime(edad, "%Y-%m-%d").date()
-	edad = datetime.now().date() - fecha
-	edad = math.floor(edad.days / DPY)
-	edad = str(edad)
-	return edad
+    edad = datetime.strptime(fecha, "%Y-%m-%d").date()
+    edad = datetime.now().date() - edad
+    edad = math.floor(edad.days / DPY)
+    edad = str(edad)
+    return edad
         
 def busca_likes(id_rem,id_dest):
     archivo_logico_likes.seek(0,0)
