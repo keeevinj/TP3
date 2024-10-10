@@ -954,7 +954,7 @@ def validar_idregistro_nombre (parametro, condicion):
                 return -1
 
 
-def anular_usuarioenreporte (parametro, condicion):
+def anular_usuarioenreporte (parametro):
 
     pos = 0
     tam = os.path.getsize(archivo_fisico_reportes)
