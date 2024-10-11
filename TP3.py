@@ -227,10 +227,13 @@ def cargar_archivo_reportes():
 def cargar_archivo_likes():
 
     archivo_logico_likes.seek(0,0)
-    for i in range(0,4):
+    for i in range(4):
         like=likes()
-        like.idrem=random.randint(1,4)
-        like.iddest=random.randint(1,4)
+        like.idrem=i
+        like.iddest=random.randint(0,4)
+        #Para que no se den like a si mismos
+        while like.iddest==like.idrem:
+            like.iddest=random.randint(0,4)
         pickle.dump(like,archivo_logico_likes)
         archivo_logico_likes.flush()
 
@@ -673,8 +676,6 @@ def menu_editar_datos_personales():
         if opc != 0:
             formato_estudiante(aux)
             tam_reg=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
-            #No se porque se agrega uno al idregistro pero sino pisa el anterior jajaja
-            #Debe ser porque no hago el picke.load
             archivo_logico_estudiantes.seek((aux.idregistro+1) * tam_reg,0)
             pickle.dump(aux,archivo_logico_estudiantes)
             archivo_logico_estudiantes.flush()
@@ -700,8 +701,12 @@ def menu_eliminar_perfil():
 
 #---------------------------MENU GESTIONAR CANDIDATOS--------------------------------#
 
-
-
+def calcularedad(fecha):
+    edad = datetime.strptime(fecha, "%Y-%m-%d").date()
+    edad = datetime.now().date() - edad
+    edad = math.floor(edad.days / DPY)
+    edad = str(edad)
+    return edad
 
 def menu_print_gestion_candidatos():
     print("2. Gestionar candidatos")
@@ -736,7 +741,6 @@ def menu_ver_candidatos():
                 print("Su ciudad es: ", estudiante.ciudad)
                 print("Su fecha de nacimiento es: ", estudiante.fecha_nacimiento)
                 print("Su edad es: ", edad)
-                print("-------------------------------------------------------------")
             estudiante = pickle.load(archivo_logico_estudiantes)
     print("¿Desea dar me gusta a algun estudiante?")
     print("S/N")
@@ -758,14 +762,6 @@ def menu_ver_candidatos():
         pickle.dump(like,archivo_logico_likes)
         archivo_logico_likes.flush()
 
-
-def calcularedad(fecha):
-    edad = datetime.strptime(fecha, "%Y-%m-%d").date()
-    edad = datetime.now().date() - edad
-    edad = math.floor(edad.days / DPY)
-    edad = str(edad)
-    return edad
-        
 def busca_likes(id_rem,id_dest):
     archivo_logico_likes.seek(0,0)
     like=likes()
@@ -773,25 +769,66 @@ def busca_likes(id_rem,id_dest):
     while archivo_logico_likes.tell()<os.path.getsize(archivo_fisico_likes) and (like.idrem != id_rem and like.iddest != id_dest):
         like=pickle.load(archivo_logico_likes)
     if (like.idrem == id_rem and like.iddest == id_dest):
-        print("Le dio like!")
+        devolver=1
+        #print("Le dio like!")
     else:
-        print("No le dio like")
+        devolver=0
+    return devolver
 
 def busca_match(id_rem,id_dest):
-    archivo_logico_likes.seek(0,0)
-    like=likes()
-    like=pickle.load(archivo_logico_likes)
-    while archivo_logico_likes.tell()<os.path.getsize(archivo_fisico_likes) and ((like.idrem != id_rem and like.iddest != id_dest) or (like.idrem != id_dest and like.iddest != id_rem)):
-        like=pickle.load(archivo_logico_likes)
-    if (like.idrem == id_rem and like.iddest == id_dest) or (like.idrem == id_dest and like.iddest == id_rem):
-        print("Hubo match!")
+    if busca_likes(id_rem,id_dest)==1 and busca_likes(id_dest,id_rem)==1:
+        devolver=1
     else:
-        print("No hubo match")
+        devolver=0
+    return devolver
 
-
-
-######QUEDE ACA
-######KEVIN
+def menu_reportar_candidato():
+    dest=-1
+    print("¿Desea reportar a algun candidato?")
+    print("S/N")
+    opc=validaralfabeticamente("NS","N","S")
+    if opc != "N":
+        print("1. Reportar por ID")
+        print("2. Reportar por nombre")
+        opc_num=validar(1,2)
+        if opc_num == 1:
+            #Si es por ID es facil, valido y listo
+            print("Ingrese ID del candidato a reportar: ")
+            reportar_id=validar(0,100)
+            dest=int(reportar_id)
+            reportar_id=validar_idregistro_nombre(reportar_id, 1)
+            while reportar_id==-1 or dest==usuario.idregistro:
+                print("Ingrese ID del candidato a reportar: ")
+                reportar_id=validar(0,100)
+                dest=int(reportar_id)
+                reportar_id=validar_idregistro_nombre(reportar_id, 1)
+        else:
+            #Si es por nombre, tengo que validar y despues buscar la posicion que me devuelve validar para agarrar el id del registro
+            reportar_nombre=validar_campos_texto("Ingrese nombre del candidato a reportar: ",32)
+            validar_id=validar_idregistro_nombre(reportar_nombre, 2)
+            while validar_id==-1 or reportar_nombre==usuario.nombre:
+                reportar_nombre=validar_campos_texto("Ingrese nombre del candidato a reportar: ",32)
+                validar_id=validar_idregistro_nombre(reportar_nombre, 2)
+        razon=validar_campos_texto("Razon",50)
+        detalles=validar_campos_texto("Detalles",255)
+        #Busco registro con la posición
+        if dest==-1:
+            archivo_logico_estudiantes.seek(validar_id,0)
+            validar_id=pickle.load(archivo_logico_estudiantes)
+            dest=validar_id.idregistro
+        #Armo reporte y me voy al final del archivo
+        reporte=reportes()
+        archivo_logico_reportes.seek(0,0)
+        while archivo_logico_reportes.tell() < os.path.getsize(archivo_fisico_reportes):
+            aux_reporte=pickle.load(archivo_logico_reportes)
+        reporte.nroreporte=aux_reporte.nroreporte+1
+        reporte.idreportante=usuario.idregistro
+        reporte.idreportado=dest
+        reporte.razon=razon
+        reporte.detalles=detalles
+        formato_reportes(reporte)
+        pickle.dump(reporte,archivo_logico_reportes)
+        archivo_logico_reportes.flush()
 
 def menu_opc_gestion_candidatos():
     global usuario
@@ -810,7 +847,52 @@ def menu_opc_gestion_candidatos():
             menu_print_gestion_candidatos()
             opc = input("Ingrese una opcion: ")
 
+#---------------------------MENU MATCHEOS--------------------------------#
+def menu_print_gestion_matcheos():
+    print("3. Matcheos")
+    print("a. Ver matcheos")
+    print("b. Eliminar un matcheo")
+    print("c. Volver")
 
+def menu_opc_matcheos():
+    global usuario
+    limpiar_pantalla()
+    menu_print_gestion_matcheos()
+    opc = validaralfabeticamente("abc", "a", "c")
+    while opc != "c":
+        while opc != "c":
+            match opc:
+                case "a":
+                    print("En construccion..")
+                case "b":
+                    print("En construccion..")
+                case "c":
+                    print("")
+            menu_print_gestion_matcheos()
+            opc = input("Ingrese una opcion: ")
+
+#---------------------------MENU REPORTES ESTADISTICOS--------------------------------#
+def menu_opc_reportes():
+    global usuario
+    cant_likes_dados=0
+    cant_likes_recibidos=0
+    cant_match=0
+    print("Reportes estadisticos")
+    cant_est=contador_general(archivo_logico_estudiantes,archivo_fisico_estudiantes)
+    for i in range(cant_est):
+        if i != usuario.idregistro:
+            if busca_likes(usuario.idregistro,i)==1:
+                cant_likes_dados=cant_likes_dados+1
+            if busca_match(usuario.idregistro,i)==1:
+                cant_match=cant_match+1
+            if busca_likes(i,usuario.idregistro)==1:
+                cant_likes_recibidos=cant_likes_recibidos+1
+    if cant_match == 0:
+        print("Matcheados sobre el % posible: 0%")
+    else:
+        print("Matcheados sobre el % posible: ",(cant_match/(cant_est-1))*100)
+    print("Likes dados y no recibidos: ",cant_likes_dados)
+    print("Likes recibidos y no respondidos: ",cant_likes_recibidos)
 #-------------------------------------MENU MODERADORES-----------------------------------#
 
 def menu_principal_moderadores():
