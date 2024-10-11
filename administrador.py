@@ -4,4 +4,12 @@ def totaldereportes ():
         variable = pickle.load (archivo_logico_reportes)
         tamreg = archivo_logico_reportes.tell()
         cantreg = tam // tamreg
-        return cantreg
+        return cantrep
+def totaldereportesignorados()
+	repignorados=0
+    for i in range(len(tamreg)):
+        if estadoreporte[i] == 2:
+            repignorados=repignorados+1
+    return repignorados
+    porcentajerepignorados=cantreg/repignorados
+    return porcentajerepignorados
