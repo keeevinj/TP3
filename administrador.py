@@ -6,10 +6,10 @@ def totaldereportes ():
         cantreg = tam // tamreg
         return cantrep
 def totaldereportesignorados()
-	repignorados=0
-    for i in range(len(tamreg)):
-        if estadoreporte[i] == 2:
-            repignorados=repignorados+1
-    return repignorados
-    porcentajerepignorados=cantreg/repignorados
-    return porcentajerepignorados
+	tam=os.path.getsize(archivo_fisico_reportes)
+	pos=0
+	archivo_logico_reportes.seek (0,0)
+    variable=pickle.load(archivo_logico_reportes)
+    while archivo_logico_reportes.tell()<tam 
+    	pos=archivo_logico_reportes.tell()
+    	variable=pickle.load(archivo_logico_reportes)
