@@ -1080,10 +1080,6 @@ def menu_gestion_reportes():
                 print("2. Ignorar el reporte")
                 opc = validar(1,2)
                 if opc == 1:
-                    #AGREGAR LA POSICION DEL MODERADOR ACTUAL PARA OBTENER EL ID
-                    archivo_logico_moderadores.seek(0,0)
-                    usuario = moderadores()
-                    usuario = pickle.load(archivo_logico_moderadores)
                     id_mod = usuario.idregistro
                     archivo_logico_reportes.seek(reporte_numero,0)
                     auxreportar = reportes ()
@@ -1095,24 +1091,21 @@ def menu_gestion_reportes():
 
                     #DESDE ACA MODIFICA EL REPORTE#
                     auxreportar.reportadoestado = False
-                    auxreportar.estadoreporte = opc
+                    auxreportar.estadoreporte = 1
                     auxreportar.idmoderador = id_mod
                     archivo_logico_reportes.seek(reporte_numero,0)
                     pickle.dump(auxreportar, archivo_logico_reportes)
                     archivo_logico_reportes.flush()
 
                 if opc == 2:
-                    #AGREGAR LA POSICION DEL MODERADOR ACTUAL PARA OBTENER EL ID
-                    archivo_logico_moderadores.seek(0,0)
-                    usuario = moderadores()
-                    usuario = pickle.load(archivo_logico_moderadores)
+
                     id_mod = usuario.idregistro
 
                     #DESDE ACA MODIFICA EL REPORTE#
                     archivo_logico_reportes.seek(reporte_numero,0)
                     auxreportar = reportes ()
                     auxreportar = pickle.load(archivo_logico_reportes)
-                    auxreportar.estadoreporte = opc
+                    auxreportar.estadoreporte = 2
                     auxreportar.idmoderador = id_mod
                     archivo_logico_reportes.seek(reporte_numero,0)
                     pickle.dump(auxreportar, archivo_logico_reportes)
