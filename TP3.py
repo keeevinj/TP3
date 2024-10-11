@@ -1416,11 +1416,11 @@ def menu_opc_reportes_estadisticos():
     if contador_grabar == 0:
         grabar_cantidad_reportes(0)
         contador_grabar = contador_grabar + 1
-        puntero = funcion_puntero ()
+        puntero = totaldereportes ()
     #PROXIMA VEZ QUE SE EJECUTE EL MENU DEBE HACERLO DESDE LA ULTIMA POSICION PUNTERO GRABADA#
     elif contador_grabar != 0:
         grabar_cantidad_reportes(puntero)
-        puntero = funcion_puntero ()
+        puntero = totaldereportes ()
     #DE ESTA FORMA SE EVITA DUPLICAR LOS DATOS EN LOS CONTADORES TOTALES DE REPORTES POR MODERADOR#
     id_mod_aceptado = listado_general_metricas (1)
     id_mod_ignorados = listado_general_metricas (2)
@@ -1460,13 +1460,6 @@ def listado_general_metricas (condicion):
 
 
 
-def funcion_puntero ():
-    tam = os.path.getsize(archivo_fisico_reportes)
-    archivo_logico_reportes.seek (0,0)
-    variable = pickle.load (archivo_logico_reportes)
-    tamreg = archivo_logico_reportes.tell()
-    puntero = tam - tamreg
-    return puntero
 
 def totaldereportes ():
     tam = os.path.getsize(archivo_fisico_reportes)
