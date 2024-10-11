@@ -277,11 +277,18 @@ def main():
     archivo_logico_likes = verificar_archivo(archivo_fisico_likes)
     archivo_logico_contadordereportes = verificar_archivo(archivo_fisico_contadordereportes)
 
-    cargar_archivo_admin_mod("moderador", moderadores)
-    cargar_archivo_admin_mod("administrador", administradores)
-    cargar_archivo_estudiantes()
-    cargar_archivo_reportes()
-    cargar_archivo_likes()
+    if os.path.getsize(archivo_fisico_estudiantes)==0:
+        cargar_archivo_estudiantes()
+    if os.path.getsize(archivo_fisico_administradores)==0:
+        cargar_archivo_admin_mod("administrador", administradores)
+    if os.path.getsize(archivo_fisico_moderadores)==0:
+        cargar_archivo_admin_mod("moderador", moderadores)
+    if os.path.getsize(archivo_fisico_reportes)==0:
+        cargar_archivo_reportes()
+    if os.path.getsize(archivo_fisico_likes)==0:
+        cargar_archivo_likes()
+    
+    
 
 
 #----------------------------VALIDAR CAMPOS / OPCIONES GENERAL-------------------------------#
@@ -470,7 +477,7 @@ def login():
         password = validar_campos_contrasenia ("Contrasenia", 32)
         busco_estudiante = validar_usuario(archivo_fisico_estudiantes, archivo_logico_estudiantes, email, password)
         busco_moderador = validar_usuario(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
-        busco_administrador = validar_usuario(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
+        busco_administrador = validar_usuario(archivo_fisico_administradores, archivo_logico_administradores, email, password)
         intentos = 0
         while (intentos < 3) and (busco_estudiante == -1) and (busco_moderador == -1) and (busco_administrador == -1):
             intentos = intentos + 1
@@ -1198,9 +1205,9 @@ def menu_administradores():
             case 1:
                 menu_opc_gestion_usuarios()
             case 2:
-                menu_opc_gestion_candidatos()
+                menu_opc_gestion_reportes()
             case 3:
-                menu_gestion_usuarios()
+                menu_opc_reportes_estadisticos()
             case 0:
                 print ("")
         if opc != 0:
@@ -1491,10 +1498,16 @@ def contador_reportes (condicion):
 
 def grabar_cantidad_reportes(pos):
     tam = os.path.getsize(archivo_fisico_reportes)
-    archivo_logico_reportes.seek (pos,0)
+    #Agrego tamaño de registro
+    archivo_logico_reportes.seek(0,0)
+    aux_reg=pickle.load(archivo_logico_reportes)
+    tam_reg=archivo_logico_reportes.tell()
+    ####
+    archivo_logico_reportes.seek (pos*tam_reg,0)
     pos = archivo_logico_reportes.tell()
-    reporte = pickle.load(archivo_logico_reportes)
+    #reporte = pickle.load(archivo_logico_reportes)
     while archivo_logico_reportes.tell() < tam:
+        reporte = pickle.load(archivo_logico_reportes)
         pos = archivo_logico_reportes.tell()
         if reporte.idmoderador != 0:
             id_mod = reporte.idmoderador
