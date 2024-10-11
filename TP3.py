@@ -516,7 +516,7 @@ def validar_correo_duplicado():
         return email_nuevo
 
 def registro_estudiantes():
-	email = validar_correo_duplicado()
+        email = validar_correo_duplicado()
         tam_registro=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
         tamaño=os.path.getsize(archivo_fisico_estudiantes)
         cant_reg=tamaño//tam_registro
