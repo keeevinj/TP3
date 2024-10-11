@@ -537,10 +537,7 @@ def registro_estudiantes():
         nuevo_usuario.ciudad = validar_campos_texto("Ciudad", 32)
         nuevo_usuario.fecha_nacimiento = modulo_ingrese_fecha()
         formato_estudiante(nuevo_usuario)
-        archivo_logico_estudiantes.seek(0,0)
-        tam_est=os.path.getsize(archivo_fisico_estudiantes)
-        while archivo_logico_estudiantes.tell()<tam_est:
-            aux=pickle.load(archivo_logico_estudiantes)
+        archivo_logico_estudiantes.seek(0,2)
         pickle.dump(nuevo_usuario,archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
 
