@@ -306,8 +306,8 @@ def validar_fecha(D, M, Y):
                     ddmax = 31
                 if 1 <= dd <= ddmax:
                     date = str(year) + "-" + str(mm) + "-" + str(dd)
-		    date = datetime.strptime(date, "%Y-%m-%d").date()
-		    date = str(date)
+                    date = datetime.strptime(date, "%Y-%m-%d").date()
+                    date = str(date)
                     return date
 
     return -1
@@ -1101,9 +1101,74 @@ def desactivar_usuario (parametro):
 #-------------------------------------MENU ADMINISTRADORES------------------------------#
 
 
+def menu_administradores():
+    global usuario
+
+    menu_administradores_principal()
+    opc=validar(0,3)
+    while opc != 0:
+        limpiar_pantalla()
+        match opc:
+            case 1:
+                menu_opc_gestion_usuarios()
+            case 2:
+                menu_opc_gestion_candidatos()
+            case 3:
+                menu_gestion_usuarios()
+            case 0:
+                print ("")
+        if opc != 0:
+            limpiar_pantalla()
+            menu_administradores_principal()
+            opc=validar(0,3)
+
+
+
+def menu_administradores_principal():
+    print ("1. Gestionar usuarios")
+    print ("a. Eliminar un usuario")
+    print ("b. Dar de alta un moderador")
+    print ("c. Desactivar usuario")
+    print ("d. Volver")
+    print ("2. Gestionar Reportes")
+    print ("a. Ver Reportes")
+    print ("b. Volver")
+    print ("3. Reportes Estadisticos")
+    print ("0. Salir")
+
+
+#---------------------------------MENU ADMIN GESTION DE USUARIOS------------------------------------#
+
+
+def menu_print_eliminar_usuario_moderador():
+    print ("1. Gestionar usuarios")
+    print ("a. Eliminar un usuario")
+    print ("b. Dar de alta un moderador")
+    print ("c. Desactivar usuario")
+    print ("d. Volver")
+
+def menu_opc_gestion_usuarios():
+    limpiar_pantalla()
+    menu_print_eliminar_usuario_moderador()
+    opc = validaralfabeticamente("abcd", "a", "d")
+    while opc != "d":
+        match opc:
+            case "a":
+                menu_eliminar_estudiante_moderador()
+            case "b":
+                menu_alta_moderador()
+            case "c":
+                menu_gestion_usuarios()
+            case "d":
+                print("")
+        if opc != "d":
+            limpiar_pantalla()
+            menu_print_eliminar_usuario_moderador()
+            opc = validaralfabeticamente("abcd", "a", "d")
+
+#---------------------------------------MENU ELIMINAR ESTUDIANTES/MODERADOR-------------------------------------------#
 
 def menu_eliminar_estudiante_moderador():
-
 
     opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
     contador_estudiante = contador_inactivos (archivo_logico_estudiantes, archivo_fisico_estudiantes)
@@ -1140,7 +1205,6 @@ def menu_eliminar_estudiante_moderador():
                 usuario_desactivar = validar_idregistro_moderador (usuario_desactivar)
                 if usuario_desactivar != -1:
                     desactivar_moderador (usuario_desactivar)
-
         limpiar_pantalla()
         opcion1 = validar_mientras ("Desea eliminar a un usuario (S/N)", "S", "N")
         contador_estudiante = contador_inactivos (archivo_logico_estudiantes, archivo_fisico_estudiantes)
@@ -1236,6 +1300,34 @@ def borrar_estudiante (self):
         self.ciudad = " "
         self.fecha_nacimiento = " "
 
+#----------------------------------MENU DAR ALTA MODERADOR-----------------------------------#
+
+def menu_alta_moderador():
+
+    opcion1 = validar_mientras ("Desea dar de alta un Moderador (S/N)", "S", "N")
+    while opcion1 !="N":
+        tam = os.path.getsize(archivo_fisico_moderadores)
+        archivo_logico_moderadores.seek (0,0)
+        variable = pickle.load (archivo_logico_moderadores)
+        tamreg = archivo_logico_moderadores.tell()
+        pos = tam - tamreg
+        archivo_logico_moderadores.seek(pos,0)
+        variable = moderadores()
+        variable = pickle.load (archivo_logico_moderadores)
+        id_siguiente = variable.idregistro + 1
+        variable = moderadores ()
+        variable.idregistro = id_siguiente
+        variable.email = validar_correo_duplicado ()
+        variable.contraseña = validar_campos_contrasenia("Contrasenia", 32)
+        variable.estado = True
+        archivo_logico_moderadores.seek(0,2)
+        pickle.dump(variable, archivo_logico_moderadores)
+        archivo_logico_moderadores.flush()
+        print ("El proceso se completo")
+        listado_general_moderadores()
+        opcion1 = validar_mientras ("Desea dar de alta un Moderador (S/N)", "S", "N")
+
+
 #---------------------------------PROGRAMA---------------------------------#
 
 usuario = [None]
@@ -1253,7 +1345,7 @@ while opc != 0 and salida == False:
         registro_estudiantes()
     elif opc == 0 or salida == True:
         print ("Hasta Luego")
-    if opc != 0:
+    if opc != 0 and salida == False:
         print_menu_inicio()
         opc = validar(0,2)
 
