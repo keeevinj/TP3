@@ -259,8 +259,8 @@ def rdob():
 
 
 def main():
-    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores, archivo_logico_reportes, archivo_logico_likes
-    global archivo_fisico_estudiantes, archivo_fisico_administradores, archivo_fisico_moderadores, archivo_fisico_reportes, archivo_fisico_likes
+    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores, archivo_logico_reportes, archivo_logico_likes, archivo_logico_contadordereportes
+    global archivo_fisico_estudiantes, archivo_fisico_administradores, archivo_fisico_moderadores, archivo_fisico_reportes, archivo_fisico_likes, archivo_fisico_contadordereportes
 
     #archivo_fisico_xxxxxxxx="ruta de este .py" + \\xxxxxxxx.dat 
     archivo_fisico_estudiantes = os.getcwd()+"\\estudiantes.dat"
@@ -268,12 +268,14 @@ def main():
     archivo_fisico_moderadores = os.getcwd()+"\\moderadores.dat"
     archivo_fisico_reportes = os.getcwd()+"\\reportes.dat"
     archivo_fisico_likes = os.getcwd()+"\\likes.dat"
+    archivo_fisico_contadordereportes = os.getcwd()+"\\contadordereportes.dat"
 
     archivo_logico_estudiantes = verificar_archivo(archivo_fisico_estudiantes)
     archivo_logico_administradores = verificar_archivo(archivo_fisico_administradores)
     archivo_logico_moderadores = verificar_archivo(archivo_fisico_moderadores)
     archivo_logico_reportes = verificar_archivo(archivo_fisico_reportes)
     archivo_logico_likes = verificar_archivo(archivo_fisico_likes)
+    archivo_logico_contadordereportes = verificar_archivo(archivo_fisico_contadordereportes)
 
     cargar_archivo_admin_mod("moderador", moderadores)
     cargar_archivo_admin_mod("administrador", administradores)
@@ -464,7 +466,7 @@ def tamaño_registro(archivofisico,archivologico):
 def login():
     global usuario
     if check() == True:
-        email = validar_correo_campos_texto("Email", 32)
+        email = validar_campos_texto("Email", 32)
         password = validar_campos_contrasenia ("Contrasenia", 32)
         busco_estudiante = validar_usuario(archivo_fisico_estudiantes, archivo_logico_estudiantes, email, password)
         busco_moderador = validar_usuario(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
@@ -1063,7 +1065,7 @@ def anular_usuarioenreporte (parametro):
 #----------------------------------MENU GESTIONAR REPORTES-----------------------------#
 
 
-def menu_gestion_reportes():
+def menu_opc_gestion_reportes():
     global usuario
     listado_general_reportes ()
     opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ", "S", "N")
@@ -1087,7 +1089,7 @@ def menu_gestion_reportes():
                     auxiliar_idreportado = int(auxreportar.idreportado)
 
                     #DESDE ACA DESACTIVA AL USUARIO#
-                    desactivar_usuario (auxiliar_idereportado)
+                    desactivar_usuario(auxiliar_idreportado)
 
                     #DESDE ACA MODIFICA EL REPORTE#
                     auxreportar.reportadoestado = False
@@ -1173,6 +1175,14 @@ def desactivar_usuario (parametro):
     archivo_logico_estudiantes.seek(auxiliar_idreportado,0)
     pickle.dump(a_usuario, archivo_logico_estudiantes)
     archivo_logico_estudiantes.flush()
+
+#-----------------------------------BONUS TRACK 1---------------------------------#
+def bonus_track_1():
+    pass
+
+#-----------------------------------BONUS TRACK 2---------------------------------#
+def bonus_track_2():
+    pass
 
 #-------------------------------------MENU ADMINISTRADORES------------------------------#
 
