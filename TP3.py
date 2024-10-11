@@ -24,6 +24,7 @@ class likes:
         self.idrem=0
         #ID destinatario
         self.iddest=0
+
 class estudiantes:
     def __init__(self):
         #Asigno atributos
@@ -67,6 +68,14 @@ class reportes:
         self.estadoreporte = 0
         self.detalles = ""
         self.idmoderador = 0
+
+class contadordereportes:
+    def __init__(self):
+        self.idmoderador = 0
+        self.reportesignorados = 0
+        self.reportesaceptados = 0
+        self.totalreportes = 0
+
 
 
 #-------------------------------FORMATEO----------------------------#
@@ -1401,11 +1410,157 @@ def menu_alta_moderador():
         listado_general_moderadores()
         opcion1 = validar_mientras ("Desea dar de alta un Moderador (S/N)", "S", "N")
 
+#-------------------------------MENU REPORTES ESTADISTICOS-----------------------------------#
+def menu_opc_reportes_estadisticos():
+    global contador_grabar, puntero
+
+    reportes_total = totaldereportes ()
+    reportes_ignorados = contador_reportes (2)
+    reportes_ignorados = (reportes_ignorados * 100)/reportes_total
+    reportes_aceptados = contador_reportes (1)
+    reportes_aceptados = (reportes_aceptados * 100)/reportes_total
+    # QUIERO QUE ESTE PROCESO SE EJECUTE SOLAMENTE UNA VEZ EN LA POSICION 0 #
+    if contador_grabar == 0:
+        grabar_cantidad_reportes(0)
+        contador_grabar = contador_grabar + 1
+        puntero = funcion_puntero ()
+    #PROXIMA VEZ QUE SE EJECUTE EL MENU DEBE HACERLO DESDE LA ULTIMA POSICION PUNTERO GRABADA#
+    elif contador_grabar != 0:
+        grabar_cantidad_reportes(puntero)
+        puntero = funcion_puntero ()
+    #DE ESTA FORMA SE EVITA DUPLICAR LOS DATOS EN LOS CONTADORES TOTALES DE REPORTES POR MODERADOR#
+    id_mod_aceptado = listado_general_metricas (1)
+    id_mod_ignorados = listado_general_metricas (2)
+    id_mod_ambos = listado_general_metricas (3)
+    print ("La cantidad de reportes es:", reportes_total)
+    print ("La cantidad de reportes ignorados es:", reportes_ignorados)
+    print ("La cantidad de reportes aceptados es:", reportes_aceptados)
+    print ("El moderador con mayor cantidad de reportes aceptados es:", id_mod_aceptado)
+    print ("El moderador con mayor cantidad de reportes ignorados es:", id_mod_ignorados)
+    print ("El moderador con mayor cantidad de reportes aceptados e ignorados es:", id_mod_ambos)
+    sleep(10)
+
+
+
+def listado_general_metricas (condicion):
+    id_mod = 0
+    contador = 0
+    tam = os.path.getsize(archivo_fisico_contadordereportes)
+    if tam == 0:
+        print("ningun moderador ha gestionado un reporte")
+    else:
+        archivo_logico_contadordereportes.seek (0,0)
+        variable = contadordereportes ()
+        variable = pickle.load(archivo_logico_contadordereportes)
+        while (archivo_logico_contadordereportes.tell() < tam):
+            if condicion == 1 and contador < variable.reportseaceptados:
+               contador = variable.reportesaceptados
+               id_mod = variable.idmoderador
+            if condicion == 2 and contador < variable.reportesignorados:
+               contador = variable.reportesignorados
+               id_mod = variable.idmoderador
+            if condicion == 3 and contador < variable.totalreportes:
+               contador = variable.totalreportes
+               id_mod = variable.idmoderador
+            variable = pickle.load(archivo_logico_contadordereportes)
+        return id_mod
+
+
+
+def funcion_puntero ():
+    tam = os.path.getsize(archivo_fisico_reportes)
+    archivo_logico_reportes.seek (0,0)
+    variable = pickle.load (archivo_logico_reportes)
+    tamreg = archivo_logico_reportes.tell()
+    puntero = tam - tamreg
+    return puntero
+
+def totaldereportes ():
+    tam = os.path.getsize(archivo_fisico_reportes)
+    archivo_logico_reportes.seek (0,0)
+    variable = pickle.load (archivo_logico_reportes)
+    tamreg = archivo_logico_reportes.tell()
+    cantreg = tam // tamreg
+    return cantreg
+
+def contador_reportes (condicion):
+    tam = os.path.getsize(archivo_fisico_reportes)
+    archivo_logico_reportes.seek (0,0)
+    contador = 0
+    while archivo_logico_reportes.tell() < tam:
+        variable = pickle.load(archivo_logico_reportes)
+        if variable.estadoreporte == condicion:
+            contador = contador + 1
+    return contador
+
+def grabar_cantidad_reportes(pos):
+    tam = os.path.getsize(archivo_fisico_reportes)
+    archivo_logico_reportes.seek (pos,0)
+    pos = archivo_logico_reportes.tell()
+    reporte = pickle.load(archivo_logico_reportes)
+    while archivo_logico_reportes.tell() < tam:
+        pos = archivo_logico_reportes.tell()
+        if reporte.idmoderador != 0:
+            id_mod = reporte.idmoderador
+            id_parametro = reporte.idmoderador
+            id_mod = corroborar_id (id_mod)
+            reporte_estado = reporte.estadoreporte
+            if id_mod != -1 and id_mod != -2:
+                archivo_logico_contadordereportes.seek (id_mod,0)
+                grabar_segun_condiciones (id_parametro, reporte_estado, id_mod)
+            elif id_mod == -2:
+                archivo_logico_contadordereportes.seek (0,0)
+                grabar_segun_condiciones (id_parametro, reporte_estado, id_mod)
+            elif id_mod == -1:
+                archivo_logico_contadordereportes.seek (0,2)
+                grabar_segun_condiciones (id_parametro, reporte_estado, id_mod)
+        reporte = pickle.load(archivo_logico_reportes)
+
+
+
+def grabar_segun_condiciones (idregistro, estadoreporte, posicion):
+        variable = contadordereportes ()
+        if posicion == -1 or posicion == -2:
+            variable.idmoderador = idregistro
+        if posicion != -1 and posicion != -2:
+            variable = pickle.load(archivo_logico_contadordereportes)
+        if estadoreporte == 1:
+            variable.reporteaceptados = variable.reporteaceptados + 1
+        if estadoreporte == 2:
+            variable.reporteignorados = variable.reporteignorados + 1
+        variable.totalreportes = variable.totalreportes + 1
+        if posicion != -1 and posicion != -2:
+            archivo_logico_contadordereportes.seek (posicion,0)
+        pickle.dump(variable, archivo_logico_contadordereportes)
+        archivo_logico_contadordereportes.flush()
+
+def corroborar_id (parametro):
+    pos = 0
+    tam = os.path.getsize(archivo_fisico_contadordereportes)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+        return -2
+    else:
+        pos = 0
+        archivo_logico_contadordereportes.seek (0,0)
+        contador = pickle.load (archivo_logico_contadordereportes)
+        while (archivo_logico_contadordereportes.tell() < tam) and (contador.idmoderador != parametro):
+            pos = archivo_logico_contadordereportes.tell()
+            contador = pickle.load(archivo_logico_contadordereportes)
+        if contador.idmoderador == parametro:
+            return pos
+        else:
+            return -1
+
 
 #---------------------------------PROGRAMA---------------------------------#
 
 usuario = [None]
-global salida
+global salida, contador_grabar, puntero
+salida = False
+contador_grabar = 0
+puntero = 0
+
 main()
 
 print_menu_inicio()
