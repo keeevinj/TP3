@@ -452,7 +452,7 @@ def tamaño_registro(archivofisico,archivologico):
 def login():
     global usuario
     if check() == True:
-        email = validar_campos_texto("Email", 32)
+        email = validar_correo_campos_texto("Email", 32)
         password = validar_campos_contrasenia ("Contrasenia", 32)
         busco_estudiante = validar_usuario(archivo_fisico_estudiantes, archivo_logico_estudiantes, email, password)
         busco_moderador = validar_usuario(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
@@ -516,11 +516,7 @@ def validar_correo_duplicado():
         return email_nuevo
 
 def registro_estudiantes():
-    email = validar_campos_texto("Email", 32)
-    busco_estudiante = validar_email_duplicado(archivo_fisico_estudiantes, archivo_logico_estudiantes, email)
-    busco_moderador = validar_email_duplicado(archivo_fisico_moderadores, archivo_logico_moderadores, email)
-    busco_administrador = validar_email_duplicado(archivo_fisico_administradores, archivo_logico_administradores, email)	
-    if (busco_estudiante == -1 and busco_moderador == -1 and busco_administrador == -1):
+	email = validar_correo_duplicado()
         tam_registro=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
         tamaño=os.path.getsize(archivo_fisico_estudiantes)
         cant_reg=tamaño//tam_registro
