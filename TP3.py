@@ -543,8 +543,7 @@ def registro_estudiantes():
             aux=pickle.load(archivo_logico_estudiantes)
         pickle.dump(nuevo_usuario,archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
-    else:
-        print("El mail ya esta en uso")
+
 		
 #-------------------------------------MENU ESTUDIANTES-----------------------------------#
 
