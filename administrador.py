@@ -11,6 +11,6 @@ def totaldereportesignorados()
 	archivo_logico_reportes.seek (0,0)
 	while archivo_logico_reportes.tell()<tam 
 		variable=pickle.load(archivo_logico_reportes)
-		if :archivo_logico_reportes==2
+		if variable.estadoreportes == 2:
 			cont=cont+1
 	return cont
