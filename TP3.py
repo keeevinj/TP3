@@ -955,8 +955,6 @@ def menu_principal_moderadores():
     #print("   a. Ver reportes")
     #print("   b. Volver")
     print("3. Reportes estadisticos")
-    print("4. Bonus track 1")
-    print("5. Bonus track 2")
     print("0. Salir")
 
 def menu_moderadores():
@@ -972,10 +970,6 @@ def menu_moderadores():
                 menu_opc_gestion_reportes()
             case 3:
                 print("En construccion..")
-            case 4:
-                bonus_track_1()
-            case 5:
-                bonus_track_2()
         limpiar_pantalla()
 
 #-----------------------------------MENU GESTION DE USUARIOS---------------------------------#
@@ -1305,7 +1299,48 @@ def desactivar_usuario (parametro):
 
 #-----------------------------------BONUS TRACK 1---------------------------------#
 def bonus_track_1():
-    pass
+    puntajes = {}
+    rachas = {}
+
+    # Inicializar puntajes y rachas
+    archivo_logico_estudiantes.seek(0, 0)
+    while archivo_logico_estudiantes.tell() < os.path.getsize(archivo_fisico_estudiantes):
+        estudiante = pickle.load(archivo_logico_estudiantes)
+        puntajes[estudiante.idregistro] = 0
+        rachas[estudiante.idregistro] = 0
+
+    # Calcular puntajes
+    archivo_logico_likes.seek(0, 0)
+    while archivo_logico_likes.tell() < os.path.getsize(archivo_fisico_likes):
+        like = pickle.load(archivo_logico_likes)
+        remitente = like.idrem
+        destinatario = like.iddest
+
+        if busca_match(remitente, destinatario):
+            puntajes[remitente] += 1
+            rachas[remitente] += 1
+            if rachas[remitente] >= 3:
+                puntajes[remitente] += 1
+        else:
+            puntajes[remitente] -= 1
+            rachas[remitente] = 0
+
+    # Ordenar y mostrar resultados
+    puntajes_ordenados = sorted(puntajes.items(), key=lambda x: x[1], reverse=True)
+    print("Listado de candidatos según su puntaje:")
+    for id_estudiante, puntaje in puntajes_ordenados:
+        estudiante = obtener_estudiante_por_id(id_estudiante)
+        if estudiante:
+            print(f"ID: {id_estudiante}, Nombre: {estudiante.nombre}, Puntaje: {puntaje}")
+
+def obtener_estudiante_por_id(id_estudiante):
+    archivo_logico_estudiantes.seek(0, 0)
+    while archivo_logico_estudiantes.tell() < os.path.getsize(archivo_fisico_estudiantes):
+        estudiante = pickle.load(archivo_logico_estudiantes)
+        if estudiante.idregistro == id_estudiante:
+            return estudiante
+    return None
+
 
 #-----------------------------------BONUS TRACK 2---------------------------------#
 def bonus_track_2():
@@ -1328,6 +1363,8 @@ def menu_administradores():
                 menu_opc_gestion_reportes()
             case 3:
                 menu_opc_reportes_estadisticos()
+	    case 4: 
+		bonus_track_1()
             case 0:
                 print ("")
         if opc != 0:
@@ -1347,6 +1384,7 @@ def menu_administradores_principal():
     #print ("    a. Ver Reportes")
     #print ("    b. Volver")
     print ("3. Reportes Estadisticos")
+    print ("4. Bonus Track 1 - Puntuando Candidatos")
     print ("0. Salir")
 
 
