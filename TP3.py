@@ -43,6 +43,7 @@ class estudiantes:
         self.pais = ""
         self.ciudad = ""
         self.fecha_nacimiento = ""
+	self.super_like = 1 #bonus2
 
 class moderadores:
     def __init__(self):
@@ -590,6 +591,7 @@ def registro_estudiantes():
         nuevo_usuario.pais = validar_campos_texto("Pais", 32)
         nuevo_usuario.ciudad = validar_campos_texto("Ciudad", 32)
         nuevo_usuario.fecha_nacimiento = modulo_ingrese_fecha()
+	nuevo_usuario.super_like = 1 #bonus2
         formato_estudiante(nuevo_usuario)
         archivo_logico_estudiantes.seek(0,2)
         pickle.dump(nuevo_usuario,archivo_logico_estudiantes)
@@ -793,24 +795,66 @@ def menu_ver_candidatos():
                 print("Su fecha de nacimiento es: ", estudiante.fecha_nacimiento)
                 print("Su edad es: ", edad)
     print("¿Desea dar me gusta a algun estudiante?")
-    print("S/N")
-    opc=validaralfabeticamente("NS","N","S")
-    if opc != "N":
-        usuario_id=input("Ingrese ID del estudiante a dar me gusta: ")
-        dest=int(usuario_id)
-        usuario_id=validar_idregistro_nombre(usuario_id, 1)
-        while usuario_id==-1 or dest == usuario.idregistro:
-            usuario_id=input("Ingrese ID del estudiante a dar me gusta: ")
-            dest=int(usuario_id)
-            usuario_id=validar_idregistro_nombre(usuario_id, 1)
-        like=likes()
-        like.idrem=usuario.idregistro
-        like.iddest=dest
-        archivo_logico_likes.seek(0,0)
-        while archivo_logico_likes.tell()<os.path.getsize(archivo_fisico_likes):
-            aux=pickle.load(archivo_logico_likes)
-        pickle.dump(like,archivo_logico_likes)
-        archivo_logico_likes.flush()
+	# -- bonus2 -- #
+    print("S: Me gusta normal")
+    print("L: Super-like (si está disponible)")
+    print("N: No dar me gusta")
+    opc = validaralfabeticamente("NSL", "N", "S")
+    if opc == "S" or opc == "L":
+        usuario_id = input("Ingrese ID del estudiante a dar me gusta: ")
+        dest = int(usuario_id)
+        usuario_id = validar_idregistro_nombre(usuario_id, 1)
+        while usuario_id == -1 or dest == usuario.idregistro:
+            usuario_id = input("Ingrese ID del estudiante a dar me gusta: ")
+            dest = int(usuario_id)
+            usuario_id = validar_idregistro_nombre(usuario_id, 1)
+        
+        if opc == "L" and usuario.super_like > 0:
+            usar_super_like(usuario.idregistro, dest)
+        else:
+            like = likes()
+            like.idrem = usuario.idregistro
+            like.iddest = dest
+            archivo_logico_likes.seek(0, 2)
+            pickle.dump(like, archivo_logico_likes)
+            archivo_logico_likes.flush()
+
+
+def usar_super_like(id_remitente, id_destinatario):
+    # Crear el like del remitente al destinatario
+    like_remitente = likes()
+    like_remitente.idrem = id_remitente
+    like_remitente.iddest = id_destinatario
+    
+    # Crear el like automático del destinatario al remitente
+    like_destinatario = likes()
+    like_destinatario.idrem = id_destinatario
+    like_destinatario.iddest = id_remitente
+    
+    # Guardar ambos likes
+    archivo_logico_likes.seek(0, 2)
+    pickle.dump(like_remitente, archivo_logico_likes)
+    pickle.dump(like_destinatario, archivo_logico_likes)
+    archivo_logico_likes.flush()
+    
+    # Actualizar el contador de super-likes del remitente
+    actualizar_super_like(id_remitente)
+
+# -- bonus2 -- #
+
+def actualizar_super_like(id_estudiante):
+    encontrado = False
+    archivo_logico_estudiantes.seek(0, 0)
+    while encontrado == False and archivo_logico_estudiantes.tell() < os.path.getsize(archivo_fisico_estudiantes):
+        pos = archivo_logico_estudiantes.tell()
+        estudiante = pickle.load(archivo_logico_estudiantes)
+        if estudiante.idregistro == id_estudiante:
+            estudiante.super_like -= 1
+            archivo_logico_estudiantes.seek(pos)
+            pickle.dump(estudiante, archivo_logico_estudiantes)
+            archivo_logico_estudiantes.flush()
+            encontrado = True
+
 
 def busca_likes(id_rem,id_dest):
     devolver=0
