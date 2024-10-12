@@ -728,7 +728,6 @@ def menu_editar_datos_personales():
             formato_estudiante(aux)
             tam_reg=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
             archivo_logico_estudiantes.seek((aux.idregistro) * tam_reg,0)
-            #archivo_logico_estudiantes.seek((aux.idregistro+1) * tam_reg,0)
             pickle.dump(aux,archivo_logico_estudiantes)
             archivo_logico_estudiantes.flush()
 
@@ -742,6 +741,7 @@ def menu_eliminar_perfil():
     match opc:
         case 0:
             usuario.estado = False
+            anular_usuarioenreporte(usuario.idregistro)
             tam_registro=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
             pos=usuario.idregistro
             archivo_logico_estudiantes.seek(pos*tam_registro,0)
@@ -799,7 +799,7 @@ def menu_ver_candidatos():
         usuario_id=input("Ingrese ID del estudiante a dar me gusta: ")
         dest=int(usuario_id)
         usuario_id=validar_idregistro_nombre(usuario_id, 1)
-        while usuario_id==-1:
+        while usuario_id==-1 or dest == usuario.idregistro:
             usuario_id=input("Ingrese ID del estudiante a dar me gusta: ")
             dest=int(usuario_id)
             usuario_id=validar_idregistro_nombre(usuario_id, 1)
@@ -813,16 +813,13 @@ def menu_ver_candidatos():
         archivo_logico_likes.flush()
 
 def busca_likes(id_rem,id_dest):
+    devolver=0
     archivo_logico_likes.seek(0,0)
     like=likes()
-    like=pickle.load(archivo_logico_likes)
-    while archivo_logico_likes.tell()<os.path.getsize(archivo_fisico_likes) and (like.idrem != id_rem and like.iddest != id_dest):
+    while archivo_logico_likes.tell()<os.path.getsize(archivo_fisico_likes):# and (like.idrem != id_rem and like.iddest != id_dest):
         like=pickle.load(archivo_logico_likes)
-    if (like.idrem == id_rem and like.iddest == id_dest):
-        devolver=1
-        #print("Le dio like!")
-    else:
-        devolver=0
+        if (like.idrem == id_rem and like.iddest == id_dest):
+            devolver=1
     return devolver
 
 def busca_match(id_rem,id_dest):
@@ -876,6 +873,8 @@ def menu_reportar_candidato():
         reporte.idreportado=dest
         reporte.razon=razon
         reporte.detalles=detalles
+        reporte.reportanteestado = True
+        reporte.reportadoestado = True
         formato_reportes(reporte)
         pickle.dump(reporte,archivo_logico_reportes)
         archivo_logico_reportes.flush()
@@ -931,16 +930,16 @@ def menu_opc_reportes():
     cant_est=contador_general(archivo_logico_estudiantes,archivo_fisico_estudiantes)
     for i in range(cant_est):
         if i != usuario.idregistro:
-            if busca_likes(usuario.idregistro,i)==1:
+            if busca_likes(usuario.idregistro,i)==1 and busca_likes(i,usuario.idregistro)==0:
                 cant_likes_dados=cant_likes_dados+1
             if busca_match(usuario.idregistro,i)==1:
                 cant_match=cant_match+1
-            if busca_likes(i,usuario.idregistro)==1:
+            if busca_likes(i,usuario.idregistro)==1 and busca_likes(usuario.idregistro,i)==0:
                 cant_likes_recibidos=cant_likes_recibidos+1
     if cant_match == 0:
         print("Matcheados sobre el % posible: 0%")
     else:
-        print("Matcheados sobre el % posible: ",(cant_match/(cant_est-1))*100)
+        print("Matcheados sobre el % posible: ",round((cant_match/(cant_est-1))*100),"%")
     print("Likes dados y no recibidos: ",cant_likes_dados)
     print("Likes recibidos y no respondidos: ",cant_likes_recibidos)
     sleep(5)
@@ -1137,59 +1136,93 @@ def anular_usuarioenreporte (parametro):
                     archivo_logico_reportes.flush()
 
 #----------------------------------MENU GESTIONAR REPORTES-----------------------------#
-#----------------------------------Agregar sub menú opciones a y b-----------------------------#
+
+def menu_print_opc_gestion_reportes():
+    print ("2. Gestionar reportes")
+    print ("    a. Ver reportes")
+    print ("    b. Volver")
+
+def menu_adm_gestion_usuarios():
+    limpiar_pantalla()
+    menu_print_eliminar_usuario_moderador()
+    opc = validaralfabeticamente("abcd", "a", "d")
+    while opc != "d":
+        match opc:
+            case "a":
+                menu_eliminar_estudiante_moderador()
+            case "b":
+                menu_alta_moderador()
+            case "c":
+                menu_gestion_usuarios()
+            case "d":
+                print("")
+        if opc != "d":
+            limpiar_pantalla()
+            menu_print_eliminar_usuario_moderador()
+            opc = validaralfabeticamente("abcd", "a", "d")
+
 
 def menu_opc_gestion_reportes():
     global usuario
-    listado_general_reportes ()
-    opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ", "S", "N")
-    while opcion != "N":
+    limpiar_pantalla()
+    menu_print_opc_gestion_reportes()
+    opc = validaralfabeticamente("ab","a","b")
+    while opc != "b":
+        match opc:
+            case "a":
+                listado_general_reportes ()
+                opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ", "S", "N")
+                while opcion != "N":
+                    limpiar_pantalla()
+                    listado_general_reportes ()
+                    reporte_numero = input ("Ingrese el nro de reporte:")
+                    if reporte_numero.isdigit():
+                        reporte_numero = int(reporte_numero)
+                        reporte_numero = buscar_nro_reporte (reporte_numero)
+                        if reporte_numero != -1:
+                            print("Que desea hacer:")
+                            print("1. Tomar el reporte y desactivar usuario")
+                            print("2. Ignorar el reporte")
+                            opc = validar(1,2)
+                            if opc == 1:
+                                id_mod = usuario.idregistro
+                                archivo_logico_reportes.seek(reporte_numero,0)
+                                auxreportar = reportes ()
+                                auxreportar = pickle.load(archivo_logico_reportes)
+                                auxiliar_idreportado = int(auxreportar.idreportado)
+
+                                #DESDE ACA DESACTIVA AL USUARIO#
+                                desactivar_usuario(auxiliar_idreportado)
+
+                                #DESDE ACA MODIFICA EL REPORTE#
+                                auxreportar.reportadoestado = False
+                                auxreportar.estadoreporte = 1
+                                auxreportar.idmoderador = id_mod
+                                archivo_logico_reportes.seek(reporte_numero,0)
+                                pickle.dump(auxreportar, archivo_logico_reportes)
+                                archivo_logico_reportes.flush()
+
+                            if opc == 2:
+
+                                id_mod = usuario.idregistro
+
+                                #DESDE ACA MODIFICA EL REPORTE#
+                                archivo_logico_reportes.seek(reporte_numero,0)
+                                auxreportar = reportes ()
+                                auxreportar = pickle.load(archivo_logico_reportes)
+                                auxreportar.estadoreporte = 2
+                                auxreportar.idmoderador = id_mod
+                                archivo_logico_reportes.seek(reporte_numero,0)
+                                pickle.dump(auxreportar, archivo_logico_reportes)
+                                archivo_logico_reportes.flush()
+                    limpiar_pantalla()
+                    listado_general_reportes ()
+                    opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ","S", "N")
+            case "b":
+                print("")
         limpiar_pantalla()
-        listado_general_reportes ()
-        reporte_numero = input ("Ingrese el nro de reporte:")
-        if reporte_numero.isdigit():
-            reporte_numero = int(reporte_numero)
-            reporte_numero = buscar_nro_reporte (reporte_numero)
-            if reporte_numero != -1:
-                print("Que desea hacer:")
-                print("1. Tomar el reporte y desactivar usuario")
-                print("2. Ignorar el reporte")
-                opc = validar(1,2)
-                if opc == 1:
-                    id_mod = usuario.idregistro
-                    archivo_logico_reportes.seek(reporte_numero,0)
-                    auxreportar = reportes ()
-                    auxreportar = pickle.load(archivo_logico_reportes)
-                    auxiliar_idreportado = int(auxreportar.idreportado)
-
-                    #DESDE ACA DESACTIVA AL USUARIO#
-                    desactivar_usuario(auxiliar_idreportado)
-
-                    #DESDE ACA MODIFICA EL REPORTE#
-                    auxreportar.reportadoestado = False
-                    auxreportar.estadoreporte = 1
-                    auxreportar.idmoderador = id_mod
-                    archivo_logico_reportes.seek(reporte_numero,0)
-                    pickle.dump(auxreportar, archivo_logico_reportes)
-                    archivo_logico_reportes.flush()
-
-                if opc == 2:
-
-                    id_mod = usuario.idregistro
-
-                    #DESDE ACA MODIFICA EL REPORTE#
-                    archivo_logico_reportes.seek(reporte_numero,0)
-                    auxreportar = reportes ()
-                    auxreportar = pickle.load(archivo_logico_reportes)
-                    auxreportar.estadoreporte = 2
-                    auxreportar.idmoderador = id_mod
-                    archivo_logico_reportes.seek(reporte_numero,0)
-                    pickle.dump(auxreportar, archivo_logico_reportes)
-                    archivo_logico_reportes.flush()
-        limpiar_pantalla()
-        listado_general_reportes ()
-        opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ","S", "N")
-
+        menu_print_opc_gestion_reportes()
+        opc = validaralfabeticamente("ab","a","b")
 
 '''def buscar_nro_reporte (parametro):
 
@@ -1239,8 +1272,6 @@ def listado_general_reportes ():
         archivo_logico_reportes.seek (0,0)
         while (archivo_logico_reportes.tell() < tam):
             reporte = pickle.load(archivo_logico_reportes)
-            #####VER ESTO DEL REPORTANTE ESTADO
-            #####PORQUE REPORTO A ALGUIEN DESDE EL MENU DE ESTUDIANTE Y NO LO CARGO
             if reporte.reportanteestado == True and reporte.reportadoestado == True and reporte.estadoreporte == 0:
                 mostrar_reporte (reporte)
 
