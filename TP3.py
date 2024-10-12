@@ -239,10 +239,10 @@ def cargar_archivo_likes():
     for i in range(4):
         like=likes()
         like.idrem=i
-        like.iddest=random.randint(0,4)
+        like.iddest=random.randint(0,3)
         #Para que no se den like a si mismos
         while like.iddest==like.idrem:
-            like.iddest=random.randint(0,4)
+            like.iddest=random.randint(0,3)
         pickle.dump(like,archivo_logico_likes)
         archivo_logico_likes.flush()
 
@@ -313,6 +313,7 @@ def validar_campos_contrasenia(campo_validar, longitud):
 
 def validar_fecha(D, M, Y):
 
+
     if D.isdigit() and M.isdigit() and Y.isdigit():
         dd = int(D)
         mm = int(M)
@@ -329,9 +330,17 @@ def validar_fecha(D, M, Y):
                     date = str(year) + "-" + str(mm) + "-" + str(dd)
                     date = datetime.strptime(date, "%Y-%m-%d").date()
                     date = str(date)
-                    return date
-
-    return -1
+                    #return date
+                else:
+                    date=-1
+            else:
+                date=-1
+        else:
+            date=-1
+    else:
+        date = -1
+    #return -1
+    return date
 
 def modulo_ingrese_fecha():
     print("Ingresando fecha de nacimiento DD-MM-YYYY")
@@ -352,9 +361,10 @@ def validar_opcion_numerica(opcion, minimo, maximo):
 
     if opcion.isdigit():
         opcion = int(opcion)
-        if minimo <= opcion <= maximo:
-            return opcion
-    return -1
+        if not (minimo <= opcion <= maximo):
+            opcion=-1
+    return opcion
+
 
 def validar(minimo,maximo):
     opc = input("ingrese una opcion del " + str(minimo) + " al " + str(maximo) + ": ")
@@ -372,10 +382,11 @@ def validar_opcion_alfabetica(opcion, string):
     while i < len(string) and string[i] != opcion:
         i = i + 1
 
-    if i < len(string) and string[i] == opcion:
-        return opcion
-    else:
-        return -1
+    if not (i < len(string) and string[i] == opcion):
+        #return opcion
+        opcion=-1
+
+    return opcion
 
 def validaralfabeticamente(string, letrainicial, letrafinal):
     opc = input("Ingrese una opción de la " + letrainicial + " a " + letrafinal + ": ")
@@ -421,8 +432,7 @@ def check():
     else:
         return False
 
-
-def validar_usuario(archivofisico, archivologico, correo, password):
+def validar_usuario_administrador(archivofisico, archivologico, correo, password):
     pos = 0
     tam = os.path.getsize(archivofisico)
     if tam == 0:
@@ -433,15 +443,39 @@ def validar_usuario(archivofisico, archivologico, correo, password):
         while (archivologico.tell() < tam) and (usuario.email != correo):
             pos = archivologico.tell()
             usuario = pickle.load(archivologico)
-        if (usuario.email == correo) and (usuario.contraseña == password):
-            if archivologico == archivo_logico_administradores:
-                return pos
-            elif ((archivologico == archivo_logico_estudiantes) or (archivologico == archivo_logico_moderadores)) and (usuario.estado == True):
-                return pos
-            else:
-                return -1
-        else:
-            return -1
+        if not ((usuario.email == correo) and (usuario.contraseña == password) and (archivologico == archivo_logico_administradores)):
+            pos = -1
+    return pos
+
+def validar_usuario_estudiante(archivofisico, archivologico, correo, password):
+    pos = 0
+    tam = os.path.getsize(archivofisico)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivologico.seek (0,0)
+        usuario = pickle.load (archivologico)
+        while (archivologico.tell() < tam) and (usuario.email != correo):
+            pos = archivologico.tell()
+            usuario = pickle.load(archivologico)
+        if not ((usuario.email == correo) and (usuario.contraseña == password) and (archivologico == archivo_logico_estudiantes) and (usuario.estado == True)):
+            pos = -1
+    return pos
+
+def validar_usuario_moderador(archivofisico, archivologico, correo, password):
+    pos = 0
+    tam = os.path.getsize(archivofisico)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivologico.seek (0,0)
+        usuario = pickle.load (archivologico)
+        while (archivologico.tell() < tam) and (usuario.email != correo):
+            pos = archivologico.tell()
+            usuario = pickle.load(archivologico)
+        if not ((usuario.email == correo) and (usuario.contraseña == password) and (archivologico == archivo_logico_moderadores) and (usuario.estado == True)):
+            pos = -1
+    return pos
 
 def validar_email_duplicado(archivofisico, archivologico, correo):
     pos = 0
@@ -454,13 +488,13 @@ def validar_email_duplicado(archivofisico, archivologico, correo):
         while (archivologico.tell() < tam) and (usuario.email != correo):
             pos = archivologico.tell()
             usuario = pickle.load(archivologico)
-        if (usuario.email == correo):
-                return pos
-        else:
-            return -1
+        if not (usuario.email == correo):
+                pos = -1
+    return pos
 
 def tamaño_registro(archivofisico,archivologico):
-
+    global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores, archivo_logico_reportes, archivo_logico_likes, archivo_logico_contadordereportes
+    global archivo_fisico_estudiantes, archivo_fisico_administradores, archivo_fisico_moderadores, archivo_fisico_reportes, archivo_fisico_likes, archivo_fisico_contadordereportes
     tamaño_total = os.path.getsize(archivofisico)
     if tamaño_total == 0:
         print("no se puede hacer la consulta, cargar datos primero")
@@ -475,9 +509,9 @@ def login():
     if check() == True:
         email = validar_campos_texto("Email", 32)
         password = validar_campos_contrasenia ("Contrasenia", 32)
-        busco_estudiante = validar_usuario(archivo_fisico_estudiantes, archivo_logico_estudiantes, email, password)
-        busco_moderador = validar_usuario(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
-        busco_administrador = validar_usuario(archivo_fisico_administradores, archivo_logico_administradores, email, password)
+        busco_estudiante = validar_usuario_estudiante(archivo_fisico_estudiantes, archivo_logico_estudiantes, email, password)
+        busco_moderador = validar_usuario_moderador(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
+        busco_administrador = validar_usuario_administrador(archivo_fisico_administradores, archivo_logico_administradores, email, password)
         intentos = 0
         while (intentos < 3) and (busco_estudiante == -1) and (busco_moderador == -1) and (busco_administrador == -1):
             intentos = intentos + 1
@@ -488,9 +522,9 @@ def login():
                 print("Usuario y/o contrasenia incorrectas o Usuario inactivo")
                 email = validar_campos_texto("Email", 32)
                 password = validar_campos_contrasenia ("Contrasenia", 32)
-                busco_estudiante = validar_usuario(archivo_fisico_estudiantes, archivo_logico_estudiantes, email, password)
-                busco_moderador = validar_usuario(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
-                busco_administrador = validar_usuario(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
+                busco_estudiante = validar_usuario_estudiante(archivo_fisico_estudiantes, archivo_logico_estudiantes, email, password)
+                busco_moderador = validar_usuario_moderador(archivo_fisico_moderadores, archivo_logico_moderadores, email, password)
+                busco_administrador = validar_usuario_administrador(archivo_fisico_administradores, archivo_logico_administradores, email, password)
 
         if busco_estudiante != -1:
             usuario=estudiantes()
@@ -542,7 +576,7 @@ def registro_estudiantes():
         tamaño=os.path.getsize(archivo_fisico_estudiantes)
         cant_reg=tamaño//tam_registro
         nuevo_usuario = estudiantes()
-        nuevo_usuario.idregistro = cant_reg-1
+        nuevo_usuario.idregistro = cant_reg
         nuevo_usuario.email = email
         nuevo_usuario.contraseña = validar_campos_contrasenia("Contrasenia", 32)
         nuevo_usuario.nombre = validar_campos_texto("Nombre", 32)
@@ -690,11 +724,12 @@ def menu_editar_datos_personales():
             case 10:
                 aux.ciudad = validar_campos_texto("Ciudad",32)
             case 11:
-                fecha = modulo_ingrese_fecha()
+                aux.fecha_nacimiento = modulo_ingrese_fecha()
         if opc != 0:
             formato_estudiante(aux)
             tam_reg=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
-            archivo_logico_estudiantes.seek((aux.idregistro+1) * tam_reg,0)
+            archivo_logico_estudiantes.seek((aux.idregistro) * tam_reg,0)
+            #archivo_logico_estudiantes.seek((aux.idregistro+1) * tam_reg,0)
             pickle.dump(aux,archivo_logico_estudiantes)
             archivo_logico_estudiantes.flush()
 
@@ -710,7 +745,6 @@ def menu_eliminar_perfil():
             usuario.estado = False
             tam_registro=tamaño_registro(archivo_fisico_estudiantes,archivo_logico_estudiantes)
             pos=usuario.idregistro
-            archivo_logico_estudiantes=open(archivo_fisico_estudiantes,"r+b")
             archivo_logico_estudiantes.seek(pos*tam_registro,0)
             pickle.dump(usuario,archivo_logico_estudiantes)
             archivo_logico_estudiantes.flush()
@@ -911,6 +945,7 @@ def menu_opc_reportes():
         print("Matcheados sobre el % posible: ",(cant_match/(cant_est-1))*100)
     print("Likes dados y no recibidos: ",cant_likes_dados)
     print("Likes recibidos y no respondidos: ",cant_likes_recibidos)
+    sleep(5)
 #-------------------------------------MENU MODERADORES-----------------------------------#
 
 def menu_principal_moderadores():
@@ -1018,7 +1053,7 @@ def listado_general_estudiantes ():
                 print (f" El estudiante {variable.idregistro} es {variable.nombre}")
 
 
-def validar_idregistro_nombre (parametro, condicion):
+'''def validar_idregistro_nombre (parametro, condicion):
     pos = 0
     tam = os.path.getsize(archivo_fisico_estudiantes)
     if tam == 0:
@@ -1043,7 +1078,39 @@ def validar_idregistro_nombre (parametro, condicion):
             if variable.nombre == parametro:
                 return pos
             else:
-                return -1
+                return -1'''
+
+def validar_idregistro_nombre (parametro, condicion):
+    pos = 0
+    tam = os.path.getsize(archivo_fisico_estudiantes)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivo_logico_estudiantes.seek (0,0)
+        variable = pickle.load (archivo_logico_estudiantes)
+        if condicion == 1:
+            #Agregue esto porque parametro lo leia como string y el tipo de dato en el registro es INT entonces no comparaba bien.
+            parametro=int(parametro)
+            while (archivo_logico_estudiantes.tell() < tam) and (variable.idregistro != parametro):
+                pos = archivo_logico_estudiantes.tell()
+                variable = pickle.load(archivo_logico_estudiantes)
+            if not(variable.idregistro == parametro):
+                pos = -1
+                #return pos
+            #else:
+                #pos=-1
+                #return -1
+        elif condicion == 2:
+            while (archivo_logico_estudiantes.tell() < tam) and (variable.nombre != parametro):
+                pos = archivo_logico_estudiantes.tell()
+                variable = pickle.load(archivo_logico_estudiantes)
+            if not(variable.nombre == parametro):
+                pos = -1
+                #return pos
+            #else:
+                #pos=-1
+                #return -1
+    return pos
 
 
 def anular_usuarioenreporte (parametro):
@@ -1124,7 +1191,7 @@ def menu_opc_gestion_reportes():
         opcion = validar_mientras ("Desea actualizar algun reporte (S/N): ","S", "N")
 
 
-def buscar_nro_reporte (parametro):
+'''def buscar_nro_reporte (parametro):
 
     pos = 0
     tam = os.path.getsize(archivo_fisico_reportes)
@@ -1139,7 +1206,27 @@ def buscar_nro_reporte (parametro):
         if reporte.nroreporte == parametro  and reporte.idmoderador == 0:
             return pos
         else:
-            return -1
+            return -1'''
+
+def buscar_nro_reporte (parametro):
+
+    pos = 0
+    tam = os.path.getsize(archivo_fisico_reportes)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivo_logico_reportes.seek (0,0)
+        reporte = pickle.load (archivo_logico_reportes)
+        while (archivo_logico_reportes.tell() < tam) and (reporte.nroreporte != parametro):
+            pos = archivo_logico_reportes.tell()
+            reporte = pickle.load(archivo_logico_reportes)
+        if not(reporte.nroreporte == parametro  and reporte.idmoderador == 0):
+            pos = -1
+            #return pos
+        #else:
+            #pos=-1
+            #return -1
+    return pos
 
 
 
@@ -1219,13 +1306,13 @@ def menu_administradores():
 
 def menu_administradores_principal():
     print ("1. Gestionar usuarios")
-    print ("a. Eliminar un usuario")
-    print ("b. Dar de alta un moderador")
-    print ("c. Desactivar usuario")
-    print ("d. Volver")
+    print ("    a. Eliminar un usuario")
+    print ("    b. Dar de alta un moderador")
+    print ("    c. Desactivar usuario")
+    print ("    d. Volver")
     print ("2. Gestionar Reportes")
-    print ("a. Ver Reportes")
-    print ("b. Volver")
+    print ("    a. Ver Reportes")
+    print ("    b. Volver")
     print ("3. Reportes Estadisticos")
     print ("0. Salir")
 
@@ -1235,10 +1322,10 @@ def menu_administradores_principal():
 
 def menu_print_eliminar_usuario_moderador():
     print ("1. Gestionar usuarios")
-    print ("a. Eliminar un usuario")
-    print ("b. Dar de alta un moderador")
-    print ("c. Desactivar usuario")
-    print ("d. Volver")
+    print ("    a. Eliminar un usuario")
+    print ("    b. Dar de alta un moderador")
+    print ("    c. Desactivar usuario")
+    print ("    d. Volver")
 
 def menu_opc_gestion_usuarios():
     limpiar_pantalla()
@@ -1322,7 +1409,7 @@ def desactivar_moderador (parametro):
     pickle.dump(a_usuario, archivo_logico_moderadores)
     archivo_logico_moderadores.flush()
 
-def contador_inactivos (archivologico, archivofisico):
+'''def contador_inactivos (archivologico, archivofisico):
     tamaño = os.path.getsize(archivofisico)
     archivologico.seek (0,0)
     contador = 0
@@ -1331,10 +1418,24 @@ def contador_inactivos (archivologico, archivofisico):
         if variable.estado == True:
             return 1
     return -1
+'''
+def contador_inactivos (archivologico, archivofisico):
+    tamaño = os.path.getsize(archivofisico)
+    archivologico.seek (0,0)
+    contador = 0
+    while archivologico.tell() < tamaño:
+        variable = pickle.load(archivologico)
+        if variable.estado == True:
+            devolver=1
+            #return 1
+        else:
+            devolver=-1
+    #return -1
+    return devolver
 
 
 
-def validar_idregistro_moderador (parametro):
+'''def validar_idregistro_moderador (parametro):
     pos = 0
     tam = os.path.getsize(archivo_fisico_moderadores)
     if tam == 0:
@@ -1349,6 +1450,26 @@ def validar_idregistro_moderador (parametro):
             return pos
         else:
             return -1
+'''
+def validar_idregistro_moderador (parametro):
+    pos = 0
+    tam = os.path.getsize(archivo_fisico_moderadores)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+    else:
+        archivo_logico_moderadores.seek (0,0)
+        variable = pickle.load (archivo_logico_moderadores)
+        while (archivo_logico_moderadores.tell() < tam) and (variable.idregistro != parametro):
+            pos = archivo_logico_moderadores.tell()
+            variable = pickle.load(archivo_logico_moderadores)
+        if not(variable.idregistro == parametro):
+            pos = -1
+            #return pos
+        #else:
+            #pos=-1
+            #return -1
+    return pos
+
 
 
 def listado_general_moderadores ():
@@ -1543,7 +1664,7 @@ def grabar_segun_condiciones (idregistro, estadoreporte, posicion):
         pickle.dump(variable, archivo_logico_contadordereportes)
         archivo_logico_contadordereportes.flush()
 
-def corroborar_id (parametro):
+'''def corroborar_id (parametro):
     pos = 0
     tam = os.path.getsize(archivo_fisico_contadordereportes)
     if tam == 0:
@@ -1559,7 +1680,29 @@ def corroborar_id (parametro):
         if contador.idmoderador == parametro:
             return pos
         else:
-            return -1
+            return -1'''
+
+def corroborar_id (parametro):
+    pos = 0
+    tam = os.path.getsize(archivo_fisico_contadordereportes)
+    if tam == 0:
+        print("no se puede hacer la consulta, cargar datos primero")
+        pos=-2
+        #return -2
+    else:
+        pos = 0
+        archivo_logico_contadordereportes.seek (0,0)
+        contador = pickle.load (archivo_logico_contadordereportes)
+        while (archivo_logico_contadordereportes.tell() < tam) and (contador.idmoderador != parametro):
+            pos = archivo_logico_contadordereportes.tell()
+            contador = pickle.load(archivo_logico_contadordereportes)
+        if not (contador.idmoderador == parametro):
+            pos = -1
+            #return pos
+        #else:
+            #pos=-1
+            #return -1
+    return pos
 
 
 #---------------------------------PROGRAMA---------------------------------#
