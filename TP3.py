@@ -1334,12 +1334,14 @@ def bonus_track_1():
             print(f"ID: {id_estudiante}, Nombre: {estudiante.nombre}, Puntaje: {puntaje}")
 
 def obtener_estudiante_por_id(id_estudiante):
+    estudiante=estudiantes()
     archivo_logico_estudiantes.seek(0, 0)
-    while archivo_logico_estudiantes.tell() < os.path.getsize(archivo_fisico_estudiantes):
+    while (archivo_logico_estudiantes.tell() < os.path.getsize(archivo_fisico_estudiantes)) and (estudiante.idregistro != id_estudiante):
         estudiante = pickle.load(archivo_logico_estudiantes)
-        if estudiante.idregistro == id_estudiante:
-            return estudiante
-    return None
+    if estudiante.idregistro != id_estudiante:
+        estudiante=None
+    return estudiante
+
 
 
 #-----------------------------------BONUS TRACK 2---------------------------------#
@@ -1363,8 +1365,8 @@ def menu_administradores():
                 menu_opc_gestion_reportes()
             case 3:
                 menu_opc_reportes_estadisticos()
-	    case 4: 
-		bonus_track_1()
+            case 4:
+                bonus_track_1()
             case 0:
                 print ("")
         if opc != 0:
