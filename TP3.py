@@ -1325,21 +1325,30 @@ def bonus_track_1():
             puntajes[remitente] -= 1
             rachas[remitente] = 0
 
-    # Ordenar y mostrar resultados
-    puntajes_ordenados = sorted(puntajes.items(), key=lambda x: x[1], reverse=True)
+    # Ordenar puntajes usando búsqueda burbuja
+    puntajes_lista = list(puntajes.items())
+    n = len(puntajes_lista)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            # Comparar el puntaje actual con el siguiente
+            if puntajes_lista[j][1] < puntajes_lista[j+1][1]:
+                # Intercambiar si están en el orden incorrecto
+                puntajes_lista[j], puntajes_lista[j+1] = puntajes_lista[j+1], puntajes_lista[j]
+
+    # Mostrar resultados
     print("Listado de candidatos según su puntaje:")
-    for id_estudiante, puntaje in puntajes_ordenados:
+    for id_estudiante, puntaje in puntajes_lista:
         estudiante = obtener_estudiante_por_id(id_estudiante)
         if estudiante:
             print(f"ID: {id_estudiante}, Nombre: {estudiante.nombre}, Puntaje: {puntaje}")
 
 def obtener_estudiante_por_id(id_estudiante):
-    estudiante=estudiantes()
+    estudiante = estudiantes()
     archivo_logico_estudiantes.seek(0, 0)
     while (archivo_logico_estudiantes.tell() < os.path.getsize(archivo_fisico_estudiantes)) and (estudiante.idregistro != id_estudiante):
         estudiante = pickle.load(archivo_logico_estudiantes)
     if estudiante.idregistro != id_estudiante:
-        estudiante=None
+        estudiante = None
     return estudiante
 
 
@@ -1355,7 +1364,7 @@ def menu_administradores():
     global usuario
 
     menu_administradores_principal()
-    opc=validar(0,3)
+    opc=validar(0,4)
     while opc != 0:
         limpiar_pantalla()
         match opc:
