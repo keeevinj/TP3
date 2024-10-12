@@ -949,11 +949,11 @@ def menu_opc_reportes():
 
 def menu_principal_moderadores():
     print("1. Gestionar usuarios")
-    print("   a. Desactivar usuarios")
-    print("   b. Volver")
+    #print("   a. Desactivar usuarios")
+    #print("   b. Volver")
     print("2. Gestionar reportes")
-    print("   a. Ver reportes")
-    print("   b. Volver")
+    #print("   a. Ver reportes")
+    #print("   b. Volver")
     print("3. Reportes estadisticos")
     print("4. Bonus track 1")
     print("5. Bonus track 2")
@@ -1339,13 +1339,13 @@ def menu_administradores():
 
 def menu_administradores_principal():
     print ("1. Gestionar usuarios")
-    print ("    a. Eliminar un usuario")
-    print ("    b. Dar de alta un moderador")
-    print ("    c. Desactivar usuario")
-    print ("    d. Volver")
+    #print ("    a. Eliminar un usuario")
+    #print ("    b. Dar de alta un moderador")
+    #print ("    c. Desactivar usuario")
+    #print ("    d. Volver")
     print ("2. Gestionar Reportes")
-    print ("    a. Ver Reportes")
-    print ("    b. Volver")
+    #print ("    a. Ver Reportes")
+    #print ("    b. Volver")
     print ("3. Reportes Estadisticos")
     print ("0. Salir")
 
@@ -1677,7 +1677,7 @@ def grabar_cantidad_reportes(pos):
             elif id_mod == -1:
                 archivo_logico_contadordereportes.seek (0,2)
                 grabar_segun_condiciones (id_parametro, reporte_estado, id_mod)
-        reporte = pickle.load(archivo_logico_reportes)
+        #reporte = pickle.load(archivo_logico_reportes)
 
 
 #-------------------------------------Modifique reporte como adm y se rompió-----------------------------------#
