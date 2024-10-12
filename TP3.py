@@ -330,7 +330,6 @@ def validar_fecha(D, M, Y):
                     date = str(year) + "-" + str(mm) + "-" + str(dd)
                     date = datetime.strptime(date, "%Y-%m-%d").date()
                     date = str(date)
-                    #return date
                 else:
                     date=-1
             else:
@@ -1290,7 +1289,7 @@ def menu_administradores():
         limpiar_pantalla()
         match opc:
             case 1:
-                menu_opc_gestion_usuarios()
+                menu_adm_gestion_usuarios()
             case 2:
                 menu_opc_gestion_reportes()
             case 3:
@@ -1327,7 +1326,7 @@ def menu_print_eliminar_usuario_moderador():
     print ("    c. Desactivar usuario")
     print ("    d. Volver")
 
-def menu_opc_gestion_usuarios():
+def menu_adm_gestion_usuarios():
     limpiar_pantalla()
     menu_print_eliminar_usuario_moderador()
     opc = validaralfabeticamente("abcd", "a", "d")
