@@ -774,9 +774,9 @@ def menu_ver_candidatos():
         print("no se puede hacer la consulta, cargar datos primero")
     else:
         archivo_logico_estudiantes.seek (0,0)
-        estudiante = pickle.load(archivo_logico_estudiantes)
         while (archivo_logico_estudiantes.tell() < tam):
-            if (usuario.email != estudiante.email):
+            estudiante = pickle.load(archivo_logico_estudiantes)
+            if (usuario.email != estudiante.email and estudiante.estado != False):
                 edad = calcularedad(estudiante.fecha_nacimiento)
                 print("-------------------------------------------------------------")
                 print("Estudiante N°: ",estudiante.idregistro)
@@ -792,7 +792,6 @@ def menu_ver_candidatos():
                 print("Su ciudad es: ", estudiante.ciudad)
                 print("Su fecha de nacimiento es: ", estudiante.fecha_nacimiento)
                 print("Su edad es: ", edad)
-            estudiante = pickle.load(archivo_logico_estudiantes)
     print("¿Desea dar me gusta a algun estudiante?")
     print("S/N")
     opc=validaralfabeticamente("NS","N","S")
@@ -946,6 +945,8 @@ def menu_opc_reportes():
     print("Likes recibidos y no respondidos: ",cant_likes_recibidos)
     sleep(5)
 #-------------------------------------MENU MODERADORES-----------------------------------#
+
+#-------------------------------------PROBAR-----------------------------------#
 
 def menu_principal_moderadores():
     print("1. Gestionar usuarios")
@@ -1136,7 +1137,7 @@ def anular_usuarioenreporte (parametro):
                     archivo_logico_reportes.flush()
 
 #----------------------------------MENU GESTIONAR REPORTES-----------------------------#
-
+#----------------------------------Agregar sub menú opciones a y b-----------------------------#
 
 def menu_opc_gestion_reportes():
     global usuario
@@ -1238,6 +1239,8 @@ def listado_general_reportes ():
         archivo_logico_reportes.seek (0,0)
         while (archivo_logico_reportes.tell() < tam):
             reporte = pickle.load(archivo_logico_reportes)
+            #####VER ESTO DEL REPORTANTE ESTADO
+            #####PORQUE REPORTO A ALGUIEN DESDE EL MENU DE ESTUDIANTE Y NO LO CARGO
             if reporte.reportanteestado == True and reporte.reportadoestado == True and reporte.estadoreporte == 0:
                 mostrar_reporte (reporte)
 
@@ -1646,7 +1649,7 @@ def grabar_cantidad_reportes(pos):
         reporte = pickle.load(archivo_logico_reportes)
 
 
-
+#-------------------------------------Modifique reporte como adm y se rompió-----------------------------------#
 def grabar_segun_condiciones (idregistro, estadoreporte, posicion):
         variable = contadordereportes ()
         if posicion == -1 or posicion == -2:
@@ -1654,9 +1657,9 @@ def grabar_segun_condiciones (idregistro, estadoreporte, posicion):
         if posicion != -1 and posicion != -2:
             variable = pickle.load(archivo_logico_contadordereportes)
         if estadoreporte == 1:
-            variable.reporteaceptados = variable.reporteaceptados + 1
+            variable.reportesaceptados = variable.reportesaceptados + 1
         if estadoreporte == 2:
-            variable.reporteignorados = variable.reporteignorados + 1
+            variable.reportesignorados = variable.reportesignorados + 1
         variable.totalreportes = variable.totalreportes + 1
         if posicion != -1 and posicion != -2:
             archivo_logico_contadordereportes.seek (posicion,0)
