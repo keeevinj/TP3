@@ -18,12 +18,23 @@ def limpiar_pantalla():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 #--------------------------------REGISTROS-------------------------------#
+'''
+Registro likes:
+idrem, iddest: int
+'''
 class likes:
     def __init__(self):
         #ID remitente
         self.idrem=0
         #ID destinatario
         self.iddest=0
+
+'''
+Registro estudiantes:
+idregistro,super_like: int
+email, nombre, sexo, contraseña, hobbies, materia_fav, deporte_fav, materia_fuerte, materia_debil, biografia, pais, ciudad, fecha_nacimiento: string
+estado: booleano
+'''
 
 class estudiantes:
     def __init__(self):
@@ -45,6 +56,13 @@ class estudiantes:
         self.fecha_nacimiento = ""
         self.super_like = 1 #bonus2
 
+
+'''
+Registro modereadores
+idregistro: int
+email, contraseña: string
+estado: booleano
+'''
 class moderadores:
     def __init__(self):
         self.idregistro = 0
@@ -52,11 +70,24 @@ class moderadores:
         self.contraseña = ""
         self.estado = False
 
+'''
+Registro administradores
+idregistro: int
+email, contraseña: string
+'''
+
 class administradores:
     def __init__(self):
         self.idregistro = 0
         self.email = ""
         self.contraseña = ""
+
+'''
+Registro reportes
+nroreporte, idreportante, idreportado, estadoreporte, idmoderador: int
+reportanteestado, reportadoestado: booleano
+razo, detalles: string
+'''
 
 class reportes:
     def __init__(self):
@@ -70,6 +101,11 @@ class reportes:
         self.detalles = ""
         self.idmoderador = 0
 
+'''
+Registro contadordereportes
+idmoderador, reportesignorados, reportesaceptados, totalreportes: int
+'''
+
 class contadordereportes:
     def __init__(self):
         self.idmoderador = 0
@@ -80,6 +116,10 @@ class contadordereportes:
 
 
 #-------------------------------FORMATEO----------------------------#
+'''
+email, nombre, contraseña, hobbies, materia_fav, deporte_fav, materia_fuerte, materia_debil, biografia, pais, ciudad, fecha_nacimiento: string
+'''
+
 
 def formato_estudiante(self):
 
@@ -95,18 +135,27 @@ def formato_estudiante(self):
     self.pais = self.pais.ljust(32, " ")
     self.ciudad = self.ciudad.ljust(32, " ")
     self.fecha_nacimiento = self.fecha_nacimiento.ljust(10, " ")
-        
+
+'''
+email, contraseña: string
+'''
+
 def formato_admin_mod(self):
     self.email = self.email.ljust(32, " ")
     self.contraseña = self.contraseña.ljust(32, " ")
 
+'''
+razon,detalles: string
+'''
 def formato_reportes(self):
     self.razon = self.razon.ljust(50, " ")
     self.detalles = self.detalles.ljust(255, " ")
 
 
 #--------------------------------VERIFICAR ARCHIVO---------------------------#
-
+'''
+path:string
+'''
 def verificar_archivo(path):
     #Si existe el archivo, lo abre como escritura
     if os.path.exists(path):
@@ -118,6 +167,18 @@ def verificar_archivo(path):
 
 
 #------------------------------VARIABLES CON INFO----------------------------#
+
+'''
+currentdate:datetime
+CYEAR, CYEARF, CYEARI, DPY: int
+nombre*:string
+materia*:string
+deporte*:string
+hobbies*:string
+biografia*:string
+pais:string
+ciudad*:string
+'''
 
 currentdate = datetime.now()
 CYEAR = int(currentdate.year)
@@ -163,6 +224,10 @@ ciudad4 = "Rufino"
 
 #----------------------------RAZON DE REPORTES-----------------------------------#
 
+'''
+razon*:string
+'''
+
 razon1 = "Unlike bombing"
 razon2 = "No me devolvio el like"
 razon3 = "Difamacion"
@@ -171,6 +236,12 @@ razon5 = "Otra"
 
 
 #--------------------------CARGA DE DATOS AUTOMATICO-----------------------------#
+
+'''
+i: int
+estudiante: estudiantes
+
+'''
 
 def cargar_archivo_estudiantes():
     archivo_logico_estudiantes.seek(0, 0)
@@ -195,6 +266,11 @@ def cargar_archivo_estudiantes():
         pickle.dump(estudiante, archivo_logico_estudiantes)
         archivo_logico_estudiantes.flush()
 
+'''
+tipodeusuario: string
+clase: registro
+'''
+
 
 def cargar_archivo_admin_mod(tipodeusuario, clase):
 
@@ -216,6 +292,12 @@ def cargar_archivo_admin_mod(tipodeusuario, clase):
         pickle.dump(variable,archivo_logico_administradores)
         archivo_logico_administradores.flush()
 
+
+'''
+i: int
+reporte: reportes
+'''
+
 def cargar_archivo_reportes():
 
     archivo_logico_reportes.seek(0, 0)
@@ -234,6 +316,11 @@ def cargar_archivo_reportes():
         pickle.dump(reporte, archivo_logico_reportes)
         archivo_logico_reportes.flush()
 
+'''
+i: int
+like: likes
+'''
+
 def cargar_archivo_likes():
 
     archivo_logico_likes.seek(0,0)
@@ -247,6 +334,10 @@ def cargar_archivo_likes():
         pickle.dump(like,archivo_logico_likes)
         archivo_logico_likes.flush()
 
+'''
+rdd, rmm, ryear: string
+rdate: datetime
+'''
 
 def rdob():
     rdd = str(random.randint(1,28))
@@ -256,8 +347,6 @@ def rdob():
     rdate = datetime.strptime(rdate, "%Y-%m-%d").date()
     rdate = str(rdate)
     return rdate
-
-
 
 def main():
     global archivo_logico_estudiantes, archivo_logico_administradores, archivo_logico_moderadores, archivo_logico_reportes, archivo_logico_likes, archivo_logico_contadordereportes
@@ -1745,6 +1834,12 @@ while opc != 0 and salida == False:
     if opc != 0 and salida == False:
         print_menu_inicio()
         opc = validar(0,2)
-
-
+print ("Hasta Luego")
+sleep(2)
+archivo_logico_estudiantes.close()
+archivo_logico_administradores.close()
+archivo_logico_moderadores.close()
+archivo_logico_reportes.close()
+archivo_logico_likes.close()
+archivo_logico_contadordereportes.close()
 
