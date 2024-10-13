@@ -219,12 +219,12 @@ def cargar_archivo_admin_mod(tipodeusuario, clase):
 def cargar_archivo_reportes():
 
     archivo_logico_reportes.seek(0, 0)
-    for i in range(0, 4):
+    for i in range(0, 3):
         reporte = reportes()
         reporte.nroreporte = i
         reporte.idreportante = 0
         reporte.reportanteestado = True
-        reporte.idreportado = 4 - i
+        reporte.idreportado = i+1
         reporte.reportadoestado = True
         reporte.razon = globals()[f"razon{random.randint(1, 4)}"]
         reporte.estadoreporte = 0
@@ -1075,8 +1075,6 @@ def desactivar_devolver_id (parametro):
     archivo_logico_estudiantes.flush()
     return id_desactivar
 
-
-
 def listado_general_estudiantes ():
 
     tam = os.path.getsize(archivo_fisico_estudiantes)
@@ -1088,34 +1086,6 @@ def listado_general_estudiantes ():
             variable = pickle.load(archivo_logico_estudiantes)
             if variable.estado == True:
                 print (f" El estudiante {variable.idregistro} es {variable.nombre}")
-
-
-'''def validar_idregistro_nombre (parametro, condicion):
-    pos = 0
-    tam = os.path.getsize(archivo_fisico_estudiantes)
-    if tam == 0:
-        print("no se puede hacer la consulta, cargar datos primero")
-    else:
-        archivo_logico_estudiantes.seek (0,0)
-        variable = pickle.load (archivo_logico_estudiantes)
-        if condicion == 1:
-            #Agregue esto porque parametro lo leia como string y el tipo de dato en el registro es INT entonces no comparaba bien.
-            parametro=int(parametro)
-            while (archivo_logico_estudiantes.tell() < tam) and (variable.idregistro != parametro):
-                pos = archivo_logico_estudiantes.tell()
-                variable = pickle.load(archivo_logico_estudiantes)
-            if variable.idregistro == parametro:
-                return pos
-            else:
-                return -1
-        elif condicion == 2:
-            while (archivo_logico_estudiantes.tell() < tam) and (variable.nombre != parametro):
-                pos = archivo_logico_estudiantes.tell()
-                variable = pickle.load(archivo_logico_estudiantes)
-            if variable.nombre == parametro:
-                return pos
-            else:
-                return -1'''
 
 def validar_idregistro_nombre (parametro, condicion):
     pos = 0
@@ -1391,12 +1361,16 @@ def bonus_track_1():
         estudiante = obtener_estudiante_por_id(id_estudiante)
         if estudiante:
             print(f"ID: {id_estudiante}, Nombre: {estudiante.nombre}, Puntaje: {puntaje}")
+    sleep(5)
 
 def obtener_estudiante_por_id(id_estudiante):
     estudiante = estudiantes()
     archivo_logico_estudiantes.seek(0, 0)
-    while (archivo_logico_estudiantes.tell() < os.path.getsize(archivo_fisico_estudiantes)) and (estudiante.idregistro != id_estudiante):
+    if id_estudiante==0:
         estudiante = pickle.load(archivo_logico_estudiantes)
+    else:
+            while (archivo_logico_estudiantes.tell() < os.path.getsize(archivo_fisico_estudiantes)) and (estudiante.idregistro != id_estudiante):
+                    estudiante = pickle.load(archivo_logico_estudiantes)
     if estudiante.idregistro != id_estudiante:
         estudiante = None
     return estudiante
@@ -1425,7 +1399,7 @@ def menu_administradores():
         if opc != 0:
             limpiar_pantalla()
             menu_administradores_principal()
-            opc=validar(0,3)
+            opc=validar(0,4)
 
 
 
