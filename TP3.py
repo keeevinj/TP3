@@ -1282,6 +1282,7 @@ def desactivar_usuario (parametro):
     archivo_logico_estudiantes.flush()
 
 #-----------------------------------BONUS TRACK 1---------------------------------#
+#bonus1
 def bonus_track_1():
     puntajes = {}
     rachas = {}
@@ -1308,23 +1309,31 @@ def bonus_track_1():
         else:
             puntajes[remitente] -= 1
             rachas[remitente] = 0
-
+		
+    # Hago una lista de IDs manualmente
+    num_estudiantes = len(puntajes)
+    ids = [None] * num_estudiantes
+    i = 0
+    for id_estudiante in puntajes:
+        ids[i] = id_estudiante
+        i += 1
+	    
     # Ordenar puntajes usando búsqueda burbuja
-    puntajes_lista = list(puntajes.items())
-    n = len(puntajes_lista)
-    for i in range(n):
-        for j in range(0, n-i-1):
-            # Comparar el puntaje actual con el siguiente
-            if puntajes_lista[j][1] < puntajes_lista[j+1][1]:
+    for i in range(num_estudiantes):
+        for j in range(num_estudiantes - 1):
+            if puntajes[ids[j]] < puntajes[ids[j + 1]]:
                 # Intercambiar si están en el orden incorrecto
-                puntajes_lista[j], puntajes_lista[j+1] = puntajes_lista[j+1], puntajes_lista[j]
-
+                temp = ids[j]
+                ids[j] = ids[j + 1]
+                ids[j + 1] = temp
+		    
     # Mostrar resultados
     print("Listado de candidatos según su puntaje:")
-    for id_estudiante, puntaje in puntajes_lista:
+    for i in range(num_estudiantes):
+        id_estudiante = ids[i]
         estudiante = obtener_estudiante_por_id(id_estudiante)
         if estudiante:
-            print(f"ID: {id_estudiante}, Nombre: {estudiante.nombre}, Puntaje: {puntaje}")
+            print(f"ID: {id_estudiante}, Nombre: {estudiante.nombre}, Puntaje: {puntajes[id_estudiante]}")
     sleep(5)
 
 def obtener_estudiante_por_id(id_estudiante):
