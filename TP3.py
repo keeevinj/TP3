@@ -339,7 +339,6 @@ def validar_fecha(D, M, Y):
             date=-1
     else:
         date = -1
-    #return -1
     return date
 
 def modulo_ingrese_fecha():
@@ -370,7 +369,6 @@ def validar(minimo,maximo):
     opc = input("ingrese una opcion del " + str(minimo) + " al " + str(maximo) + ": ")
     opc = validar_opcion_numerica(opc, minimo, maximo)
     while opc == -1:
-        #limpiar_pantalla()
         print ("La opcion es incorrecta")
         opc = input("ingrese una opcion del " + str(minimo) + " al " + str(maximo) + ": ")
         opc = validar_opcion_numerica(opc, minimo, maximo)
@@ -383,7 +381,6 @@ def validar_opcion_alfabetica(opcion, string):
         i = i + 1
 
     if not (i < len(string) and string[i] == opcion):
-        #return opcion
         opcion=-1
 
     return opcion
@@ -860,7 +857,7 @@ def busca_likes(id_rem,id_dest):
     devolver=0
     archivo_logico_likes.seek(0,0)
     like=likes()
-    while archivo_logico_likes.tell()<os.path.getsize(archivo_fisico_likes):# and (like.idrem != id_rem and like.iddest != id_dest):
+    while archivo_logico_likes.tell()<os.path.getsize(archivo_fisico_likes):
         like=pickle.load(archivo_logico_likes)
         if (like.idrem == id_rem and like.iddest == id_dest):
             devolver=1
@@ -993,11 +990,7 @@ def menu_opc_reportes():
 
 def menu_principal_moderadores():
     print("1. Gestionar usuarios")
-    #print("   a. Desactivar usuarios")
-    #print("   b. Volver")
     print("2. Gestionar reportes")
-    #print("   a. Ver reportes")
-    #print("   b. Volver")
     print("3. Reportes estadisticos")
     print("0. Salir")
 
@@ -1103,20 +1096,12 @@ def validar_idregistro_nombre (parametro, condicion):
                 variable = pickle.load(archivo_logico_estudiantes)
             if not(variable.idregistro == parametro):
                 pos = -1
-                #return pos
-            #else:
-                #pos=-1
-                #return -1
         elif condicion == 2:
             while (archivo_logico_estudiantes.tell() < tam) and (variable.nombre != parametro):
                 pos = archivo_logico_estudiantes.tell()
                 variable = pickle.load(archivo_logico_estudiantes)
             if not(variable.nombre == parametro):
                 pos = -1
-                #return pos
-            #else:
-                #pos=-1
-                #return -1
     return pos
 
 
@@ -1238,23 +1223,6 @@ def menu_opc_gestion_reportes():
         menu_print_opc_gestion_reportes()
         opc = validaralfabeticamente("ab","a","b")
 
-'''def buscar_nro_reporte (parametro):
-
-    pos = 0
-    tam = os.path.getsize(archivo_fisico_reportes)
-    if tam == 0:
-        print("no se puede hacer la consulta, cargar datos primero")
-    else:
-        archivo_logico_reportes.seek (0,0)
-        reporte = pickle.load (archivo_logico_reportes)
-        while (archivo_logico_reportes.tell() < tam) and (reporte.nroreporte != parametro):
-            pos = archivo_logico_reportes.tell()
-            reporte = pickle.load(archivo_logico_reportes)
-        if reporte.nroreporte == parametro  and reporte.idmoderador == 0:
-            return pos
-        else:
-            return -1'''
-
 def buscar_nro_reporte (parametro):
 
     pos = 0
@@ -1269,10 +1237,6 @@ def buscar_nro_reporte (parametro):
             reporte = pickle.load(archivo_logico_reportes)
         if not(reporte.nroreporte == parametro  and reporte.idmoderador == 0):
             pos = -1
-            #return pos
-        #else:
-            #pos=-1
-            #return -1
     return pos
 
 
@@ -1405,13 +1369,7 @@ def menu_administradores():
 
 def menu_administradores_principal():
     print ("1. Gestionar usuarios")
-    #print ("    a. Eliminar un usuario")
-    #print ("    b. Dar de alta un moderador")
-    #print ("    c. Desactivar usuario")
-    #print ("    d. Volver")
     print ("2. Gestionar Reportes")
-    #print ("    a. Ver Reportes")
-    #print ("    b. Volver")
     print ("3. Reportes Estadisticos")
     print ("4. Bonus Track 1 - Puntuando Candidatos")
     print ("0. Salir")
@@ -1509,16 +1467,6 @@ def desactivar_moderador (parametro):
     pickle.dump(a_usuario, archivo_logico_moderadores)
     archivo_logico_moderadores.flush()
 
-'''def contador_inactivos (archivologico, archivofisico):
-    tamaño = os.path.getsize(archivofisico)
-    archivologico.seek (0,0)
-    contador = 0
-    while archivologico.tell() < tamaño:
-        variable = pickle.load(archivologico)
-        if variable.estado == True:
-            return 1
-    return -1
-'''
 def contador_inactivos (archivologico, archivofisico):
     tamaño = os.path.getsize(archivofisico)
     archivologico.seek (0,0)
@@ -1533,24 +1481,6 @@ def contador_inactivos (archivologico, archivofisico):
     #return -1
     return devolver
 
-
-
-'''def validar_idregistro_moderador (parametro):
-    pos = 0
-    tam = os.path.getsize(archivo_fisico_moderadores)
-    if tam == 0:
-        print("no se puede hacer la consulta, cargar datos primero")
-    else:
-        archivo_logico_moderadores.seek (0,0)
-        variable = pickle.load (archivo_logico_moderadores)
-        while (archivo_logico_moderadores.tell() < tam) and (variable.idregistro != parametro):
-            pos = archivo_logico_moderadores.tell()
-            variable = pickle.load(archivo_logico_moderadores)
-        if variable.idregistro == parametro:
-            return pos
-        else:
-            return -1
-'''
 def validar_idregistro_moderador (parametro):
     pos = 0
     tam = os.path.getsize(archivo_fisico_moderadores)
@@ -1671,8 +1601,6 @@ def menu_opc_reportes_estadisticos():
     print ("El moderador con mayor cantidad de reportes aceptados e ignorados es:", id_mod_ambos)
     sleep(10)
 
-
-
 def listado_general_metricas (condicion):
     id_mod = 0
     contador = 0
@@ -1684,7 +1612,7 @@ def listado_general_metricas (condicion):
         variable = contadordereportes ()
         variable = pickle.load(archivo_logico_contadordereportes)
         while (archivo_logico_contadordereportes.tell() < tam):
-            if condicion == 1 and contador < variable.reportseaceptados:
+            if condicion == 1 and contador < variable.reportesaceptados:
                contador = variable.reportesaceptados
                id_mod = variable.idmoderador
             if condicion == 2 and contador < variable.reportesignorados:
@@ -1695,9 +1623,6 @@ def listado_general_metricas (condicion):
                id_mod = variable.idmoderador
             variable = pickle.load(archivo_logico_contadordereportes)
         return id_mod
-
-
-
 
 def totaldereportes ():
     tam = os.path.getsize(archivo_fisico_reportes)
@@ -1763,24 +1688,6 @@ def grabar_segun_condiciones (idregistro, estadoreporte, posicion):
             archivo_logico_contadordereportes.seek (posicion,0)
         pickle.dump(variable, archivo_logico_contadordereportes)
         archivo_logico_contadordereportes.flush()
-
-'''def corroborar_id (parametro):
-    pos = 0
-    tam = os.path.getsize(archivo_fisico_contadordereportes)
-    if tam == 0:
-        print("no se puede hacer la consulta, cargar datos primero")
-        return -2
-    else:
-        pos = 0
-        archivo_logico_contadordereportes.seek (0,0)
-        contador = pickle.load (archivo_logico_contadordereportes)
-        while (archivo_logico_contadordereportes.tell() < tam) and (contador.idmoderador != parametro):
-            pos = archivo_logico_contadordereportes.tell()
-            contador = pickle.load(archivo_logico_contadordereportes)
-        if contador.idmoderador == parametro:
-            return pos
-        else:
-            return -1'''
 
 def corroborar_id (parametro):
     pos = 0
