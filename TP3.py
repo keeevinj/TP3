@@ -43,7 +43,7 @@ class estudiantes:
         self.pais = ""
         self.ciudad = ""
         self.fecha_nacimiento = ""
-	self.super_like = 1 #bonus2
+        self.super_like = 1 #bonus2
 
 class moderadores:
     def __init__(self):
@@ -505,7 +505,7 @@ def tamaño_registro(archivofisico,archivologico):
     return tamaño
 
 def login():
-    global usuario
+    global usuario, busco_estudiante, busco_moderador, busco_administrador
     if check() == True:
         email = validar_campos_texto("Email", 32)
         password = validar_campos_contrasenia ("Contrasenia", 32)
@@ -591,7 +591,7 @@ def registro_estudiantes():
         nuevo_usuario.pais = validar_campos_texto("Pais", 32)
         nuevo_usuario.ciudad = validar_campos_texto("Ciudad", 32)
         nuevo_usuario.fecha_nacimiento = modulo_ingrese_fecha()
-	nuevo_usuario.super_like = 1 #bonus2
+        nuevo_usuario.super_like = 1 #bonus2
         formato_estudiante(nuevo_usuario)
         archivo_logico_estudiantes.seek(0,2)
         pickle.dump(nuevo_usuario,archivo_logico_estudiantes)
@@ -1201,7 +1201,7 @@ def menu_adm_gestion_usuarios():
 
 
 def menu_opc_gestion_reportes():
-    global usuario
+    global usuario, busco_administrador, busco_moderador
     limpiar_pantalla()
     menu_print_opc_gestion_reportes()
     opc = validaralfabeticamente("ab","a","b")
@@ -1235,6 +1235,9 @@ def menu_opc_gestion_reportes():
                                 #DESDE ACA MODIFICA EL REPORTE#
                                 auxreportar.reportadoestado = False
                                 auxreportar.estadoreporte = 1
+                                #VER
+                                if busco_administrador != -1:
+                                    id_mod=0
                                 auxreportar.idmoderador = id_mod
                                 archivo_logico_reportes.seek(reporte_numero,0)
                                 pickle.dump(auxreportar, archivo_logico_reportes)
@@ -1249,6 +1252,9 @@ def menu_opc_gestion_reportes():
                                 auxreportar = reportes ()
                                 auxreportar = pickle.load(archivo_logico_reportes)
                                 auxreportar.estadoreporte = 2
+                                #VER
+                                if busco_administrador != -1:
+                                    id_mod=0
                                 auxreportar.idmoderador = id_mod
                                 archivo_logico_reportes.seek(reporte_numero,0)
                                 pickle.dump(auxreportar, archivo_logico_reportes)
@@ -1394,12 +1400,6 @@ def obtener_estudiante_por_id(id_estudiante):
     if estudiante.idregistro != id_estudiante:
         estudiante = None
     return estudiante
-
-
-
-#-----------------------------------BONUS TRACK 2---------------------------------#
-def bonus_track_2():
-    pass
 
 #-------------------------------------MENU ADMINISTRADORES------------------------------#
 
@@ -1834,7 +1834,7 @@ def corroborar_id (parametro):
 #---------------------------------PROGRAMA---------------------------------#
 
 usuario = [None]
-global salida, contador_grabar, puntero
+global salida, contador_grabar, puntero, busco_estudiante, busco_moderador, busco_administrador
 salida = False
 contador_grabar = 0
 puntero = 0
