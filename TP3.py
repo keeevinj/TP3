@@ -44,6 +44,7 @@ class estudiantes:
         self.ciudad = ""
         self.fecha_nacimiento = ""
 	self.super_like = 1 #bonus2
+	self.credito_revelar = 1 #bonus3
 
 class moderadores:
     def __init__(self):
@@ -592,6 +593,7 @@ def registro_estudiantes():
         nuevo_usuario.ciudad = validar_campos_texto("Ciudad", 32)
         nuevo_usuario.fecha_nacimiento = modulo_ingrese_fecha()
 	nuevo_usuario.super_like = 1 #bonus2
+	nuevo_usuario.credito_revelar = 1 #bonus3
         formato_estudiante(nuevo_usuario)
         archivo_logico_estudiantes.seek(0,2)
         pickle.dump(nuevo_usuario,archivo_logico_estudiantes)
@@ -818,7 +820,58 @@ def menu_ver_candidatos():
             archivo_logico_likes.seek(0, 2)
             pickle.dump(like, archivo_logico_likes)
             archivo_logico_likes.flush()
+ # -- bonus3 -- #
+    if usuario.credito_revelar > 0:
+              print("4. Revelar candidatos que te han dado like")
+            if validaralfabeticamente("1", "1", "1") == "1":  # Solo un ejemplo para ejecutar la opción
+                revelar_candidatos(usuario.idregistro)
 
+def revelar_candidatos(id_estudiante):
+    likes_recibidos = []
+    archivo_logico_likes.seek(0)
+    cantidad_likes = 0
+
+    while archivo_logico_likes.tell() < os.path.getsize(archivo_fisico_likes):
+        like = pickle.load(archivo_logico_likes)
+        
+        if like.iddest == id_estudiante and not busca_match(id_estudiante, like.idrem):
+            if cantidad_likes < 3:  # Limitar a 3 candidatos
+                likes_recibidos += [like.idrem]  # Cargar manualmente
+                cantidad_likes += 1
+
+    if cantidad_likes == 0:
+        print("No tienes candidatos que revelarte.")
+    else:
+        print("Candidatos que te han dado like:")
+        for i in range(cantidad_likes):
+            id_candidato = likes_recibidos[i]
+            estudiante = obtener_estudiante_por_id(id_candidato)
+            print(f"{i + 1}. ID: {id_candidato}, Nombre: {estudiante.nombre}")
+    # Actualizar el crédito de revelar
+    if usuario.credito_revelar > 0:
+        actualizar_credito_revelar(id_estudiante)
+	    
+def actualizar_credito_revelar(id_estudiante):
+    encontrado = False
+    f = open("estudiantes.dat", "rb+")
+    
+    pos = 0
+    tam = os.path.getsize("estudiantes.dat")
+    
+    while pos < tam and not encontrado:
+        f.seek(pos)
+        estudiante = pickle.load(f)
+        
+        if estudiante.idregistro == id_estudiante:
+            estudiante.credito_revelar -= 1
+            f.seek(pos)
+            pickle.dump(estudiante, f)
+            encontrado = True  # Marca que hemos encontrado y actualizado al estudiante
+        
+        pos = f.tell()  # Actualiza la posición para la siguiente iteración
+
+    f.close()  # Cierro el archivo
+ # -- bonus3 -- #
 
 def usar_super_like(id_remitente, id_destinatario):
     # Crear el like del remitente al destinatario
@@ -923,23 +976,35 @@ def menu_reportar_candidato():
         pickle.dump(reporte,archivo_logico_reportes)
         archivo_logico_reportes.flush()
 
+#--bonus3--#
 def menu_opc_gestion_candidatos():
     global usuario
     limpiar_pantalla()
     menu_print_gestion_candidatos()
-    opc = validaralfabeticamente("abc", "a", "c")
-    while opc != "c":
-        while opc != "c":
-            match opc:
-                case "a":
-                    menu_ver_candidatos()
-                case "b":
-                    menu_reportar_candidato()
-                case "c":
-                    print("")
-            menu_print_gestion_candidatos()
-            opc = input("Ingrese una opcion: ")
-
+    
+    # Obtener el estudiante actual
+    estudiante_actual = obtener_estudiante_por_id(usuario.idregistro)
+    
+    opc = validaralfabeticamente("abcd", "a", "d")
+    
+    while opc != "d":  # Cambié "c" a "d" para incluir la nueva opción
+        if opc == "a":
+            menu_ver_candidatos()
+        elif opc == "b":
+            menu_reportar_candidato()
+        elif opc == "c":
+            if estudiante_actual.credito_revelar > 0:
+                print("c. Revelar candidatos que te han dado like")
+                opcion = input("¿Deseas proceder? (S/N): ").upper()
+                if opcion == "S":
+                    revelar_candidatos(estudiante_actual.idregistro)
+            else:
+                print("No tienes créditos para revelar candidatos.")
+        
+        # Volver a mostrar el menú
+        menu_print_gestion_candidatos()
+        opc = validaralfabeticamente("abcd", "a", "d")
+#--bonus3--#
 #---------------------------MENU MATCHEOS--------------------------------#
 def menu_print_gestion_matcheos():
     print("3. Matcheos")
